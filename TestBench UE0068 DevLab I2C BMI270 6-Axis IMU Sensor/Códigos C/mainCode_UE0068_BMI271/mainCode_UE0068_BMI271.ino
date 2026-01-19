@@ -12,6 +12,8 @@
 #define SDO_PIN D1  // MISO
 #define CS_PIN D0
 
+#define RELAY 5  // Relay de cambio para CS
+
 // ==== Inicialización de objetos
 HardwareSerial PagWeb(1);  // Objeto para UART2 en PULSAR como PagWeb
 BMI270 imu;
@@ -27,12 +29,20 @@ StaticJsonDocument<200> sendJSON;
 uint8_t chipSelectPin = D0;
 uint32_t clockFrequency = 100000;
 
+// Banderas de estado
+bool flagi2c68 = false;
+bool flagi2c69 = false;
+bool flagtwin = false;
+
 void setup() {
   // Start serial
   Serial.begin(115200);
 
   // Iniciar UART2 en los pines seleccionados
   PagWeb.begin(115200, SERIAL_8N1, RX2, TX2);
+
+  pinMode(RELAY, OUTPUT);
+  digitalWrite(RELAY, HIGH);  // Activo a BAJA
 
   Serial.println("MainCode JSON BMI270");
 }
@@ -49,19 +59,26 @@ void loop() {
 
       int opc = 0;
 
-      if (Function == "scan") opc = 1;       // {"Function":"scan"}
-      else if (Function == "SPI") opc = 2;   // {"Function":"SPI"}
-      else if (Function == "ping") opc = 3;  // {"Function":"ping"}
+      if (Function == "scan") opc = 1;           // {"Function":"scan"}
+      else if (Function == "SPI") opc = 2;       // {"Function":"SPI"}
+      else if (Function == "relayOn") opc = 3;   // {"Function":"relayOn"}
+      else if (Function == "relayOff") opc = 4;  // {"Function":"relayOff"}
+      else if (Function == "ping") opc = 5;      // {"Function":"ping"}
 
       switch (opc) {
         case 1:
           {
             Serial.println("==== Escaneo y lectura en direcciones I2C ====");
             sendJSON.clear();  // Limpia cualquier dato previo
+            flagi2c68 = false;
+            flagi2c69 = false;
+            flagtwin = false;  // Reset de banderas
 
             String scan1 = scanI2C(68);
             Serial.println("Escaneo LOW: " + scan1);
+            delay(50);
 
+            flagtwin = true;  // Fin de la primera direccion
             String scan2 = scanI2C(69);
             Serial.println("Escaneo HIGH: " + scan2);
             break;
@@ -79,6 +96,8 @@ void loop() {
               if (imu.beginSPI(chipSelectPin, clockFrequency) != BMI2_OK) {
                 Serial.println("Error: BMI270 not connected, check wiring and CS pin!");
                 sendJSON["SPI"] = "Fail";
+                serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+                PagWeb.println();
               } else {
                 // Inicialización del sensor en SPI
                 sendJSON["SPI"] = "OK";
@@ -94,7 +113,19 @@ void loop() {
             break;
           }
 
-        case 3:
+        case 3:  // Encendido de Relay
+          {
+            digitalWrite(RELAY, LOW);
+            break;
+          }
+
+        case 4:  // Apagado de Relay
+          {
+            digitalWrite(RELAY, HIGH);
+            break;
+          }
+
+        case 5:
           {
             sendJSON.clear();  // Limpia cualquier dato previo
             sendJSON["ping"] = "pong";
@@ -113,9 +144,9 @@ String scanI2C(int sw) {
 
   String addressI2C = "";
 
+  // Configuración de pines para modo I2C
   pinMode(CS_PIN, INPUT);
   pinMode(SDO_PIN, OUTPUT);
-
   if (sw == 68) {
     digitalWrite(SDO_PIN, LOW);  // LOW = 0x68 || HIGH = 0x69
   } else if (sw == 69) {
@@ -124,8 +155,8 @@ String scanI2C(int sw) {
     digitalWrite(SDO_PIN, LOW);
   }
 
-  Wire.begin(SDA_PIN, SCL_PIN);
   //Serial.println("Inicio de escáner I2C...");
+  Wire.begin(SDA_PIN, SCL_PIN);
 
   for (uint8_t addr = 1; addr < 127; addr++) {
     Wire.beginTransmission(addr);
@@ -133,18 +164,17 @@ String scanI2C(int sw) {
       //Serial.print("Dispositivo encontrado en 0x");
 
       if (addr == 0x68) {
-        sendJSON["i2c0x68"] = "OK";
-        sendJSON["addr"] = addr;
+        flagi2c68 = true;  // Levantamos bandera de 0x68
+        sendJSON["addr"] = String(addr, HEX);
       }
 
       if (addr == 0x69) {
-        sendJSON["i2c0x69"] = "OK";
-        sendJSON["addr"] = addr;
+        flagi2c69 = true;  // Levantamos bandera de 0x69
+        sendJSON["addr"] = String(addr, HEX);
       }
 
       if (addr < 16) Serial.print("0");
       //Serial.println(addr, HEX);
-
       addressI2C += "0x";
       if (addr < 16) addressI2C += "0";
       addressI2C += String(addr, HEX);
@@ -152,25 +182,39 @@ String scanI2C(int sw) {
     }
   }
 
-  if (imu.beginI2C(0x68, Wire) == BMI2_OK) {
-    Serial.println("BMI270 detectado en 0x68");
-    delay(500);
-    for (int i = 0; i < 10; i++) {
-      readIMU();
-      delay(50);
+  // Envio de estados en caso de detectar la dirección I2C
+  if (flagi2c68) {
+    sendJSON["i2c0x68"] = "OK";
+
+    // Lectura de valores de IMU
+    if (imu.beginI2C(0x68, Wire) == BMI2_OK) {
+      Serial.println("BMI270 detectado en 0x68");
+      delay(500);
+      for (int i = 0; i < 10; i++) {
+        readIMU();
+        delay(50);
+      }
     }
   } else {
     sendJSON["i2c0x68"] = "Fail";
+    serializeJson(sendJSON, PagWeb);
+    PagWeb.println();
   }
 
-  if (imu.beginI2C(0x69, Wire) == BMI2_OK) {
-    Serial.println("BMI270 detectado en 0x69");
-    for (int i = 0; i < 10; i++) {
-      readIMU();
-      delay(50);
+
+  if (flagi2c69 && flagtwin) {
+    sendJSON["i2c0x69"] = "OK";
+    if (imu.beginI2C(0x69, Wire) == BMI2_OK) {
+      Serial.println("BMI270 detectado en 0x69");
+      for (int i = 0; i < 10; i++) {
+        readIMU();
+        delay(50);
+      }
     }
-  } else {
+  } else if (!flagi2c69 && flagtwin) {
     sendJSON["i2c0x69"] = "Fail";
+    serializeJson(sendJSON, PagWeb);
+    PagWeb.println();
   }
 
   Wire.end();
