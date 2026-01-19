@@ -12,7 +12,8 @@
 #define SDO_PIN D1  // MISO
 #define CS_PIN D0
 
-#define RELAY 5  // Relay de cambio para CS
+#define RUN_BUTTON 4  // Botón de Arranque
+#define RELAY 5       // Relay de cambio para CS
 
 // ==== Inicialización de objetos
 HardwareSerial PagWeb(1);  // Objeto para UART2 en PULSAR como PagWeb
@@ -41,6 +42,7 @@ void setup() {
   // Iniciar UART2 en los pines seleccionados
   PagWeb.begin(115200, SERIAL_8N1, RX2, TX2);
 
+  pinMode(RUN_BUTTON, INPUT);
   pinMode(RELAY, OUTPUT);
   digitalWrite(RELAY, HIGH);  // Activo a BAJA
 
@@ -48,6 +50,19 @@ void setup() {
 }
 
 void loop() {
+
+  if (digitalRead(RUN_BUTTON) == HIGH) {
+    delay(200);
+    sendJSON.clear();  // Limpia cualquier dato previo
+
+    if (digitalRead(RUN_BUTTON) == LOW) {
+      Serial.println("Arranque por botonera");
+      sendJSON["Run"] = "OK";           // Envio de corriente JSON para corto
+      serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+      PagWeb.println();
+    }
+  }
+
 
   if (PagWeb.available()) {
 
