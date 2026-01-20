@@ -33,10 +33,10 @@
 #define TX2 16
 #define Rx2 17
 
-#define XD1 32     // Activación de Q1 para salida en IN+
+#define ONSX 32    // Activación de Q1 para alimentación de SX1308
 #define WAKEUP 33  // WakeUp SW2
-#define XD3 34     // Divisor de tensión TP4056 In+ In-
-#define XD4 35     // Divisor de tensión TP4056 Out+ Out-
+#define DIVIn 34   // Divisor de tensión TP4056 In+ In-
+#define DIVOut 35  // Divisor de tensión TP4056 Out+ Out-
 
 
 // ==== Creación de objetos ====
@@ -45,7 +45,9 @@
 Adafruit_PCD8544 display = Adafruit_PCD8544(SCL_PIN, MOSI_PIN, DAT_PIN, SCE_PIN, RST_PIN);
 
 // Variables y banderas
-String stateButton;  // Estado de botón de WakeUp
+String stateButton = "";      // Estado de botón de WakeUp
+bool DIVIn_estable = false;   // Estabilidad de GPIO34 DIVIn
+bool DIVOut_estable = false;  // Estabilidad de GPIO35 DIVOut
 
 // Variables de JSON
 String JSON_entrada;  // Variable que recibe al JSON en crudo de PagWeb
@@ -59,14 +61,18 @@ void setup() {
 
   // === Declaración e inicialización de pines - gpios
   pinMode(WAKEUP, INPUT);
+  pinMode(DIVIn, INPUT);
+  pinMode(DIVOut, INPUT);
 
   pinMode(VCC, OUTPUT);
   pinMode(LED, OUTPUT);
   pinMode(RGB_R, OUTPUT);  // Activos a BAJA
   pinMode(RGB_G, OUTPUT);
   pinMode(RGB_B, OUTPUT);
+  pinMode(ONSX, OUTPUT);
 
-  digitalWrite(VCC, HIGH);
+  digitalWrite(ONSX, HIGH);  // Base de transistor para SX1308
+  digitalWrite(VCC, HIGH);   // VCC de OLED
 
   // Inicialización de Serial
   Serial.begin(115200);
@@ -113,25 +119,41 @@ void loop() {
 
         case 2:
           {
-            Serial.println("Presiona el SW2 WakeUp");
-            for (int i = 0; i < 100; i++) {
-              if (digitalRead(WAKEUP) == LOW) {
-                for (int j = 0; j < 50; j++) {
-                  if (digitalRead(WAKEUP) == HIGH) {
-                    stateButton = "OK";
-                    writeScreen("Boton SW2: ", stateButton);
-                    return;
-                  }
-                  delay(500);
-                }
-              }
-              delay(500);
+            display.clearDisplay();
+
+            // ==== Validación de I34 Divisor V en +In -In
+            delay(200);
+            DIVIn_estable = leerAnalogicoEstable(DIVIn);
+            if (DIVIn_estable) {
+              writeScreen(2, "Analog I34: ", "OK");
+            } else {
+              writeScreen(2, "Analog I34: ", "Fail");
             }
 
+            // ==== Validación de I35 Divisor V en +Out -Out
+            // Va a leer correctamente 5V hasta que se suelde el SX1308
+            delay(200);
+            DIVOut_estable = leerAnalogicoEstable(DIVOut);
+            if (DIVOut_estable) {
+              writeScreen(3, "Analog I35: ", "OK");
+            } else {
+              writeScreen(3, "Analog I35: ", "Fail");
+            }
             break;
           }
       }
     }
+  } else if (digitalRead(WAKEUP) == LOW) {
+
+    // ==== Validación de SW2 Wake Up
+    delay(200);
+    if (digitalRead(WAKEUP) == HIGH)
+      Serial.println("Botón presionado SW2 WakeUp");
+    for (int i = 0; i < 15; i++) {
+      demoBUTTON();
+      delay(20);
+    }
+
   } else {
     demoLED();
   }
@@ -154,11 +176,56 @@ void demoLED() {
   digitalWrite(RGB_B, HIGH);
 }
 
-void writeScreen(String lbl, String msg) {
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.println(lbl);
-  display.setCursor(60, 0);
-  display.println(msg);
+void demoBUTTON() {
+  delay(100);
+  digitalWrite(RGB_R, LOW);
+  digitalWrite(RGB_G, HIGH);
+  digitalWrite(RGB_B, HIGH);
+
+  delay(100);
+  digitalWrite(RGB_R, HIGH);
+  digitalWrite(RGB_G, LOW);
+  digitalWrite(RGB_B, HIGH);
+
+  delay(100);
+  digitalWrite(RGB_R, LOW);
+  digitalWrite(RGB_G, LOW);
+  digitalWrite(RGB_B, HIGH);
+}
+
+void writeScreen(uint8_t line, String lbl, String msg) {
+  int y = line * 8;  // 8 px por línea
+
+  display.setCursor(0, y);
+  display.print(lbl);
+
+  display.setCursor(70, y);
+  display.print(msg);
+
   display.display();
+}
+
+
+bool leerAnalogicoEstable(uint8_t GPIO) {
+  int lecturas[10];
+  int minVal = 4095;
+  int maxVal = 0;
+  int NUM_LECTURAS = 10;
+  int UMBRAL = 10;
+
+  for (int i = 0; i < NUM_LECTURAS; i++) {
+    Serial.println("Lectura: " + String(analogRead(GPIO)));
+    lecturas[i] = analogRead(GPIO);
+
+    if (lecturas[i] < minVal) minVal = lecturas[i];
+    if (lecturas[i] > maxVal) maxVal = lecturas[i];
+
+    delay(10);  // pequeño retardo entre lecturas
+  }
+
+  if ((maxVal - minVal) <= UMBRAL) {
+    return true;
+  } else {
+    return false;
+  }
 }
