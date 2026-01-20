@@ -1,3 +1,9 @@
+/* ==== Código de Integración 
+
+
+*/
+
+
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
@@ -20,6 +26,7 @@
 
 
 #define LED 23  // gpio provisional
+
 #define RGB_R 13
 #define RGB_G 15
 #define RGB_B 2
@@ -39,13 +46,13 @@ Adafruit_PCD8544 display = Adafruit_PCD8544(SCL_PIN, MOSI_PIN, DAT_PIN, SCE_PIN,
 void setup() {
 
   // Declaración de pines - gpios
-  pinMode(VCC, OUTPUT); 
+  pinMode(VCC, OUTPUT);
   pinMode(LED, OUTPUT);
   pinMode(RGB_R, OUTPUT);  // Activos a BAJA
   pinMode(RGB_G, OUTPUT);
   pinMode(RGB_B, OUTPUT);
 
-  digitalWrite(VCC, HIGH); 
+  digitalWrite(VCC, HIGH);
 
   // Inicialización de Serial
   Serial.begin(115200);
@@ -62,29 +69,27 @@ void setup() {
   display.setTextColor(BLACK);
   display.setCursor(0, 0);
   display.println("Hola Mundo!");
-  display.println(":D");
+  display.println("Prueba VSV :D");
   display.display();
 }
 
 void loop() {
-
   demoLED();
 }
 
 void demoLED() {
+  delay(500);
   digitalWrite(RGB_R, LOW);
   digitalWrite(RGB_G, HIGH);
   digitalWrite(RGB_B, HIGH);
 
-  delay(2000);
+  delay(500);
   digitalWrite(RGB_R, HIGH);
   digitalWrite(RGB_G, LOW);
   digitalWrite(RGB_B, HIGH);
 
-  delay(2000);
-  digitalWrite(RGB_R, HIGH);
-  digitalWrite(RGB_G, HIGH);
-  digitalWrite(RGB_B, LOW);
-
-  delay(2000);
+  delay(500);
+  digitalWrite(RGB_R, LOW);
+  digitalWrite(RGB_G, LOW);
+  digitalWrite(RGB_B, HIGH);
 }
