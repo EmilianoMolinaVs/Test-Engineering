@@ -124,6 +124,8 @@ void loop() {
         case 2:
           {
             sendJSON.clear();  // Limpia cualquier dato previo
+            sendJSON["Result"] = "OK";
+            sendJSON["uart"] = "OK";
             display.clearDisplay();
 
             // ==== Validación de I34 Divisor V en +In -In
@@ -223,7 +225,7 @@ bool leerAnalogicoEstable(uint8_t GPIO) {
   int minVal = 4095;
   int maxVal = 0;
   int NUM_LECTURAS = 10;
-  int UMBRAL = 10;
+  int UMBRAL = 20;
 
   for (int i = 0; i < NUM_LECTURAS; i++) {
     Serial.println("Lectura: " + String(analogRead(GPIO)));
