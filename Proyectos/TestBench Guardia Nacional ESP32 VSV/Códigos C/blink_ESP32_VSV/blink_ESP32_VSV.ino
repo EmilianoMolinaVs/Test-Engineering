@@ -30,8 +30,8 @@
 #define RGB_G 15
 #define RGB_B 2
 
-#define TX2 16
-#define Rx2 17
+#define TX2 16  // Serial PagWeb
+#define RX2 17
 
 #define ONSX 32    // Activación de Q1 para alimentación de SX1308
 #define WAKEUP 33  // WakeUp SW2
@@ -40,6 +40,7 @@
 
 
 // ==== Creación de objetos ====
+HardwareSerial PagWeb(1);
 
 // Adafruit_PCD8544 display = Adafruit_PCD8544(3, 4, 5, 6, 7);
 Adafruit_PCD8544 display = Adafruit_PCD8544(SCL_PIN, MOSI_PIN, DAT_PIN, SCE_PIN, RST_PIN);
@@ -78,6 +79,9 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Serial inicializado");
 
+  PagWeb.begin(115200, SERIAL_8N1, RX2, TX2);
+  Serial.println("Serial PagWeb inicializado");
+
   // Inicialización de SPI
   SPI.begin();
 
@@ -95,9 +99,9 @@ void setup() {
 
 void loop() {
 
-  if (Serial.available()) {
+  if (PagWeb.available()) {
 
-    JSON_entrada = Serial.readStringUntil('\n');                              // Leer hasta newline (JSON en crudo)
+    JSON_entrada = PagWeb.readStringUntil('\n');                              // Leer hasta newline (JSON en crudo)
     DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);  // Deserializa el JSON y guarda la información en datosJSON
 
     if (!error) {
@@ -112,13 +116,14 @@ void loop() {
           {
             sendJSON.clear();  // Limpia cualquier dato previo
             sendJSON["ping"] = "pong";
-            serializeJson(sendJSON, Serial);  // Envío de datos por JSON a la PagWeb
-            Serial.println();
+            serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+            PagWeb.println();
             break;
           }
 
         case 2:
           {
+            sendJSON.clear();  // Limpia cualquier dato previo
             display.clearDisplay();
 
             // ==== Validación de I34 Divisor V en +In -In
@@ -126,8 +131,10 @@ void loop() {
             DIVIn_estable = leerAnalogicoEstable(DIVIn);
             if (DIVIn_estable) {
               writeScreen(2, "Analog I34: ", "OK");
+              sendJSON["analog34"] = "OK";
             } else {
               writeScreen(2, "Analog I34: ", "Fail");
+              sendJSON["analog34"] = "Fail";
             }
 
             // ==== Validación de I35 Divisor V en +Out -Out
@@ -136,9 +143,14 @@ void loop() {
             DIVOut_estable = leerAnalogicoEstable(DIVOut);
             if (DIVOut_estable) {
               writeScreen(3, "Analog I35: ", "OK");
+              sendJSON["analog35"] = "OK";
             } else {
               writeScreen(3, "Analog I35: ", "Fail");
+              sendJSON["analog35"] = "Fail";
             }
+
+            serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+            PagWeb.println();
             break;
           }
       }
