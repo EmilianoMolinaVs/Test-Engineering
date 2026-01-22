@@ -74,6 +74,7 @@ void setup() {
 
   digitalWrite(ONSX, HIGH);  // Base de transistor para SX1308
   digitalWrite(VCC, HIGH);   // VCC de OLED
+  digitalWrite(LED, HIGH);   // VCC de LED OLED Fondo
 
   // Inicialización de Serial
   Serial.begin(115200);

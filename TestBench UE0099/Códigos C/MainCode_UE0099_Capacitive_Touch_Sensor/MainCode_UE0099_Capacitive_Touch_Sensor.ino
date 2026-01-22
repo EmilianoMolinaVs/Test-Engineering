@@ -106,13 +106,14 @@ int durations[] = {
 
 #define NUM_INPUTS 9
 
-const uint8_t inputPins[NUM_INPUTS] = {4, 5, 6, 7, 8, 9, 10, 11, 12};
-volatile bool inputFlag[NUM_INPUTS] = {false};
+const uint8_t inputPins[NUM_INPUTS] = { D0, 2, 3, 4, 5, 6, 7, 22, 23 };
+volatile bool inputFlag[NUM_INPUTS] = { false };
+
+volatile int triggeredInput = -1;
+volatile unsigned long lastInterruptTime = 0;
 
 
-const int TOUCH_PIN = 6;
 volatile bool playZelda = false;
-
 
 void Zelda() {
   for (int thisNote = 0; thisNote < sizeof(melody) / sizeof(int); thisNote++) {
@@ -126,10 +127,17 @@ void Zelda() {
   delay(1000);
 }
 
-void IRAM_ATTR onPulse() {
-  Serial.println("¡Pulso detectado!");
-  playZelda = true;
+void IRAM_ATTR onInput(void* arg) {
+  int index = (int)arg;
+
+  unsigned long now = millis();
+  if (now - lastInterruptTime > 200) {  // debounce
+    triggeredInput = index;
+    lastInterruptTime = now;
+  }
 }
+
+
 
 
 
@@ -137,17 +145,27 @@ void IRAM_ATTR onPulse() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Serial Inicializado...");
+  Serial.println("Serial inicializado");
 
-  pinMode(TOUCH_PIN, INPUT_PULLDOWN);
-  attachInterrupt(digitalPinToInterrupt(TOUCH_PIN), onPulse, RISING);
-}
-
-void loop() {
-  if (playZelda) {
-    playZelda = false;
-    Serial.println("¡Pulso detectado!");
-    Zelda();
+  for (int i = 0; i < NUM_INPUTS; i++) {
+    pinMode(inputPins[i], INPUT_PULLDOWN);
+    attachInterruptArg(
+      digitalPinToInterrupt(inputPins[i]),
+      onInput,
+      (void*)i,
+      RISING);
   }
 }
 
+
+void loop() {
+  if (triggeredInput != -1) {
+    int i = triggeredInput;
+    triggeredInput = -1;
+
+    Serial.print("Interrupción en GPIO ");
+    Serial.println(inputPins[i]);
+
+    Zelda();
+  }
+}
