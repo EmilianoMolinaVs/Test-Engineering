@@ -36,8 +36,8 @@ String rxDIS = "";
 
 void setup() {
 
-  Serial.begin(4800);                     // Serial enlaza la PagWeb
-  DIS.begin(4800, SERIAL_8N1, RX2, TX2);  // Bus de comunicación con el CH552
+  Serial.begin(115200);                     // Serial enlaza la PagWeb DIS 4800 || VSV 115200
+  DIS.begin(115200, SERIAL_8N1, RX2, TX2);  // Bus de comunicación con el CH552
 
   pinMode(RUN_BUTTON, INPUT);
 }
@@ -84,6 +84,6 @@ void loop() {
   if (waitingResponse && (millis() - sendTime >= TIMEOUT)) {
     waitingResponse = false;
 
-    Serial.println("{\"gpioIn\":\"Fail\", \"analog\":\"Fail\", \"sw\":\"Fail\", \"gpioOut\":\"Fail\"}");
+    Serial.println("{\"Result\":\"Fail\", \"uart\":\"Fail\", \"gpioIn\":\"Fail\", \"analog\":\"Fail\", \"sw\":\"Fail\", \"gpioOut\":\"Fail\"}");
   }
 }

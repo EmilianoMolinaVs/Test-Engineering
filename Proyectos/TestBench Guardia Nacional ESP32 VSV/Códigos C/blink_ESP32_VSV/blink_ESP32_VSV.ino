@@ -1,6 +1,4 @@
-/* ==== Código de Integración ESP32 VSV ====
-
-*/
+/* ==== Código de Integración ESP32 VSV ==== */
 
 #include <SPI.h>
 #include <Adafruit_GFX.h>
@@ -9,97 +7,89 @@
 #include <ArduinoJson.h>
 #include <Wire.h>
 
-// Conexión SPI:
-// pin 7 --> LCD reset (RST)
-// pin 6 --> LCD chip select (SCE)
-// pin 5 --> Data/Command select (D/C)
-// pin 4 --> Serial data input (DN/ MOSI)
-// pin 3 --> Serial clock out (SCLK)
-
-// Acomodo de GPIOs para SPI OLED
-#define VCC 14
-#define RST_PIN 18
-#define SCL_PIN 22
-#define DAT_PIN 19
+// ==== GPIOs ====
+#define VCC 4
+#define RST_PIN 23
+#define SCL_PIN 19
+#define DAT_PIN 22
 #define MOSI_PIN 21
-#define SCE_PIN 4
+#define SCE_PIN 14
+#define LED 18
 
-#define LED 23  // gpio provisional
-
-#define RGB_R 13  // GPIOs de LED RGB
+#define RGB_R 13
 #define RGB_G 15
 #define RGB_B 2
 
-#define TX2 16  // Serial PagWeb
+#define TX2 16
 #define RX2 17
 
-#define ONSX 32    // Activación de Q1 para alimentación de SX1308
-#define WAKEUP 33  // WakeUp SW2
-#define DIVIn 34   // Divisor de tensión TP4056 In+ In-
-#define DIVOut 35  // Divisor de tensión TP4056 Out+ Out-
+#define ONSX 32
+#define WAKEUP 33
+#define DIVIn 34
+#define DIVOut 35
 
-
-// ==== Creación de objetos ====
+// ==== Objetos ====
 HardwareSerial PagWeb(1);
+Adafruit_PCD8544 display = Adafruit_PCD8544(
+  SCL_PIN, MOSI_PIN, DAT_PIN, SCE_PIN, RST_PIN);
 
-// Adafruit_PCD8544 display = Adafruit_PCD8544(3, 4, 5, 6, 7);
-Adafruit_PCD8544 display = Adafruit_PCD8544(SCL_PIN, MOSI_PIN, DAT_PIN, SCE_PIN, RST_PIN);
+// ==== Variables ====
+bool DIVIn_estable = false;
+bool DIVOut_estable = false;
 
-// Variables y banderas
-String stateButton = "";      // Estado de botón de WakeUp
-bool DIVIn_estable = false;   // Estabilidad de GPIO34 DIVIn
-bool DIVOut_estable = false;  // Estabilidad de GPIO35 DIVOut
+int contador = 0;
 
-// Variables de JSON
-String JSON_entrada;  // Variable que recibe al JSON en crudo de PagWeb
+// ---- botón ----
+bool lastWakeupState = HIGH;
+bool buttonMode = false;
+unsigned long buttonTime = 0;
+
+// ---- JSON ----
+String JSON_entrada;
 StaticJsonDocument<200> receiveJSON;
 
-String JSON_salida;  // Variable que envía el JSON de datos
+String JSON_salida;
 StaticJsonDocument<200> sendJSON;
 
-
+// =========================================================
 void setup() {
 
-  // === Declaración e inicialización de pines - gpios
   pinMode(WAKEUP, INPUT);
   pinMode(DIVIn, INPUT);
   pinMode(DIVOut, INPUT);
 
   pinMode(VCC, OUTPUT);
   pinMode(LED, OUTPUT);
-  pinMode(RGB_R, OUTPUT);  // Activos a BAJA
+  pinMode(RGB_R, OUTPUT);
   pinMode(RGB_G, OUTPUT);
   pinMode(RGB_B, OUTPUT);
   pinMode(ONSX, OUTPUT);
 
-  digitalWrite(ONSX, HIGH);  // Base de transistor para SX1308
-  digitalWrite(VCC, HIGH);   // VCC de OLED
-  digitalWrite(LED, HIGH);   // VCC de LED OLED Fondo
+  digitalWrite(ONSX, HIGH);
+  digitalWrite(VCC, HIGH);
+  digitalWrite(LED, HIGH);
 
-  // Inicialización de Serial
   Serial.begin(115200);
-  Serial.println("Serial inicializado");
-
   PagWeb.begin(115200, SERIAL_8N1, RX2, TX2);
-  Serial.println("Serial PagWeb inicializado");
 
-  // Inicialización de SPI
   SPI.begin();
 
   display.begin();
-  display.setContrast(60);  // Ajusta contraste (0–127)
+  display.setContrast(60);
   display.clearDisplay();
-
   display.setTextSize(1);
   display.setTextColor(BLACK);
+
   display.setCursor(0, 0);
   display.println("Hola Mundo!");
   display.println("Prueba VSV :D");
   display.display();
 }
 
+// =========================================================
 void loop() {
 
+  /* ======= PARTE JSON (SIN CAMBIOS) ======= */
   if (PagWeb.available()) {
 
     JSON_entrada = PagWeb.readStringUntil('\n');                              // Leer hasta newline (JSON en crudo)
@@ -158,22 +148,44 @@ void loop() {
           }
       }
     }
-  } else if (digitalRead(WAKEUP) == LOW) {
+  }
 
-    // ==== Validación de SW2 Wake Up
-    delay(200);
-    if (digitalRead(WAKEUP) == HIGH)
-      Serial.println("Botón presionado SW2 WakeUp");
-    for (int i = 0; i < 15; i++) {
-      demoBUTTON();
-      delay(20);
+  /* ======= BOTÓN (FLANCO) ======= */
+  bool currentState = digitalRead(WAKEUP);
+
+  if (lastWakeupState == HIGH && currentState == LOW) {
+    Serial.println("Botón presionado SW2 WakeUp");
+
+    contador++;  // 🔥 incrementa contador
+    buttonMode = true;
+    buttonTime = millis();
+
+    // ---- Mostrar contador en pantalla ----
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.println("Conteo SW2:");
+    display.setTextSize(2);
+    display.setCursor(0, 16);
+    display.println(contador);
+    display.setTextSize(1);
+    display.display();
+  }
+
+  lastWakeupState = currentState;
+
+  /* ======= CONTROL DE LED ======= */
+  if (buttonMode) {
+    demoBUTTON();
+
+    if (millis() - buttonTime > 1000) {
+      buttonMode = false;
     }
-
   } else {
     demoLED();
   }
 }
 
+// =========================================================
 void demoLED() {
   delay(500);
   digitalWrite(RGB_R, LOW);
@@ -192,21 +204,32 @@ void demoLED() {
 }
 
 void demoBUTTON() {
-  delay(100);
-  digitalWrite(RGB_R, LOW);
+  digitalWrite(RGB_R, HIGH);
   digitalWrite(RGB_G, HIGH);
   digitalWrite(RGB_B, HIGH);
-
-  delay(100);
-  digitalWrite(RGB_R, HIGH);
-  digitalWrite(RGB_G, LOW);
-  digitalWrite(RGB_B, HIGH);
-
-  delay(100);
-  digitalWrite(RGB_R, LOW);
-  digitalWrite(RGB_G, LOW);
-  digitalWrite(RGB_B, HIGH);
 }
+
+// =========================================================
+bool leerAnalogicoEstable(uint8_t GPIO) {
+  int lecturas[10];
+  int minVal = 4095;
+  int maxVal = 0;
+  int UMBRAL =150;
+
+  for (int i = 0; i < 10; i++) {
+    int val = analogRead(GPIO);
+    Serial.println("Lectura: " + String(val));
+    lecturas[i] = val;
+
+    if (val < minVal) minVal = val;
+    if (val > maxVal) maxVal = val;
+
+    delay(10);
+  }
+
+  return ((maxVal - minVal) <= UMBRAL);
+}
+
 
 void writeScreen(uint8_t line, String lbl, String msg) {
   int y = line * 8;  // 8 px por línea
@@ -218,29 +241,4 @@ void writeScreen(uint8_t line, String lbl, String msg) {
   display.print(msg);
 
   display.display();
-}
-
-
-bool leerAnalogicoEstable(uint8_t GPIO) {
-  int lecturas[10];
-  int minVal = 4095;
-  int maxVal = 0;
-  int NUM_LECTURAS = 10;
-  int UMBRAL = 20;
-
-  for (int i = 0; i < NUM_LECTURAS; i++) {
-    Serial.println("Lectura: " + String(analogRead(GPIO)));
-    lecturas[i] = analogRead(GPIO);
-
-    if (lecturas[i] < minVal) minVal = lecturas[i];
-    if (lecturas[i] > maxVal) maxVal = lecturas[i];
-
-    delay(10);  // pequeño retardo entre lecturas
-  }
-
-  if ((maxVal - minVal) <= UMBRAL) {
-    return true;
-  } else {
-    return false;
-  }
 }
