@@ -18,7 +18,7 @@ se conecta al bus de pines GPIO01 y GPIO02 UARTL
 #define RUN_BUTTON 4  // Botón de Arranque
 
 // Relevadores de Accionamiento de Fuente
-#define RELAYA 8 
+#define RELAYA 8
 #define RELAYB 9
 
 // ==== Inicialización de objetos
@@ -44,11 +44,11 @@ void setup() {
   DIS.begin(115200, SERIAL_8N1, RX2, TX2);  // Bus de comunicación con el CH552
 
   pinMode(RUN_BUTTON, INPUT);
-  pinMode(RELAYA, OUTPUT); 
-  pinMode(RELAYB, OUTPUT); 
+  pinMode(RELAYA, OUTPUT);
+  pinMode(RELAYB, OUTPUT);
 
-  digitalWrite(RELAYA, LOW); 
-  digitalWrite(RELAYB, LOW); 
+  digitalWrite(RELAYA, HIGH);
+  digitalWrite(RELAYB, HIGH);
 }
 
 void loop() {
@@ -65,6 +65,9 @@ void loop() {
 
   // ---- SERIAL → DIS ----
   if (Serial.available()) {
+    digitalWrite(RELAYA, LOW);  // Accionamiento de relevador de Fuente
+    digitalWrite(RELAYB, LOW);
+
     char c = Serial.read();
     DIS.write(c);
 
@@ -78,6 +81,10 @@ void loop() {
 
     // Evitar que crezca infinito
     if (rxDIS.length() > 64) rxDIS = "";
+
+    delay(3000);
+    digitalWrite(RELAYA, LOW);
+    digitalWrite(RELAYB, LOW);
   }
 
   // ---- DIS → SERIAL (respuesta) ----

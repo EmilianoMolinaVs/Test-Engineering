@@ -133,7 +133,7 @@ void loop() {
             // ==== Validación de I35 Divisor V en +Out -Out
             // Va a leer correctamente 5V hasta que se suelde el SX1308
             delay(200);
-            DIVOut_estable = leerAnalogicoEstable(DIVOut, 1500, 200);
+            DIVOut_estable = leerAnalogicoEstable(DIVOut, 400, 200);
             if (DIVOut_estable) {
               writeScreen(3, "Analog I35: ", "OK");
               sendJSON["analog35"] = "OK";
@@ -224,6 +224,7 @@ bool leerAnalogicoEstable(uint8_t GPIO, int referencia, int umbral) {
   int promedio = suma / 10;
 
   Serial.println("Promedio: " + String(promedio));
+  Serial.println(""); 
 
   return abs(promedio - referencia) <= umbral;
 }
