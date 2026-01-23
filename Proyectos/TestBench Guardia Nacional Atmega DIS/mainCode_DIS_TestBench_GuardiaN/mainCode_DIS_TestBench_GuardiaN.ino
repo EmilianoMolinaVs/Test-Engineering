@@ -17,6 +17,10 @@ se conecta al bus de pines GPIO01 y GPIO02 UARTL
 #define TX2 D0        // GPIO como TXD
 #define RUN_BUTTON 4  // Botón de Arranque
 
+// Relevadores de Accionamiento de Fuente
+#define RELAYA 8 
+#define RELAYB 9
+
 // ==== Inicialización de objetos
 HardwareSerial DIS(1);  // Objeto para UART2 en PULSAR como PagWeb
 
@@ -40,6 +44,11 @@ void setup() {
   DIS.begin(115200, SERIAL_8N1, RX2, TX2);  // Bus de comunicación con el CH552
 
   pinMode(RUN_BUTTON, INPUT);
+  pinMode(RELAYA, OUTPUT); 
+  pinMode(RELAYB, OUTPUT); 
+
+  digitalWrite(RELAYA, LOW); 
+  digitalWrite(RELAYB, LOW); 
 }
 
 void loop() {

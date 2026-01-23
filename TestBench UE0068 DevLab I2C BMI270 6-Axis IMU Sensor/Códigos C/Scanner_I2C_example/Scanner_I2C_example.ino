@@ -27,7 +27,6 @@ void setup() {
     }
   }
 
-
   digitalWrite(PIN_SDO, HIGH);  // LOW = 0x68 || HIGH = 0x69
 
   Wire.begin(SDA_PIN, SCL_PIN);
