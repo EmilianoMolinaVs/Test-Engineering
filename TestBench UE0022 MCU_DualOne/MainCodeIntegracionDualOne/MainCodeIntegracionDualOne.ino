@@ -144,9 +144,8 @@ void loop() {
       String Function = receiveJSON["Function"];
 
       int opc = 0;
-      if (Function == "meas") opc = 1;
-      else if (Function == "buzzer") opc = 2;
-
+      if (Function == "meas") opc = 1;         // {"Function":"meas"}
+      else if (Function == "buzzer") opc = 2;  // {"Function":"buzzer"}
 
       switch (opc) {
 
@@ -243,7 +242,6 @@ void loop() {
             melodyBuzzer();
             break;
           }
-          
       }
     }
   } else {

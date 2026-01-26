@@ -16,13 +16,14 @@ se conecta al bus de pines GPIO01 y GPIO02 UARTL
 #define RX2 D1        // GPIO como RXD
 #define TX2 D0        // GPIO como TXD
 #define RUN_BUTTON 4  // Botón de Arranque
+#define RELAYCV 5     // Relay de control para demanda con CV
 
 // Relevadores de Accionamiento de Fuente
 #define RELAYA 8
 #define RELAYB 9
 
 // ==== Inicialización de objetos
-HardwareSerial DIS(1);  // Objeto para UART2 en PULSAR como PagWeb
+HardwareSerial VSV(1);  // Objeto para UART2 en PULSAR como PagWeb
 
 // ==== Variables de inicialización
 String JSON_entrada;  // Variable que recibe al JSON en crudo de PagWeb
@@ -41,14 +42,16 @@ String rxDIS = "";
 void setup() {
 
   Serial.begin(115200);                     // Serial enlaza la PagWeb DIS 4800 || VSV 115200
-  DIS.begin(115200, SERIAL_8N1, RX2, TX2);  // Bus de comunicación con el CH552
+  VSV.begin(115200, SERIAL_8N1, RX2, TX2);  // Bus de comunicación con el CH552
 
   pinMode(RUN_BUTTON, INPUT);
   pinMode(RELAYA, OUTPUT);
   pinMode(RELAYB, OUTPUT);
+  pinMode(RELAYCV, OUTPUT);
 
-  digitalWrite(RELAYA, HIGH);
-  digitalWrite(RELAYB, HIGH);
+  digitalWrite(RELAYA, LOW);
+  digitalWrite(RELAYB, LOW);
+  digitalWrite(RELAYCV, LOW);
 }
 
 void loop() {
@@ -63,36 +66,65 @@ void loop() {
     }
   }
 
-  // ---- SERIAL → DIS ----
+
+  // ---- PagWeb → VSV ----
   if (Serial.available()) {
-    digitalWrite(RELAYA, LOW);  // Accionamiento de relevador de Fuente
-    digitalWrite(RELAYB, LOW);
 
-    char c = Serial.read();
-    DIS.write(c);
+    JSON_entrada = Serial.readStringUntil('\n');                              // Leer hasta newline (JSON en crudo)
+    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);  // Deserializa el JSON y guarda la información en datosJSON
 
-    // Detectar envío del JSON específico
-    rxDIS += c;
-    if (rxDIS.endsWith("{\"Function\":\"testAll\"}")) {
-      waitingResponse = true;
-      sendTime = millis();
-      rxDIS = "";  // limpiar buffer
+    if (!error) {
+      String Function = receiveJSON["Function"];  // Function es la variable de interés del JSON
+      int opc = 0;                                // Variable de switcheo
+
+      if (Function == "ping") opc = 1;          // {"Function":"ping"}
+      else if (Function == "testAll") opc = 2;  // {"Function":"testAll"}
+      else if (Function == "stepUp") opc = 3;   // {"Function":"testAll"}
+      else if (Function == "reg") opc = 4;      // {"Function":"testAll"}
+
+      switch (opc) {
+        case 1:
+          {
+            sendJSON.clear();  // Limpia cualquier dato previo
+            sendJSON["Function"] = "ping";
+            serializeJson(sendJSON, VSV);  // Envío de datos por JSON a la PagWeb
+            VSV.println();
+            break;
+          }
+
+        case 2:  // Testeo de Datos de GPIOs
+          {
+            sendJSON.clear();  // Limpia cualquier dato previo
+            sendJSON["Function"] = "testAll";
+            serializeJson(sendJSON, VSV);  // Envío de datos por JSON a la PagWeb
+            VSV.println();
+            break;
+          }
+
+        case 3:  // Demanda de corriente en 5V StepUp
+          {
+            digitalWrite(RELAYCV, LOW);
+            break;
+          }
+
+        case 4:  // Demanda de corriente en 3.3V regulador de voltaje
+          {
+            digitalWrite(RELAYCV, HIGH);
+            break;
+          }
+      }
     }
-
-    // Evitar que crezca infinito
-    if (rxDIS.length() > 64) rxDIS = "";
-
-    delay(3000);
-    digitalWrite(RELAYA, LOW);
-    digitalWrite(RELAYB, LOW);
   }
 
-  // ---- DIS → SERIAL (respuesta) ----
-  if (DIS.available()) {
-    char c = DIS.read();
+
+
+
+
+  // ---- VSV → SERIAL (respuesta) ----
+  if (VSV.available()) {
+    char c = VSV.read();
     Serial.write(c);
 
-    // Cualquier dato recibido cuenta como respuesta
     waitingResponse = false;
   }
 

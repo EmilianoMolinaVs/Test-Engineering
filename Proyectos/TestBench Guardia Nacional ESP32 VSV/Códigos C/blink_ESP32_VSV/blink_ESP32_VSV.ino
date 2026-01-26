@@ -121,7 +121,7 @@ void loop() {
 
             // ==== Validación de I34 Divisor V en +In -In
             delay(200);
-            DIVIn_estable = leerAnalogicoEstable(DIVIn, 0, 200);
+            DIVIn_estable = leerAnalogicoEstable(DIVIn, 200);
             if (DIVIn_estable) {
               writeScreen(2, "Analog I34: ", "OK");
               sendJSON["analog34"] = "OK";
@@ -133,7 +133,7 @@ void loop() {
             // ==== Validación de I35 Divisor V en +Out -Out
             // Va a leer correctamente 5V hasta que se suelde el SX1308
             delay(200);
-            DIVOut_estable = leerAnalogicoEstable(DIVOut, 400, 200);
+            DIVOut_estable = leerAnalogicoEstable(DIVOut, 200);
             if (DIVOut_estable) {
               writeScreen(3, "Analog I35: ", "OK");
               sendJSON["analog35"] = "OK";
@@ -210,9 +210,12 @@ void demoBUTTON() {
 }
 
 // =========================================================
-bool leerAnalogicoEstable(uint8_t GPIO, int referencia, int umbral) {
+bool leerAnalogicoEstable(uint8_t GPIO, int umbral) {
   long suma = 0;
   int val;
+
+  delay(50);
+  int referencia = analogRead(GPIO);
 
   for (int i = 0; i < 10; i++) {
     val = analogRead(GPIO);
@@ -224,7 +227,7 @@ bool leerAnalogicoEstable(uint8_t GPIO, int referencia, int umbral) {
   int promedio = suma / 10;
 
   Serial.println("Promedio: " + String(promedio));
-  Serial.println(""); 
+  Serial.println("");
 
   return abs(promedio - referencia) <= umbral;
 }
