@@ -2,7 +2,8 @@
 
 # --- CONFIGURACIÓN ---
 BAUD="921600"
-FIRMWARE_PATH="blink_esp32.ino.merged.bin"
+#FIRMWARE_PATH="blink_esp32.ino.merged.bin"
+FIRMWARE_PATH="DualOneESP32.ino.merged.bin"
 ADDRESS="0x0"
 
 # CONFIGURACIÓN DEL MODO DE GRABACIÓN

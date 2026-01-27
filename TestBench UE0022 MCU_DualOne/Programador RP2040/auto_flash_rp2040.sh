@@ -41,7 +41,7 @@ flashear_unidades() {
     FOUND_COUNT=0
     
     # BUCLE DE ESPERA (MAX 15 INTENTOS / 15 SEGUNDOS)
-    for attempt in {1..15}; do
+    for attempt in {1..20}; do
         # Reiniciamos la lista en cada intento
         TEMP_LIST=""
         TEMP_COUNT=0
@@ -62,7 +62,7 @@ flashear_unidades() {
         # Si no esperamos ninguno en específico (Opción 2 manual), basta con encontrar 1.
         # Si venimos de un Reset (Opción 1), esperamos encontrar TODOS.
         if [ "$EXPECTED_COUNT" -gt 0 ]; then
-             echo "   [Intento $attempt/15] Encontrados: $FOUND_COUNT de $EXPECTED_COUNT esperados..."
+             echo "   [Intento $attempt/20] Encontrados: $FOUND_COUNT de $EXPECTED_COUNT esperados..."
              if [ "$FOUND_COUNT" -ge "$EXPECTED_COUNT" ]; then
                  break # ¡Ya están todos! Salimos del bucle de espera
              fi

@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # --- CONFIGURACIÓN ---
-FIRMWARE_PATH="blink_rp2040.ino.uf2" 
+#FIRMWARE_PATH="blink_rp2040.ino.uf2" 
+FIRMWARE_PATH="DualOne.ino.uf2" 
 
 # Lista para guardar las unidades encontradas (ej: "/d /e /f")
 DRIVES_LIST=""
