@@ -129,6 +129,7 @@ void loop() {
       if (Function == "testAll") opc = 1;      // {"Function":"testAll"} Testeo de todo el RP2040
       else if (Function == "buzzer") opc = 2;  // {"Function":"buzzer"}
       else if (Function == "leds") opc = 3;    // {"Function":"leds"}
+      else if (Function == "ping") opc = 4;    // {"Function":"ping"}
 
       switch (opc) {
 
@@ -160,7 +161,7 @@ void loop() {
             sendJSON["D4"] = statusD4;
 
             // Validación D5 Buzzer en Shield
-            melodyBuzzer();
+            //melodyBuzzer();
 
             // Validación D6 IR Receptor en Shield
             display.setCursor(0, 20);
@@ -308,6 +309,17 @@ void loop() {
             }
 
             display.clearDisplay();
+            break;
+          }
+
+        case 4:
+          {
+            sendJSON.clear();
+            sendJSON["Result"] = "OK";
+            serializeJson(sendJSON, Serial1);  // Envío de datos por JSON a la ESP32
+            Serial1.println();
+
+            melodyBuzzer();
             break;
           }
       }

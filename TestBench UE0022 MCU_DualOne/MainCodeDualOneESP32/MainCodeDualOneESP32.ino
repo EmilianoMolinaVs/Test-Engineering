@@ -62,10 +62,10 @@ void loop() {
       if (Function == "testRP2040") opc = 1;       // {"Function":"testRP2040"}
       else if (Function == "testBuzzer") opc = 2;  // {"Function":"testBuzzer"}
       else if (Function == "testLEDs") opc = 3;    // {"Function":"testLEDs"}
-
+      else if (Function == "ping") opc = 4;        // {"Function":"ping"}
 
       // Claves para Test de ESP32
-      else if (Function == "testESP32") opc = 9;
+      else if (Function == "testESP32") opc = 9;  // {"Function":"testESP32"}
 
       switch (opc) {
         case 1:  // Case de testAll de RP2040
@@ -95,7 +95,13 @@ void loop() {
             break;
           }
 
-
+        case 4:  // Clave de ping para validación de UART con RP2040
+          {
+            sendJSON["Function"] = "ping";
+            serializeJson(sendJSON, Bridge);
+            Bridge.println();
+            break;
+          }
 
 
         case 9:
