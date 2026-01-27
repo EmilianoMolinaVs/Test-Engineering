@@ -27,8 +27,8 @@
 #define LED_D12 16     // GPIO16 D12 LED Rojo en Shield D12
 #define LED_D13 18     // GPIO16 D13 LED Azul en Shield D13
 
-#define HAP_SDA 20  // GPIO I2C para Haptic Motor
-#define HAP_SCL 21  // GPIO I2C para Haptic Motor
+#define D20_PIN 20  // GPIO20 salida de datos
+#define D21_PIN 21  // GPIO21 entrada de datos
 
 #define LED_NEOP 24  // PIN DEDICADO AL NEOPIXEL WS2812
 #define LED_BUIL 25  // Led Builtin GPIO25
@@ -64,26 +64,6 @@ void setup() {
   Serial.println("UART0 listo para comunicación...");
   Serial1.begin(115200);
   delay(500);
-
-  // ==== Inicialización de Haptic Motor ====
-  Wire.setSDA(HAP_SDA);
-  Wire.setSCL(HAP_SCL);
-  Wire.begin();  // Inicialización de I2C de HapticMotor
-
-  if (!drv.begin(&Wire)) {
-    Serial.println("No se encontró DRV2605 en I2C1!");
-    status_HapticM = "FAIL";
-  } else {
-    status_HapticM = "OK";
-  }
-
-
-  drv.selectLibrary(1);  // Librería de efectos
-  drv.useERM();          // ERM por defecto
-  drv.setMode(DRV2605_MODE_INTTRIG);
-  HapticMotor();
-  delay(500);
-  Wire.end();
 
   // ==== Chequeo e inicialización de OLED por I2C ====
   Wire.setSDA(SDA_OLED);
@@ -123,14 +103,16 @@ void setup() {
   pinMode(RGB_BD11, OUTPUT);    // D11 RGB en Shield
   pinMode(LED_D12, OUTPUT);     // D12 LED Rojo en Shield
   pinMode(LED_D13, OUTPUT);     // D13 LED Azul en Shield
+  pinMode(D20_PIN, OUTPUT);     // Saliad de datos para GPIO20 GPIO20 --> GPIO21
 
   // ==== Entradas
-  pinMode(IR_PIN, INPUT);  // IR LED D6 en Shield
-  pinMode(D8_PIN, INPUT);  // Entrada Digital D8
-  pinMode(A0_PIN, INPUT);  // A0 para potenciometro en Shield
-  pinMode(A1_PIN, INPUT);  // A1 para LDR en Shield
-  pinMode(A2_PIN, INPUT);  // A2 para LM35 en Shield
-  pinMode(A3_PIN, INPUT);  // A3 para sensor TEMT6000
+  pinMode(IR_PIN, INPUT);   // IR LED D6 en Shield
+  pinMode(D8_PIN, INPUT);   // Entrada Digital D8
+  pinMode(A0_PIN, INPUT);   // A0 para potenciometro en Shield
+  pinMode(A1_PIN, INPUT);   // A1 para LDR en Shield
+  pinMode(A2_PIN, INPUT);   // A2 para LM35 en Shield
+  pinMode(A3_PIN, INPUT);   // A3 para sensor TEMT6000
+  pinMode(D21_PIN, INPUT);  // Entrada de datos GPIO21 <-- GPIO20
 }
 
 void loop() {
@@ -144,8 +126,9 @@ void loop() {
       String Function = receiveJSON["Function"];
 
       int opc = 0;
-      if (Function == "meas") opc = 1;         // {"Function":"meas"}
+      if (Function == "testAll") opc = 1;      // {"Function":"testAll"} Testeo de todo el RP2040
       else if (Function == "buzzer") opc = 2;  // {"Function":"buzzer"}
+      else if (Function == "leds") opc = 3;    // {"Function":"leds"}
 
       switch (opc) {
 
@@ -163,6 +146,9 @@ void loop() {
             // ==== Constructor OLED ====
 
             // Validación D0 y D1 OK UART
+            sendJSON["D0"] = "OK";
+            sendJSON["D1"] = "OK";
+
             // Validación D2 y D3 OLED
             sendJSON["D2"] = status_OLED;
             sendJSON["D3"] = status_OLED;
@@ -182,21 +168,22 @@ void loop() {
             writeLCD("D6: " + statusD6, 0);
             sendJSON["D6"] = statusD6;
 
-            // Validación D7 y D8 en Shield
-            String statusD78 = sequenceDIG();
+            // Validación D7 y D8 en Shield D8 Entrada || D7 Salida
+            String statusD78 = sequenceDIG(D8_PIN, D7_PIN);
             display.setCursor(0, 30);
             writeLCD("D7: " + statusD78, 0);
             sendJSON["D7"] = statusD78;
-
-            display.setCursor(0, 40);
-            writeLCD("D8: " + statusD78, 0);
             sendJSON["D8"] = statusD78;
 
             // Validación D9 - D11 RGB LED Shield
             // Validación D12 - D13 LEDs en Shield
-            // Validación de GPIOs 20 y 21
-            sendJSON["GPIO20"] = status_HapticM;
-            sendJSON["GPIO21"] = status_HapticM;
+
+            // Validación de GPIOs 20 y 21 GPIO21 Entrada || GPIO20 Salida
+            String statusD201 = sequenceDIG(D21_PIN, D20_PIN);
+            display.setCursor(0, 40);
+            writeLCD("D20: " + statusD201, 0);
+            sendJSON["D20"] = statusD201;
+            sendJSON["D21"] = statusD201;
 
             // ==== VALIDACIÓN DE PINES ANALÓGICOS =====
             display.setCursor(60, 10);
@@ -236,10 +223,91 @@ void loop() {
             break;
           }
 
-        case 2:
+        case 2:  // Validación de Buzzer
           {
             // Validación D5 Buzzer en Shield
-            melodyBuzzer();
+            display.clearDisplay();
+            display.setTextSize(2.5);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(40, 0);
+            display.println(F("Buzzer"));
+            display.setCursor(30, 40);
+            display.println(F("DualOne"));
+            display.display();  // Show initial text
+
+            for (int i = 0; i < 5; i++) {
+              melodyBuzzer();
+              delay(50);
+            }
+
+            display.clearDisplay();
+            break;
+          }
+
+        case 3:  // Validación de luces en Shield/Dual
+          {
+
+            display.clearDisplay();
+            display.setTextSize(2.5);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(40, 0);
+            display.println(F("LEDs"));
+            display.setCursor(30, 40);
+            display.println(F("DualOne"));
+            display.display();  // Show initial text
+
+            digitalWrite(LED_D12, LOW);  // GPIO16 D12 LED Rojo en Shield D12
+            digitalWrite(LED_D13, LOW);  // GPIO18 D13 LED Azul en Shield D13
+            np.setBrightness(20);
+
+            for (int i = 0; i < 10; i++) {
+              digitalWrite(LED_BUIL, HIGH);
+              delay(50);
+              digitalWrite(LED_BUIL, LOW);
+              delay(50);
+            }
+
+            delay(500);
+            for (int i = 0; i < 10; i++) {
+              np.setPixelColor(0, np.Color(255, 0, 0));
+              np.show();
+              delay(100);
+              np.setPixelColor(0, np.Color(0, 255, 0));
+              np.show();
+              delay(100);
+              np.setPixelColor(0, np.Color(0, 0, 255));
+              np.show();
+              delay(100);
+              np.setPixelColor(0, np.Color(0, 0, 0));
+              np.show();
+              delay(100);
+            }
+
+            for (int i = 0; i < 10; i++) {
+              digitalWrite(RGB_RD09, LOW);
+              digitalWrite(RGB_GD10, LOW);
+              digitalWrite(RGB_BD11, HIGH);
+              delay(100);
+              digitalWrite(RGB_RD09, LOW);
+              digitalWrite(RGB_GD10, HIGH);
+              digitalWrite(RGB_BD11, LOW);
+              delay(100);
+              digitalWrite(RGB_RD09, HIGH);
+              digitalWrite(RGB_GD10, LOW);
+              digitalWrite(RGB_BD11, LOW);
+              delay(100);
+            }
+
+            for (int i = 0; i < 10; i++) {
+              digitalWrite(LED_D12, LOW);
+              digitalWrite(LED_D13, HIGH);
+              delay(100);
+              digitalWrite(LED_D12, HIGH);
+              digitalWrite(LED_D13, LOW);
+              delay(100);
+            }
+
+            display.clearDisplay();
             break;
           }
       }
@@ -450,37 +518,15 @@ void melodyBuzzer() {
 #define REST 0
 
   int melody[] = {
-    NOTE_E7, NOTE_E7, REST, NOTE_E7,
-    REST, NOTE_C7, NOTE_E7, REST,
-    NOTE_G7, REST, REST, REST,
-    NOTE_G6, REST, REST, REST,
-
-    NOTE_C7, REST, REST, NOTE_G6,
-    REST, REST, NOTE_E6, REST,
-    REST, NOTE_A6, REST, NOTE_B6,
-    REST, NOTE_AS6, NOTE_A6, REST,
-
-    NOTE_G6, NOTE_E7, NOTE_G7,
-    NOTE_A7, REST, NOTE_F7, NOTE_G7,
-    REST, NOTE_E7, REST, NOTE_C7,
-    NOTE_D7, NOTE_B6, REST, REST
+    NOTE_G6, NOTE_A6, NOTE_B6,
+    NOTE_G6, NOTE_A6, NOTE_B6,
+    NOTE_C7
   };
 
   int durations[] = {
-    12, 12, 12, 12,
-    12, 12, 12, 12,
-    12, 12, 12, 12,
-    12, 12, 12, 12,
-
-    12, 12, 12, 12,
-    12, 12, 12, 12,
-    12, 12, 12, 12,
-    12, 12, 12, 12,
-
-    9, 9, 9, 12,
-    12, 12, 12, 12,
-    12, 12, 12, 12,
-    12, 12, 12, 12
+    12, 12, 12,
+    12, 12, 12,
+    4
   };
 
   for (int thisNote = 0; thisNote < sizeof(melody) / sizeof(int); thisNote++) {
@@ -515,18 +561,18 @@ String IRLEDreceptor() {
 }
 
 // Función de escritura y lectura de secuencia en pines digitales D7 y D8
-String sequenceDIG() {
+String sequenceDIG(uint8_t GpioIn, uint8_t GpioOut) {
   byte testSequence = 0b10101100;
   for (int i = 7; i >= 0; i--) {
     // Obtener el bit i
     int bitToSend = (testSequence >> i) & 1;
 
     // Enviar secuencia por D7
-    digitalWrite(D7_PIN, bitToSend);
+    digitalWrite(GpioOut, bitToSend);  // GPIO de Salida
     delay(50);
 
     // Leer secuencia por D8
-    int bitRead = digitalRead(D8_PIN);
+    int bitRead = digitalRead(GpioIn);  // GPIO de Entrada
 
     // Validar el bit recibido
     if (bitRead != bitToSend) {

@@ -26,7 +26,7 @@ ICP101xx sensor;
 String JSON_entrada;
 StaticJsonDocument<200> receiveJSON;
 
-String JSON_lectura;  // Variable que envía el JSON de datos
+String JSON_salida;  // Variable que envía el JSON de datos
 StaticJsonDocument<200> sendJSON;
 
 void setup() {
@@ -48,20 +48,76 @@ void setup() {
 
 void loop() {
 
+  // Condicional para enviar JSON a RP2040 target
   if (Serial.available()) {  // JSON de salida hacia RP2040
-    Bridge.write(Serial.read());
+
+    JSON_entrada = Serial.readStringUntil('\n');
+    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
+
+    if (!error) {
+      String Function = receiveJSON["Function"];
+
+      int opc = 0;
+      // Claves para Test de RP2040
+      if (Function == "testRP2040") opc = 1;       // {"Function":"testRP2040"}
+      else if (Function == "testBuzzer") opc = 2;  // {"Function":"testBuzzer"}
+      else if (Function == "testLEDs") opc = 3;    // {"Function":"testLEDs"}
+
+
+      // Claves para Test de ESP32
+      else if (Function == "testESP32") opc = 9;
+
+      switch (opc) {
+        case 1:  // Case de testAll de RP2040
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "testAll";
+            serializeJson(sendJSON, Bridge);
+            Bridge.println();
+            break;
+          }
+
+        case 2:  // Clave de test de buzzer en RP2040
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "buzzer";
+            serializeJson(sendJSON, Bridge);
+            Bridge.println();
+            break;
+          }
+
+        case 3:  // Clave de test de LEDs en RP2040
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "leds";
+            serializeJson(sendJSON, Bridge);
+            Bridge.println();
+            break;
+          }
+
+
+
+
+        case 9:
+          {
+            String state = sensorICP();
+            Serial.println("Sensor ICP: " + state);
+            break;
+          }
+      }
+    }
   }
 
+  // Condicional para recibir resultados de Test de RP2040
   if (Bridge.available()) {  // JSON de entrada desde RP2040
     JSON_entrada = Bridge.readStringUntil('\n');
     DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
     Serial.println(JSON_entrada);
   }
 
+  // Condicional de Demo
   if (!Serial.available() && !Bridge.available()) {
     demoLED();
-    String state = sensorICP();
-    Serial.println(state); 
   }
 }
 
@@ -100,11 +156,11 @@ String sensorICP() {
 
     avgTemp += temperature;
     avgPress += pressure;
-    delay(100); 
+    delay(100);
   }
 
-  avgTemp = avgTemp/10; 
-  Serial.println(avgTemp); 
+  avgTemp = avgTemp / 10;
+  Serial.println(avgTemp);
 
   if (avgTemp < 40 && avgTemp > 10) {
     return "OK";
