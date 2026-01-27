@@ -41,7 +41,7 @@
 #define A3_PIN 29  // A3 para lectura de sensor de luz TEMT6000
 
 // ==== Creación de objetos ====
-Adafruit_NeoPixel np = Adafruit_NeoPixel(1, LED_NEOP, NEO_GRB + NEO_KHZ800);  // Objeto NeoPixel
+Adafruit_NeoPixel np = Adafruit_NeoPixel(11, LED_NEOP, NEO_GRB + NEO_KHZ800);  // Objeto NeoPixel
 #define DHTTYPE DHT11                                                         // Tipo de sensor
 DHT dht(DHT_PIN, DHTTYPE);                                                    // Objeto Sensor DHT Hum Y Temp
 #define OLED_RESET -1                                                         // Reset pin # (or -1 if sharing Arduino reset pin)
