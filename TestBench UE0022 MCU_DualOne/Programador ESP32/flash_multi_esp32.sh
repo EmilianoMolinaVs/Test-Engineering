@@ -4,20 +4,22 @@
 BAUD="921600"
 FIRMWARE_PATH="blink_esp32.ino.merged.bin"
 ADDRESS="0x0"
-PORTS_LIST="" # Aquí guardaremos la lista (ej: "COM3 COM4 COM8")
+
+# CONFIGURACIÓN DEL MODO DE GRABACIÓN
+# "S" = Secuencial (Uno por uno, ves el progreso en vivo)
+# "P" = Paralelo (Todos a la vez, genera archivos de log)
+FLASH_MODE="P"
+
+PORTS_LIST="" 
 
 # --- FUNCIÓN PARA DETECTAR MÚLTIPLES PUERTOS ---
 detectar_puertos() {
     echo "Buscando múltiples ESP32 conectados..."
-    
-    # El comando de Python ahora usa una lista de comprensión [...] y ' '.join()
-    # para devolver todos los puertos separados por espacio.
     PORTS_LIST=$(python -c "import serial.tools.list_ports; ports = [p.device for p in serial.tools.list_ports.comports() if '10C4' in p.hwid or '1A86' in p.hwid or '303A' in p.hwid]; print(' '.join(ports))")
 
     if [ -z "$PORTS_LIST" ]; then
         echo "⚠️  ADVERTENCIA: No se detectaron placas automáticamente."
     else
-        # Contamos cuántos puertos hay (separados por espacio)
         COUNT=$(echo $PORTS_LIST | wc -w)
         echo "✅ Se detectaron $COUNT dispositivos: $PORTS_LIST"
     fi
@@ -27,12 +29,20 @@ detectar_puertos() {
 detectar_puertos
 sleep 1
 
-# --- MENÚ ---
+# --- MENÚ PRINCIPAL ---
 while true; do
     echo "========================================"
     echo "   HERRAMIENTA ESP32 MULTI-PUERTO"
     echo "========================================"
     echo "Firmware: $FIRMWARE_PATH"
+    
+    # Mostramos el modo configurado
+    if [ "${FLASH_MODE,,}" == "p" ]; then
+        echo "Modo Grabación: PARALELO (Rápido)"
+    else
+        echo "Modo Grabación: SECUENCIAL (Detallado)"
+    fi
+
     if [ -z "$PORTS_LIST" ]; then
         echo "Placas detectadas: NINGUNA"
     else
@@ -41,7 +51,7 @@ while true; do
     echo "========================================"
     echo "1. Verificar conexión (Chip ID) en TODOS"
     echo "2. Borrar Flash en TODOS"
-    echo "3. Grabar Firmware en TODOS"
+    echo "3. Grabar Firmware (Usando modo $FLASH_MODE)"
     echo "4. Redetectar Puertos"
     echo "5. Salir"
     echo "========================================"
@@ -49,13 +59,11 @@ while true; do
 
     case $opcion in
         1)
-            # BUCLE PARA RECORRER TODOS LOS PUERTOS
             for PORT in $PORTS_LIST; do
                 echo "----------------------------------------"
                 echo ">>> Consultando Chip ID en $PORT..."
                 python -m esptool --port "$PORT" chip_id
             done
-            echo "----------------------------------------"
             read -p "Presiona Enter para continuar..."
             ;;
         2)
@@ -64,26 +72,58 @@ while true; do
                 echo ">>> Borrando memoria flash en $PORT..."
                 python -m esptool --port "$PORT" erase_flash
             done
-            echo "----------------------------------------"
             read -p "Presiona Enter para continuar..."
             ;;
         3)
-            if [ -f "$FIRMWARE_PATH" ]; then
+            # VERIFICAR SI EXISTE EL ARCHIVO
+            if [ ! -f "$FIRMWARE_PATH" ]; then
+                echo "❌ ERROR: No se encuentra el archivo $FIRMWARE_PATH"
+                read -p "Presiona Enter para continuar..."
+                continue
+            fi
+
+            # Normalizamos la variable a minúscula (s/p)
+            MODE=${FLASH_MODE,,}
+
+            if [ "$MODE" == "s" ]; then
+                # === MODO SECUENCIAL ===
+                echo ">>> Iniciando grabación SECUENCIAL..."
                 for PORT in $PORTS_LIST; do
                     echo "----------------------------------------"
-                    echo ">>> GRABANDO EN $PORT (Inicio)..."
+                    echo ">>> GRABANDO EN $PORT..."
                     python -m esptool --port "$PORT" --baud "$BAUD" write_flash -z "$ADDRESS" "$FIRMWARE_PATH"
-                    
-                    # Verificamos si el comando anterior fue exitoso
                     if [ $? -eq 0 ]; then
                         echo ">>> ✅ ÉXITO en $PORT"
                     else
                         echo ">>> ❌ ERROR en $PORT"
                     fi
                 done
+
+            elif [ "$MODE" == "p" ]; then
+                # === MODO PARALELO ===
+                echo ">>> Iniciando grabación PARALELA..."
+                echo ">>> Los logs se guardarán en archivos log_COMx.txt"
+                
+                for PORT in $PORTS_LIST; do
+                    (
+                        echo ">>> Iniciando $PORT..."
+                        python -m esptool --port "$PORT" --baud "$BAUD" write_flash -z "$ADDRESS" "$FIRMWARE_PATH" > "log_$PORT.txt" 2>&1
+                        
+                        if [ $? -eq 0 ]; then
+                            echo ">>> ✅ $PORT Terminado OK"
+                        else
+                            echo ">>> ❌ $PORT Falló (Revisa log_$PORT.txt)"
+                        fi
+                    ) & 
+                done
+                
+                wait
+                echo ">>> Todos los procesos han terminado."
+
             else
-                echo "ERROR: No se encuentra el archivo $FIRMWARE_PATH"
+                echo "❌ ERROR: La variable FLASH_MODE no es válida (Debe ser 'S' o 'P')."
             fi
+            
             read -p "Presiona Enter para continuar..."
             ;;
         4)
