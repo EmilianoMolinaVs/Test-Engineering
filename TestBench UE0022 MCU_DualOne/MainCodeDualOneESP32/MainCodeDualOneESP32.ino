@@ -10,6 +10,10 @@
 #define RELAY 4     // GPIO de activación de relay para Carga Variable
 #define RX2 16      // RX Serial 2 para puente con RP2040
 #define TX2 17      // TX Serial 2 para puente con RP2040
+#define PIN_19 19   // Salida de trama para GPIO23
+#define PIN_23 23   // Entrada de trama desde GPIO19
+#define PIN_5 5     // Salida de trama para GPIO18
+#define PIN_18 18   // Entradad de trama desde GPIO5
 #define SDA_PIN 21  // SDA Pines de lectura para sensor ICP
 #define SCL_PIN 22  // SCL Pines de lectura para sensor ICP
 #define LED_R 25    // Rojo RGB en DualOne
@@ -39,11 +43,18 @@ void setup() {
     Serial.println("Check I2C wiring and connections.");
   }
 
-  pinMode(LED_R, OUTPUT);  // Activos a BAJA
-  pinMode(LED_G, OUTPUT);
-  pinMode(LED_B, OUTPUT);
-  pinMode(RELAY, OUTPUT);
+  // ==== Declaración de entradas y salidas ====
+  pinMode(LED_R, OUTPUT);   // LED RGB Rojo Activo a BAJA
+  pinMode(LED_G, OUTPUT);   // LED RGB Rojo Activo a BAJA
+  pinMode(LED_B, OUTPUT);   // LED RGB Rojo Activo a BAJA
+  pinMode(RELAY, OUTPUT);   // Pin de Relay GPIO4 para control de Carga Variable
+  pinMode(PIN_19, OUTPUT);  // Salida de trama para GPIO23
+  pinMode(PIN_5, OUTPUT);   // Salida de trama para GPIO18
 
+  pinMode(PIN_23, INPUT);  // Entrada de trama desde GPIO19
+  pinMode(PIN_18, INPUT);  // Entrada de trama desde GPIO5
+
+  // ==== Declaración de Estados Iniciales ====
   digitalWrite(RELAY, HIGH);
 }
 
@@ -109,20 +120,39 @@ void loop() {
           }
 
 
-        case 7:
+        case 7:  // Clave de validación de GPIOs de ESP32 Main
           {
-            String state = sensorICP();
-            Serial.println("Sensor ICP: " + state);
+            sendJSON.clear();
+
+            // ==== Validación de GPIOs 21 y 22 por I2C para Sensor ICP
+            String stateICP = sensorICP();
+            sendJSON["I21"] = stateICP;
+            sendJSON["I22"] = stateICP;
+
+            // ==== Validación de GPIOs 19 y 23
+            String stateA = sequenceDIG(PIN_23, PIN_19);
+            sendJSON["I19"] = stateA;
+            sendJSON["I23"] = stateA;
+            delay(1000);
+
+            // ==== Validación de GPIOs 18 y 5
+            String stateB = sequenceDIG(PIN_18, PIN_5);
+            sendJSON["I18"] = stateB;
+            sendJSON["I5"] = stateB;
+            delay(150);
+
+            serializeJson(sendJSON, Serial);
+            Serial.println();
             break;
           }
 
-        case 8:
+        case 8:  // Clave para accionamiento de relay para Carga Variable
           {
             digitalWrite(RELAY, LOW);
             break;
           }
 
-        case 9:
+        case 9:  // Clave para apagado de relay de Carga Variable
           {
             digitalWrite(RELAY, HIGH);
             break;
@@ -167,6 +197,7 @@ void demoLED() {
   delay(500);
 }
 
+// Función de sensador con ICP101
 String sensorICP() {
   sensor.measure(sensor.NORMAL);
 
@@ -183,11 +214,39 @@ String sensorICP() {
   }
 
   avgTemp = avgTemp / 10;
-  Serial.println(avgTemp);
+  //Serial.println(avgTemp);
 
   if (avgTemp < 40 && avgTemp > 10) {
     return "OK";
   } else {
     return "FAIL";
   }
+}
+
+// Función de escritura y lectura de secuencia en pines digitales
+String sequenceDIG(uint8_t GpioIn, uint8_t GpioOut) {
+  bool debug = false;
+  byte testSequence = 0b10101100;
+
+  //Serial.printf("\n--- Test %d -> %d ---\n", GpioOut, GpioIn);
+
+  for (int i = 7; i >= 0; i--) {
+    int bitToSend = (testSequence >> i) & 1;
+
+    digitalWrite(GpioOut, bitToSend);
+    delay(10);  // Pequeño delay para estabilidad
+
+    int bitRead = digitalRead(GpioIn);
+
+    if (debug) {
+      Serial.printf("Bit %d: Envié %d -> Leí %d", i, bitToSend, bitRead);
+    };
+
+
+
+    if (bitRead != bitToSend) {
+      return "FAIL";
+    }
+  }
+  return "OK";
 }

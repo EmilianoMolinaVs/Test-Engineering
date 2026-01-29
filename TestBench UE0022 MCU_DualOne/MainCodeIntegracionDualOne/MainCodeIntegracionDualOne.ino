@@ -600,7 +600,7 @@ String sequenceDIG(uint8_t GpioIn, uint8_t GpioOut) {
     if (bitRead != bitToSend) {
       return "FAIL";  // Error de transmisión
     }
-    delay(50);
+    delay(20);
   }
   return "OK";
 }
