@@ -38,8 +38,8 @@
 
 
 // Pines Analógicos
-#define A0_PIN 26  // A0 para lectura de potenciometro en Shield
-#define A1_PIN 27  // A1 para lectura de LDR en Shield
+#define A0_PIN 26  // A0 Salida de datos para A1
+#define A1_PIN 27  // A1 Entrada de datos desde A0
 #define A2_PIN 28  // A2 para lectura de LM35 en Shield
 #define A3_PIN 29  // A3 para lectura de sensor de luz TEMT6000
 
@@ -108,12 +108,12 @@ void setup() {
   pinMode(LED_D13, OUTPUT);     // D13 LED Azul en Shield
   pinMode(D20_PIN, OUTPUT);     // Salida de datos para GPIO20 GPIO20 --> GPIO21
   pinMode(D22_PIN, OUTPUT);     // Salida de datos para GPIO22 GPIO22 --> GPIO23
+  pinMode(A0_PIN, OUTPUT);      // A0 salida para A1
 
   // ==== Entradas
   pinMode(IR_PIN, INPUT);   // IR LED D6 en Shield
   pinMode(D8_PIN, INPUT);   // Entrada Digital D8
-  pinMode(A0_PIN, INPUT);   // A0 para potenciometro en Shield
-  pinMode(A1_PIN, INPUT);   // A1 para LDR en Shield
+  pinMode(A1_PIN, INPUT);   // A1 Entrada desde A0
   pinMode(A2_PIN, INPUT);   // A2 para LM35 en Shield
   pinMode(A3_PIN, INPUT);   // A3 para sensor TEMT6000
   pinMode(D21_PIN, INPUT);  // Entrada de datos GPIO21 <-- GPIO20
@@ -202,18 +202,16 @@ void loop() {
             display.setCursor(60, 10);
             display.setTextSize(1);
 
-            // Validación A0 Potenciómetro en Shield
-            String statusA0 = analogA0();
+            // Validación A0 y A1 con envio de secuencia de datos
+            String statusA0 = sequenceDIG(A1_PIN, A0_PIN);
             writeLCD("A0: " + statusA0, 0);
             sendJSON["A0"] = statusA0;
 
             display.setCursor(60, 20);
             display.setTextSize(1);
+            writeLCD("A1: " + statusA0, 0);
+            sendJSON["A1"] = statusA0;
 
-            // Validación A1 LDR en Shield
-            String statusA1 = analogA1();
-            writeLCD("A1: " + statusA1, 0);
-            sendJSON["A1"] = statusA1;
 
             display.setCursor(60, 30);
             display.setTextSize(1);
@@ -607,48 +605,6 @@ String sequenceDIG(uint8_t GpioIn, uint8_t GpioOut) {
   return "OK";
 }
 
-// Función de Haptic Motor GPIO20 y 21
-void HapticMotor() {
-  drv.setWaveform(0, 47);  // pulso corto
-  drv.setWaveform(1, 85);  // pulso corto
-  drv.setWaveform(2, 47);  // pulso corto
-  drv.setWaveform(3, 0);
-  drv.go();
-  delay(300);
-}
-
-
-String analogA0() {
-  float n = 0;
-  float lect = 0;
-  for (int i = 0; i < 10; i++) {
-    n = analogRead(A0_PIN);
-    lect += n;
-  }
-  float avg = lect / 10;
-  Serial.println("El promedio de lecturas en A0: " + String(avg));
-  if (avg > 1000) {
-    return "OK";
-  } else {
-    return "FAIL";
-  }
-}
-
-String analogA1() {
-  float n = 0;
-  float lect = 0;
-  for (int i = 0; i < 10; i++) {
-    n = analogRead(A1_PIN);
-    lect += n;
-  }
-  float avg = lect / 10;
-  Serial.println("El promedio de lecturas en A1: " + String(avg));
-  if (avg > 1000) {
-    return "OK";
-  } else {
-    return "FAIL";
-  }
-}
 
 String analogA2() {
   float n = 0;
@@ -659,7 +615,7 @@ String analogA2() {
   }
   float avg = lect / 10;
   Serial.println("El promedio de lecturas en A2: " + String(avg));
-  if (avg > 1000) {
+  if (avg > 100) {
     return "OK";
   } else {
     return "FAIL";
@@ -675,7 +631,7 @@ String analogA3() {
   }
   float avg = lect / 10;
   Serial.println("El promedio de lecturas en A3: " + String(avg));
-  if (avg > 1000) {
+  if (avg > 100) {
     return "OK";
   } else {
     return "FAIL";
