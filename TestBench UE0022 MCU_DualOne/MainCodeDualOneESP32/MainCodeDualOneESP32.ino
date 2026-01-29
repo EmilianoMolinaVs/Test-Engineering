@@ -51,7 +51,7 @@ void setup() {
   pinMode(PIN_19, OUTPUT);  // Salida de trama para GPIO23
   pinMode(PIN_5, OUTPUT);   // Salida de trama para GPIO18
 
-  pinMode(PIN_23, INPUT);  // Entrada de trama desde GPIO19
+  pinMode(PIN_23, INPUT_PULLUP);  // Entrada de trama desde GPIO19
   pinMode(PIN_18, INPUT);  // Entrada de trama desde GPIO5
 
   // ==== Declaración de Estados Iniciales ====

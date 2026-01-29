@@ -246,7 +246,7 @@ void loop() {
             display.println(F("DualOne"));
             display.display();  // Show initial text
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 3; i++) {
               melodyBuzzer();
               delay(50);
             }
