@@ -30,6 +30,9 @@
 #define D20_PIN 20  // GPIO20 salida de datos
 #define D21_PIN 21  // GPIO21 entrada de datos
 
+#define D22_PIN 22  // GPIO22 salida de datos
+#define D23_PIN 23  // GPIO23 entrada de datos
+
 #define LED_NEOP 24  // PIN DEDICADO AL NEOPIXEL WS2812
 #define LED_BUIL 25  // Led Builtin GPIO25
 
@@ -42,12 +45,12 @@
 
 // ==== Creación de objetos ====
 Adafruit_NeoPixel np = Adafruit_NeoPixel(11, LED_NEOP, NEO_GRB + NEO_KHZ800);  // Objeto NeoPixel
-#define DHTTYPE DHT11                                                         // Tipo de sensor
-DHT dht(DHT_PIN, DHTTYPE);                                                    // Objeto Sensor DHT Hum Y Temp
-#define OLED_RESET -1                                                         // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_WIDTH 128                                                      // OLED display width, in pixels
-#define SCREEN_HEIGHT 64                                                      // OLED display height, in pixels
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);     // Objeto de la OLED
+#define DHTTYPE DHT11                                                          // Tipo de sensor
+DHT dht(DHT_PIN, DHTTYPE);                                                     // Objeto Sensor DHT Hum Y Temp
+#define OLED_RESET -1                                                          // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_WIDTH 128                                                       // OLED display width, in pixels
+#define SCREEN_HEIGHT 64                                                       // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);      // Objeto de la OLED
 Adafruit_DRV2605 drv;
 
 // ==== Declaración de variables
@@ -103,7 +106,8 @@ void setup() {
   pinMode(RGB_BD11, OUTPUT);    // D11 RGB en Shield
   pinMode(LED_D12, OUTPUT);     // D12 LED Rojo en Shield
   pinMode(LED_D13, OUTPUT);     // D13 LED Azul en Shield
-  pinMode(D20_PIN, OUTPUT);     // Saliad de datos para GPIO20 GPIO20 --> GPIO21
+  pinMode(D20_PIN, OUTPUT);     // Salida de datos para GPIO20 GPIO20 --> GPIO21
+  pinMode(D22_PIN, OUTPUT);     // Salida de datos para GPIO22 GPIO22 --> GPIO23
 
   // ==== Entradas
   pinMode(IR_PIN, INPUT);   // IR LED D6 en Shield
@@ -113,6 +117,7 @@ void setup() {
   pinMode(A2_PIN, INPUT);   // A2 para LM35 en Shield
   pinMode(A3_PIN, INPUT);   // A3 para sensor TEMT6000
   pinMode(D21_PIN, INPUT);  // Entrada de datos GPIO21 <-- GPIO20
+  pinMode(D23_PIN, INPUT);  // Entrada de datos GPIO23 <-- GPIO22
 }
 
 void loop() {
@@ -185,6 +190,13 @@ void loop() {
             writeLCD("D20: " + statusD201, 0);
             sendJSON["D20"] = statusD201;
             sendJSON["D21"] = statusD201;
+
+            // Validación de GPIOs 22 y 23 GPIO23 Entrada || GPIO22 Salida
+            String statusD223 = sequenceDIG(D23_PIN, D22_PIN);
+            display.setCursor(0, 50);
+            writeLCD("D22: " + statusD223, 0);
+            sendJSON["D22"] = statusD223;
+            sendJSON["D23"] = statusD223;
 
             // ==== VALIDACIÓN DE PINES ANALÓGICOS =====
             display.setCursor(60, 10);
@@ -572,7 +584,7 @@ String IRLEDreceptor() {
   }
 }
 
-// Función de escritura y lectura de secuencia en pines digitales D7 y D8
+// Función de escritura y lectura de secuencia en pines digitales
 String sequenceDIG(uint8_t GpioIn, uint8_t GpioOut) {
   byte testSequence = 0b10101100;
   for (int i = 7; i >= 0; i--) {

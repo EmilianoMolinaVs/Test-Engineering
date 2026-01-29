@@ -7,16 +7,14 @@
 #include <ArduinoJson.h>
 #include "ue_i2c_icp_10111_sen.h"
 
-#define RX2 16
-#define TX2 17
-
-#define SDA_PIN 21  // Pines de lectura para sensor ICP
-#define SCL_PIN 22
-
-#define LED_R 25
-#define LED_G 26
-#define LED_B 27
-
+#define RELAY 4     // GPIO de activación de relay para Carga Variable
+#define RX2 16      // RX Serial 2 para puente con RP2040
+#define TX2 17      // TX Serial 2 para puente con RP2040
+#define SDA_PIN 21  // SDA Pines de lectura para sensor ICP
+#define SCL_PIN 22  // SCL Pines de lectura para sensor ICP
+#define LED_R 25    // Rojo RGB en DualOne
+#define LED_G 26    // Verd RGB en DualOne
+#define LED_B 27    // Azul RGB en DualOne
 
 // ==== Declaración de objetos
 HardwareSerial Bridge(1);
@@ -44,6 +42,9 @@ void setup() {
   pinMode(LED_R, OUTPUT);  // Activos a BAJA
   pinMode(LED_G, OUTPUT);
   pinMode(LED_B, OUTPUT);
+  pinMode(RELAY, OUTPUT);
+
+  digitalWrite(RELAY, HIGH);
 }
 
 void loop() {
@@ -65,7 +66,11 @@ void loop() {
       else if (Function == "ping") opc = 4;        // {"Function":"ping"}
 
       // Claves para Test de ESP32
-      else if (Function == "testESP32") opc = 9;  // {"Function":"testESP32"}
+      else if (Function == "testESP32") opc = 7;  // {"Function":"testESP32"}
+      else if (Function == "relayOn") opc = 8;    // {"Function":"relayOn"}
+      else if (Function == "relayOff") opc = 9;   // {"Function":"relayOff"}
+
+
 
       switch (opc) {
         case 1:  // Case de testAll de RP2040
@@ -104,10 +109,22 @@ void loop() {
           }
 
 
-        case 9:
+        case 7:
           {
             String state = sensorICP();
             Serial.println("Sensor ICP: " + state);
+            break;
+          }
+
+        case 8:
+          {
+            digitalWrite(RELAY, LOW);
+            break;
+          }
+
+        case 9:
+          {
+            digitalWrite(RELAY, HIGH);
             break;
           }
       }

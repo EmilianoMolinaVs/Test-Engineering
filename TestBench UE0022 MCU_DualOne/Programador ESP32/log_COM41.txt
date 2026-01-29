@@ -1,0 +1,8 @@
+esptool.py v4.8.1
+Serial port COM41
+
+A fatal error occurred: Could not open COM41, the port is busy or doesn't exist.
+(could not open port 'COM41': FileNotFoundError(2, 'El sistema no puede encontrar el archivo especificado.', None, 2))
+
+Hint: Check if the port is correct and ESP connected
+
