@@ -2,7 +2,10 @@
 ===== CÓDIGO UNIT DUAL ONE JSON Integración ESP32 ====
 */
 
+
+
 #include <Wire.h>
+#include <WiFi.h>
 #include <HardwareSerial.h>
 #include <ArduinoJson.h>
 #include "ue_i2c_icp_10111_sen.h"
@@ -35,6 +38,8 @@ void setup() {
   Serial.begin(115200);
   Serial.println("UART0 listo para comunicación...");
 
+  WiFi.mode(WIFI_MODE_STA);
+
   Bridge.begin(115200, SERIAL_8N1, RX2, TX2);
 
   Wire.begin(SDA_PIN, SCL_PIN);
@@ -52,7 +57,7 @@ void setup() {
   pinMode(PIN_5, OUTPUT);   // Salida de trama para GPIO18
 
   pinMode(PIN_23, INPUT_PULLUP);  // Entrada de trama desde GPIO19
-  pinMode(PIN_18, INPUT);  // Entrada de trama desde GPIO5
+  pinMode(PIN_18, INPUT);         // Entrada de trama desde GPIO5
 
   // ==== Declaración de Estados Iniciales ====
   digitalWrite(RELAY, HIGH);
@@ -76,7 +81,9 @@ void loop() {
       else if (Function == "testLEDs") opc = 3;    // {"Function":"testLEDs"}
       else if (Function == "ping") opc = 4;        // {"Function":"ping"}
 
+
       // Claves para Test de ESP32
+      else if (Function == "mac") opc = 5;        // {"Function":"mac"}
       else if (Function == "testESP32") opc = 7;  // {"Function":"testESP32"}
       else if (Function == "relayOn") opc = 8;    // {"Function":"relayOn"}
       else if (Function == "relayOff") opc = 9;   // {"Function":"relayOff"}
@@ -116,6 +123,17 @@ void loop() {
             sendJSON["Function"] = "ping";
             serializeJson(sendJSON, Bridge);
             Bridge.println();
+            break;
+          }
+
+
+        case 5:
+          {
+            sendJSON.clear();
+            String mac = WiFi.macAddress();
+            sendJSON["mac"] = mac;
+            serializeJson(sendJSON, Serial);
+            Serial.println();
             break;
           }
 
