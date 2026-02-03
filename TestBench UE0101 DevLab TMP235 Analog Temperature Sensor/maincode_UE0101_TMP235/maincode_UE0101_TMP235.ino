@@ -9,7 +9,7 @@
 #define DC_PIN 21
 #define RST_PIN 5
 
-Adafruit_ST7735 lcd = Adafruit_ST7735(CS_PIN, DC_PIN, LCD_RST);
+Adafruit_ST7735 lcd = Adafruit_ST7735(CS_PIN, DC_PIN, RST_PIN);
 
 // Colores por sensor
 const uint16_t sensorColors[9] = {
@@ -28,14 +28,20 @@ void setup() {
   Serial.begin(115200);
 
   // ESTA es la tabla correcta para la mayoría de 0.96"
-  tft.initR(INITR_MINI160x80);
-  tft.setRotation(3);
-  tft.fillScreen(ST77XX_WHITE);
+  lcd.initR(INITR_MINI160x80);
+  lcd.setRotation(3);
+  lcd.invertDisplay(true);
+  lcd.fillScreen(ST77XX_BLACK);
 
-  tft.setTextSize(1);
-  tft.setTextWrap(false);
+  lcd.setTextWrap(false);
 
-  escribirTexto("Sistema listo", 10, 10, ST77XX_GREEN);
+  // ---- HEADER ----
+  lcd.setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
+  lcd.setTextSize(2);
+  lcd.setCursor(15, 5);
+  lcd.println("TEMPERATURA");
+
+  lcd.drawFastHLine(0, 25, 160, ST77XX_YELLOW);
 }
 
 void loop() {
@@ -46,9 +52,4 @@ void loop() {
   escribirTexto("OK", 10, 40, ST77XX_GREEN);
 }
 
-void escribirTexto(const char* texto, int x, int y, uint16_t color) {
-  tft.fillRect(x, y, 260, 140, ST77XX_BLACK);
-  tft.setCursor(x, y);
-  tft.setTextColor(color, ST77XX_BLACK);
-  tft.print(texto);
-}
+
