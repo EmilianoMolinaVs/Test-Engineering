@@ -1,0 +1,61 @@
+esptool.py v4.8.1
+Serial port COM41
+Connecting......
+Detecting chip type... Unsupported detection protocol, switching and trying again...
+Connecting.....
+Detecting chip type... ESP32
+Chip is ESP32-D0WD-V3 (revision v3.1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: f8:b3:b7:ce:ff:80
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 921600
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00000000 to 0x003fffff...
+Compressed 4194304 bytes to 607208...
+Writing at 0x00000000... (2 %)
+Writing at 0x0000cc76... (5 %)
+Writing at 0x0001c194... (7 %)
+Writing at 0x00026555... (10 %)
+Writing at 0x000334c4... (13 %)
+Writing at 0x0003c5e0... (15 %)
+Writing at 0x00042364... (18 %)
+Writing at 0x00047a02... (21 %)
+Writing at 0x0004d2af... (23 %)
+Writing at 0x000525da... (26 %)
+Writing at 0x00057e11... (28 %)
+Writing at 0x0005d393... (31 %)
+Writing at 0x00062822... (34 %)
+Writing at 0x00067f03... (36 %)
+Writing at 0x0006d597... (39 %)
+Writing at 0x00072f34... (42 %)
+Writing at 0x00078425... (44 %)
+Writing at 0x0007d729... (47 %)
+Writing at 0x00082d83... (50 %)
+Writing at 0x00088414... (52 %)
+Writing at 0x0008e1bf... (55 %)
+Writing at 0x00093a1b... (57 %)
+Writing at 0x00099179... (60 %)
+Writing at 0x0009e2ed... (63 %)
+Writing at 0x000a3667... (65 %)
+Writing at 0x000a8df6... (68 %)
+Writing at 0x000ae6ea... (71 %)
+Writing at 0x000b3a0a... (73 %)
+Writing at 0x000b8f70... (76 %)
+Writing at 0x000becc8... (78 %)
+Writing at 0x000c48e8... (81 %)
+Writing at 0x000cabce... (84 %)
+Writing at 0x000d52ad... (86 %)
+Writing at 0x000dac3a... (89 %)
+Writing at 0x000dfd2e... (92 %)
+Writing at 0x000e55be... (94 %)
+Writing at 0x000eaf0e... (97 %)
+Writing at 0x003054b7... (100 %)
+Wrote 4194304 bytes (607208 compressed) at 0x00000000 in 16.8 seconds (effective 1996.8 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
