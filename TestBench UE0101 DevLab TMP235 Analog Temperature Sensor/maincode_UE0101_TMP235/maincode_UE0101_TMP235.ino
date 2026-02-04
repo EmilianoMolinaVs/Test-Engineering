@@ -5,6 +5,8 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>
+#include <Adafruit_NeoPixel.h>
+#include <Arduino.h>
 
 // ---- Pines I2C de OLED ----
 #define SDA_PIN 22  // SDA Pines de lectura para sensor ICP
@@ -18,8 +20,11 @@
 #define SENS_5 5
 #define SENS_6 6
 
-// ---- Pin de Switcheo entre sensores ----
-#define SWITCH 16
+// ---- Pines de switcheo y manejo de relevadores || Neopixel ----
+#define SWITCH 15
+#define RELAY 21
+#define NEOPIX 8
+
 
 // ---- Configuración de la pantala OLED ----
 #define OLED_RESET -1                                                      // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -27,14 +32,22 @@
 #define SCREEN_HEIGHT 64                                                   // OLED display height, in pixels
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);  // Objeto de la OLED
 
-// ---- Banderas ----
+Adafruit_NeoPixel np = Adafruit_NeoPixel(11, NEOPIX, NEO_GRB + NEO_KHZ800);  // Objeto NeoPixel
+
+// ---- Banderas y Variables ----
 bool flagSW = false;
+int animX = 0;
+
 
 void setup() {
+
   Serial.begin(115200);
 
   // ---- Declaración de pines ----
-  pinMode(SWITCH, INPUT);
+  pinMode(SWITCH, INPUT_PULLUP);
+  pinMode(RELAY, OUTPUT);
+
+  digitalWrite(RELAY, HIGH);
 
   // ---- Inicialización de I2C de OLED ----
   Wire.begin(SDA_PIN, SCL_PIN);
@@ -47,6 +60,12 @@ void setup() {
   // ---- Configuración del ADC ----
   analogReadResolution(12);
   analogSetAttenuation(ADC_11db);
+
+  // ---- Inicialización del Neopixel ----
+  np.begin();  // Inicialización de objeto NeoPixel
+  np.setBrightness(20);
+  np.setPixelColor(0, np.Color(0, 255, 0));
+  np.show();
 }
 
 void loop() {
@@ -55,10 +74,13 @@ void loop() {
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
-  display.setCursor(35, 0);
+  display.setCursor(25, 0);
   display.println("TEMPERATURA");
-  display.drawLine(0, 10, 127, 10, SSD1306_WHITE);
-  display.display();
+  // ---- Línea animada ----
+  display.drawLine(0, 12, animX, 12, SSD1306_WHITE);
+
+  animX += 4;  // velocidad
+  if (animX > 127) animX = 0;
 
 
   // ---- Valores medidos ----
@@ -66,14 +88,50 @@ void loop() {
 
   display.setCursor(10, 20);
   display.println("Sensor 1: " + String(t, 2) + " C");
-  display.display();
-
 
   Serial.print("Temp: ");
   Serial.print(t, 2);
   Serial.println(" C");
 
-  delay(1000);
+
+
+
+  // ---- Botón de Switch ---
+  if (digitalRead(SWITCH) == LOW) {
+    delay(30);  // debounce
+    if (digitalRead(SWITCH) == LOW) {
+      flagSW = !flagSW;
+      Serial.println("Presionado");
+
+      while (digitalRead(SWITCH) == LOW)
+        ;  // espera a soltar
+    }
+
+    for (int i = 0; i < 4; i++) {
+      np.setPixelColor(0, np.Color(200, 85, 226));
+      np.show();
+      delay(80);
+      np.setPixelColor(0, np.Color(0, 0, 0));
+      np.show();
+      delay(80); 
+    }
+
+    np.setPixelColor(0, np.Color(0, 255, 0));
+    np.show();
+  }
+
+
+  display.setCursor(100, 0);
+  if (flagSW == true) {
+    digitalWrite(RELAY, LOW);
+    display.println("ON");
+  } else {
+    digitalWrite(RELAY, HIGH);
+    display.println("OFF");
+  }
+
+  display.display();
+  delay(50);
 }
 
 
