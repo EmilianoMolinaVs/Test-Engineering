@@ -38,24 +38,6 @@ Adafruit_NeoPixel np = Adafruit_NeoPixel(11, NEOPIX, NEO_GRB + NEO_KHZ800);  // 
 bool flagSW = false;
 int animX = 0;
 
-unsigned long lastADC = 0;
-const unsigned long ADC_PERIOD = 800;
-
-float t[6];
-unsigned long lastBlink = 0;
-int blinkCount = 0;
-bool blinkState = false;
-static bool lastBtn = HIGH;
-
-uint8_t adcIndex = 0;
-unsigned long lastSample = 0;
-const unsigned long SAMPLE_PERIOD = 50;
-
-unsigned long lastOLED = 0;
-const unsigned long OLED_PERIOD = 100;  // ms
-
-const uint8_t sensPins[6] = { SENS_1, SENS_2, SENS_3, SENS_4, SENS_5, SENS_6 };
-
 
 void setup() {
 
@@ -88,94 +70,76 @@ void setup() {
 
 void loop() {
 
-  // ---------- ADC (lento) ----------
-  if (millis() - lastSample >= SAMPLE_PERIOD) {
-    lastSample = millis();
+  // ---- HEADER ---
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(25, 0);
+  display.println("TEMPERATURA");
+  // ---- Línea animada ----
+  display.drawLine(0, 12, animX, 12, SSD1306_WHITE);
 
-    t[adcIndex] = readTempC(sensPins[adcIndex]);
+  animX += 4;  // velocidad
+  if (animX > 127) animX = 0;
 
 
-    adcIndex++;
-    if (adcIndex >= 6) adcIndex = 0;
-  }
+  // ---- Valores medidos ----
+  float t = readTempC(SENS_6);
+
+  display.setCursor(10, 20);
+  display.println("Sensor 1: " + String(t, 2) + " C");
+
+  Serial.print("Temp: ");
+  Serial.print(t, 2);
+  Serial.println(" C");
 
 
-  // ---------- BOTÓN (rápido) ----------
-  bool btn = digitalRead(SWITCH);
-  if (lastBtn == HIGH && btn == LOW) {
-    flagSW = !flagSW;
-    Serial.println("Presionado");
-    blinkCount = 4;  // dispara animación
-  }
-  lastBtn = btn;
 
-  // ---------- NEOPIXEL (no bloqueante) ----------
-  if (blinkCount > 0 && millis() - lastBlink > 80) {
-    lastBlink = millis();
-    blinkState = !blinkState;
 
-    if (blinkState)
+  // ---- Botón de Switch ---
+  if (digitalRead(SWITCH) == LOW) {
+    delay(30);  // debounce
+    if (digitalRead(SWITCH) == LOW) {
+      flagSW = !flagSW;
+      Serial.println("Presionado");
+
+      while (digitalRead(SWITCH) == LOW)
+        ;  // espera a soltar
+    }
+
+    for (int i = 0; i < 4; i++) {
       np.setPixelColor(0, np.Color(200, 85, 226));
-    else
-      np.setPixelColor(0, 0);
+      np.show();
+      delay(80);
+      np.setPixelColor(0, np.Color(0, 0, 0));
+      np.show();
+      delay(80); 
+    }
 
+    np.setPixelColor(0, np.Color(0, 255, 0));
     np.show();
-    if (!blinkState) blinkCount--;
   }
 
-  if (blinkCount == 0) {
-    np.setPixelColor(0, flagSW ? np.Color(0, 255, 0) : np.Color(255, 0, 0));
-    np.show();
+
+  display.setCursor(100, 0);
+  if (flagSW == true) {
+    digitalWrite(RELAY, LOW);
+    display.println("ON");
+  } else {
+    digitalWrite(RELAY, HIGH);
+    display.println("OFF");
   }
 
-  // ---------- OLED ----------
-  if (millis() - lastOLED >= OLED_PERIOD) {
-    lastOLED = millis();
-
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(25, 0);
-    display.println("TEMPERATURA");
-
-    display.drawLine(0, 12, animX, 12, SSD1306_WHITE);
-    animX = (animX + 4) % 128;
-
-    display.setCursor(5, 20);
-    display.print("S1: ");
-    display.print(t[0], 1);
-    display.println("C");
-    display.setCursor(5, 35);
-    display.print("S2: ");
-    display.print(t[1], 1);
-    display.println("C");
-    display.setCursor(5, 50);
-    display.print("S3: ");
-    display.print(t[2], 1);
-    display.println("C");
-
-    display.setCursor(70, 20);
-    display.print("S4: ");
-    display.print(t[3], 1);
-    display.setCursor(70, 35);
-    display.print("S5: ");
-    display.print(t[4], 1);
-    display.setCursor(70, 50);
-    display.print("S6: ");
-    display.print(t[5], 1);
-
-    display.setCursor(100, 0);
-    display.println(flagSW ? "ON" : "OFF");
-
-    display.display();
-  }
+  display.display();
+  delay(50);
 }
+
 
 
 
 // ---- Funciones Auxiliares -----
 float readTempC(uint8_t PIN) {
-  const int N = 8;
+  const int N = 20;
   long sum_mv = 0;
 
   for (int i = 0; i < N; i++) {
