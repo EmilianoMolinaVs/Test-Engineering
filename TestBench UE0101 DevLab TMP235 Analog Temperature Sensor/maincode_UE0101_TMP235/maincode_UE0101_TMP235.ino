@@ -1,55 +1,97 @@
 /*
 ==== CÓDIGO DE INTEGRACIÓN SHIELD PULSAR C6 UE0101 DevLab: TMP235 Analog Temperature Sensor ====
 */
-#include <SPI.h>
+
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_ST7735.h>
 
-#define CS_PIN 18
-#define DC_PIN 21
-#define RST_PIN 5
+// ---- Pines I2C de OLED ----
+#define SDA_PIN 22  // SDA Pines de lectura para sensor ICP
+#define SCL_PIN 23  // SCL Pines de lectura para sensor ICP
 
-Adafruit_ST7735 lcd = Adafruit_ST7735(CS_PIN, DC_PIN, RST_PIN);
+// ---- Pines de lectura para sensor analógico [6]----
+#define SENS_1 0
+#define SENS_2 1
+#define SENS_3 8
+#define SENS_4 4
+#define SENS_5 5
+#define SENS_6 6
 
-// Colores por sensor
-const uint16_t sensorColors[9] = {
-  ST77XX_RED,
-  ST77XX_GREEN,
-  ST77XX_BLUE,
-  ST77XX_YELLOW,
-  ST77XX_CYAN,
-  ST77XX_MAGENTA,
-  0xFD20,        // Naranja
-  ST77XX_WHITE,  // Blanco
-  0x07E0         // Verde claro
-};
+// ---- Pin de Switcheo entre sensores ----
+#define SWITCH 16
+
+// ---- Configuración de la pantala OLED ----
+#define OLED_RESET -1                                                      // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_WIDTH 128                                                   // OLED display width, in pixels
+#define SCREEN_HEIGHT 64                                                   // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);  // Objeto de la OLED
+
+// ---- Banderas ----
+bool flagSW = false;
 
 void setup() {
   Serial.begin(115200);
 
-  // ESTA es la tabla correcta para la mayoría de 0.96"
-  lcd.initR(INITR_MINI160x80);
-  lcd.setRotation(3);
-  lcd.invertDisplay(true);
-  lcd.fillScreen(ST77XX_BLACK);
+  // ---- Declaración de pines ----
+  pinMode(SWITCH, INPUT);
 
-  lcd.setTextWrap(false);
+  // ---- Inicialización de I2C de OLED ----
+  Wire.begin(SDA_PIN, SCL_PIN);
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println("OLED no encontrada");
+    while (true)
+      ;
+  }
 
-  // ---- HEADER ----
-  lcd.setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
-  lcd.setTextSize(2);
-  lcd.setCursor(15, 5);
-  lcd.println("TEMPERATURA");
-
-  lcd.drawFastHLine(0, 25, 160, ST77XX_YELLOW);
+  // ---- Configuración del ADC ----
+  analogReadResolution(12);
+  analogSetAttenuation(ADC_11db);
 }
 
 void loop() {
-  delay(2000);
-  escribirTexto("ERROR", 10, 40, ST77XX_RED);
 
-  delay(2000);
-  escribirTexto("OK", 10, 40, ST77XX_GREEN);
+  // ---- HEADER ---
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(35, 0);
+  display.println("TEMPERATURA");
+  display.drawLine(0, 10, 127, 10, SSD1306_WHITE);
+  display.display();
+
+
+  // ---- Valores medidos ----
+  float t = readTempC(SENS_6);
+
+  display.setCursor(10, 20);
+  display.println("Sensor 1: " + String(t, 2) + " C");
+  display.display();
+
+
+  Serial.print("Temp: ");
+  Serial.print(t, 2);
+  Serial.println(" C");
+
+  delay(1000);
 }
 
 
+
+
+// ---- Funciones Auxiliares -----
+float readTempC(uint8_t PIN) {
+  const int N = 20;
+  long sum_mv = 0;
+
+  for (int i = 0; i < N; i++) {
+    sum_mv += analogReadMilliVolts(PIN);
+    delay(5);
+  }
+
+  float v_mv = sum_mv / (float)N;
+
+  // Tu curva: 0°C = 500mV, 10mV/°C
+  float tempC = (v_mv - 500.0f) / 10.0f;
+  return tempC;
+}
