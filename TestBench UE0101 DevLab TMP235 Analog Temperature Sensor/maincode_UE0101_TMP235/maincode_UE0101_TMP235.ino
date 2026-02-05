@@ -23,7 +23,7 @@
 
 // ---- Pines de switcheo y manejo de relevadores || Neopixel ----
 #define SWITCH 15
-#define RELAY 21
+#define RELAY 14
 #define NEOPIX 8
 
 // ---- Configuración de la pantala OLED ----
