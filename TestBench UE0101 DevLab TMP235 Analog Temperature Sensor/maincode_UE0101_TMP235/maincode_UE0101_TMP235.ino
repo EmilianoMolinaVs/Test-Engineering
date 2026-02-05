@@ -84,16 +84,38 @@ void loop() {
 
 
   // ---- Valores medidos ----
-  float t = readTempC(SENS_6);
+  int t1 = readTempC(SENS_1);
+  int t2 = readTempC(SENS_2);
+  int t3 = readTempC(SENS_3);
+  int t4 = readTempC(SENS_4);
+  int t5 = readTempC(SENS_5);
+  int t6 = readTempC(SENS_6);
 
-  display.setCursor(10, 20);
-  display.println("Sensor 1: " + String(t, 2) + " C");
+  display.setCursor(5, 20);
+  display.print("S1: ");
+  display.print(t1);
+  display.println(" C");
+  display.setCursor(5, 35);
+  display.print("S2: ");
+  display.print(t2);
+  display.println(" C");
+  display.setCursor(5, 50);
+  display.print("S3: ");
+  display.print(t3);
+  display.println(" C");
 
-  Serial.print("Temp: ");
-  Serial.print(t, 2);
-  Serial.println(" C");
-
-
+  display.setCursor(70, 20);
+  display.print("S4: ");
+  display.print(t4);
+  display.println(" C");
+  display.setCursor(70, 35);
+  display.print("S5: ");
+  display.print(t5);
+  display.println(" C");
+  display.setCursor(70, 50);
+  display.print("S6: ");
+  display.print(t6);
+  display.println(" C");
 
 
   // ---- Botón de Switch ---
@@ -102,22 +124,9 @@ void loop() {
     if (digitalRead(SWITCH) == LOW) {
       flagSW = !flagSW;
       Serial.println("Presionado");
-
       while (digitalRead(SWITCH) == LOW)
         ;  // espera a soltar
     }
-
-    for (int i = 0; i < 4; i++) {
-      np.setPixelColor(0, np.Color(200, 85, 226));
-      np.show();
-      delay(80);
-      np.setPixelColor(0, np.Color(0, 0, 0));
-      np.show();
-      delay(80); 
-    }
-
-    np.setPixelColor(0, np.Color(0, 255, 0));
-    np.show();
   }
 
 
@@ -131,6 +140,16 @@ void loop() {
   }
 
   display.display();
+
+  if (t1 > 30 || t2 > 30 || t3 > 30 || t4 > 30 || t5 > 30 || t6 > 30) {
+    np.setPixelColor(0, np.Color(255, 0, 0));
+    np.show();
+  } else {
+    np.setPixelColor(0, np.Color(0, 255, 0));
+    np.show();
+  }
+
+
   delay(50);
 }
 
@@ -139,7 +158,7 @@ void loop() {
 
 // ---- Funciones Auxiliares -----
 float readTempC(uint8_t PIN) {
-  const int N = 20;
+  const int N = 5;
   long sum_mv = 0;
 
   for (int i = 0; i < N; i++) {
