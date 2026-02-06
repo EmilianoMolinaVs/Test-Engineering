@@ -4,105 +4,165 @@ Código de integración para BMA255 con lectura de I2C y SPI
 */
 
 
-
 #include <Wire.h>
+#include <Arduino.h>
+#include <SPI.h>
+#include <HardwareSerial.h>
+#include <ArduinoJson.h>
 #include "BMA250.h"
 
-// I2C pins for ESP32-C6 (change as needed)
-#define SDA_PIN 22
-#define SCL_PIN 23
 
-// Accelerometer sensor variables
+// ---- Pines Comunicación I2C ySPI ----
+#define SDA_PIN 6   // MOSI
+#define SCL_PIN 7   // SCl
+#define SDO_PIN D1  // MISO
+#define CS_PIN D0
+
+#define RUN_BUTTON 4  // Botón de Arranque
+
+// ---- Creación de Objetos y Declaración de Variables ----
 BMA250 accel_sensor;
 int x, y, z;
 double temp;
 
+// ==== Declaración de JSON ====
+String JSON_entrada;  // Variable que recibe al JSON en crudo de PagWeb
+StaticJsonDocument<200> receiveJSON;
+
+String JSON_salida;  // Variable que envía el JSON de datos
+StaticJsonDocument<200> sendJSON;
+
 void setup() {
+
   Serial.begin(115200);
-  while (!Serial && millis() < 5000) delay(10);
-  
-  Serial.println("=== BMA250 I2C Local Library Example ===");
-  
-  // Initialize I2C with custom pins
-  Wire.begin(SDA_PIN, SCL_PIN);
-  Serial.print("I2C initialized with SDA=");
-  Serial.print(SDA_PIN);
-  Serial.print(", SCL=");
-  Serial.println(SCL_PIN);
-  
-  // Initialize BMA250 with I2C (using working parameters)
-  Serial.print("Initializing BMA250 via I2C...");
-  int result = accel_sensor.begin(BMA250_range_2g, BMA250_update_time_64ms);
-  
-  if (result == 0) {
-    Serial.println(" SUCCESS!");
-    Serial.print("I2C Address: 0x");
-    Serial.println(accel_sensor.I2Caddress, HEX);
-  } else {
-    Serial.println(" FAILED!");
-    Serial.println("Scanning I2C bus...");
-    
-    // Scan for I2C devices
-    int deviceCount = 0;
-    for (byte addr = 1; addr < 127; addr++) {
-      Wire.beginTransmission(addr);
-      if (Wire.endTransmission() == 0) {
-        Serial.print("Device found at 0x");
-        if (addr < 16) Serial.print("0");
-        Serial.println(addr, HEX);
-        deviceCount++;
-      }
-    }
-    
-    if (deviceCount == 0) {
-      Serial.println("No I2C devices found!");
-      Serial.println("Check connections:");
-      Serial.print("- SDA → GPIO"); Serial.println(SDA_PIN);
-      Serial.print("- SCL → GPIO"); Serial.println(SCL_PIN);
-    }
-  }
-  
-  Serial.println("Setup complete!");
-  Serial.println("=====================================");
+
+  // ---- Declaración de pines de Entrada/Salida ----
 }
 
 void loop() {
-  // Read new data from the accelerometer
-  accel_sensor.read();
 
-  // Get the acceleration values from the sensor
-  x = accel_sensor.X;
-  y = accel_sensor.Y;
-  z = accel_sensor.Z;
-  temp = ((accel_sensor.rawTemp * 0.5) + 24.0);
+  if (Serial.available()) {
 
-  // Check if the BMA250 is not found or connected correctly
-  if (x == -1 && y == -1 && z == -1) {
-    Serial.println("ERROR! NO BMA250 DETECTED via I2C!");
-    Serial.println("Check I2C connections:");
-    Serial.print("- SDA → GPIO"); Serial.println(SDA_PIN);
-    Serial.print("- SCL → GPIO"); Serial.println(SCL_PIN);
-    Serial.println("- SDO → GND (addr 0x18) or VCC (addr 0x19)");
-  } else {
-    // Print sensor readings
-    showSerial();
+    JSON_entrada = Serial.readStringUntil('\n');                              // Leer hasta newline (JSON en crudo)
+    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);  // Deserializa el JSON y guarda la información en datosJSON
+
+    if (!error) {
+      String Function = receiveJSON["Function"];  // Function es la variable de interés del JSON
+
+      int opc = 0;
+
+      if (Function == "ping") opc = 1;      // {"Function":"ping"}
+      else if (Function == "i2c") opc = 2;  // {"Function":"i2c"}
+      else if (Function == "spi") opc = 3;  // {"Function":"spi"}
+
+      switch (opc) {
+
+        // Validación de comunicación UART con la PagWeb <-> Pulsar
+        case 1:
+          {
+            sendJSON.clear();
+            sendJSON["ping"] = "pong";
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+            break;
+          }
+
+        // ---- Lectura de sensor con I2C 0x18 || 0x19 ----
+        case 2:
+          {
+            sendJSON.clear();
+            Wire.begin(SDA_PIN, SCL_PIN);
+            int result = 10;
+            delay(50);
+
+            for (int i = 0; i < 10; i++) {
+              result = accel_sensor.begin(BMA250_range_2g, BMA250_update_time_64ms);
+              if (result == 0) {
+                sendJSON["i2c"] = "OK";
+                sendJSON["addr"] = String(accel_sensor.I2Caddress, HEX);
+                break;
+              } else {
+                sendJSON.clear();
+                sendJSON["i2c"] = "Fail";
+              }
+            }
+
+            if (result == 0) {
+              for (int j = 0; j < 25; j++) {
+                accel_sensor.read();
+                x = accel_sensor.X;
+                y = accel_sensor.Y;
+                z = accel_sensor.Z;
+                temp = ((accel_sensor.rawTemp * 0.5) + 24.0);
+
+                // Check if the BMA250 is not found or connected correctly
+                if (x != -1 && y != -1 && z != -1) {
+                  showJSON();
+                  delay(200);
+                }
+              }
+            }
+
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+            Wire.end();
+            break;
+          }
+
+
+        case 3:
+          {
+            SPI.begin(SCL_PIN, SDO_PIN, SDA_PIN, CS_PIN);
+            int result = accel_sensor.beginSPI(BMA250_range_2g, BMA250_update_time_64ms, CS_PIN, &SPI);
+
+            if (result == 0) {
+              for (int j = 0; j < 25; j++) {
+                accel_sensor.read();
+                x = accel_sensor.X;
+                y = accel_sensor.Y;
+                z = accel_sensor.Z;
+                temp = ((accel_sensor.rawTemp * 0.5) + 24.0);
+
+                // Check if the BMA250 is not found or connected correctly
+                if (x != -1 && y != -1 && z != -1) {
+                  showSerial();
+                  delay(200);
+                }
+              }
+            } else {
+              Serial.println(" FAILED!");
+            }
+            SPI.end();
+            break;
+          }
+      }
+    }
   }
 
-  // Delay to ensure proper sensor reading timing
-  delay(250);
+
+  delay(100);
 }
+
+
+
 
 // Prints the sensor values to the Serial Monitor
 void showSerial() {
   Serial.print("X = ");
   Serial.print(x);
-  
+
   Serial.print("  Y = ");
   Serial.print(y);
-  
+
   Serial.print("  Z = ");
   Serial.print(z);
-  
+
   Serial.print("  Temperature(C) = ");
   Serial.println(temp);
+}
+
+void showJSON() {
+  sendJSON["x"] = x;
+  sendJSON["y"] = y;
+  sendJSON["z"] = z;
 }
