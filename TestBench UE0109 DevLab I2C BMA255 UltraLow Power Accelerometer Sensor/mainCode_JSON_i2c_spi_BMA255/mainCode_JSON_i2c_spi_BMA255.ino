@@ -15,8 +15,9 @@ Código de integración para BMA255 con lectura de I2C y SPI
 // ---- Pines Comunicación I2C ySPI ----
 #define SDA_PIN 6   // MOSI
 #define SCL_PIN 7   // SCl
-#define SDO_PIN D1  // MISO
-#define CS_PIN D0
+#define SDO_PIN 21  // MISO
+#define CS_PIN 18
+#define PS_PIN 14
 
 #define RUN_BUTTON 4  // Botón de Arranque
 
@@ -37,6 +38,8 @@ void setup() {
   Serial.begin(115200);
 
   // ---- Declaración de pines de Entrada/Salida ----
+  pinMode(PS_PIN, OUTPUT);
+  digitalWrite(PS_PIN, HIGH);
 }
 
 void loop() {
@@ -70,50 +73,27 @@ void loop() {
         // ---- Lectura de sensor con I2C 0x18 || 0x19 ----
         case 2:
           {
+            Serial.println("Entro i2c");
             sendJSON.clear();
-            Wire.begin(SDA_PIN, SCL_PIN);
-            int result = 10;
+            digitalWrite(PS_PIN, HIGH);
             delay(50);
+            Wire.begin(SDA_PIN, SCL_PIN);
+            delay(50);
+            int result = 10;
 
             for (int i = 0; i < 10; i++) {
               result = accel_sensor.begin(BMA250_range_2g, BMA250_update_time_64ms);
               if (result == 0) {
-                sendJSON["i2c"] = "OK";
-                sendJSON["addr"] = String(accel_sensor.I2Caddress, HEX);
+                //sendJSON["i2c"] = "OK";
+                //sendJSON["addr"] = String(accel_sensor.I2Caddress, HEX);
+                Serial.println("Encontro dir");
                 break;
               } else {
-                sendJSON.clear();
-                sendJSON["i2c"] = "Fail";
+                //sendJSON.clear();
+                //sendJSON["i2c"] = "Fail";
+                Serial.println("No encontro dir");
               }
             }
-
-            if (result == 0) {
-              for (int j = 0; j < 25; j++) {
-                accel_sensor.read();
-                x = accel_sensor.X;
-                y = accel_sensor.Y;
-                z = accel_sensor.Z;
-                temp = ((accel_sensor.rawTemp * 0.5) + 24.0);
-
-                // Check if the BMA250 is not found or connected correctly
-                if (x != -1 && y != -1 && z != -1) {
-                  showJSON();
-                  delay(200);
-                }
-              }
-            }
-
-            serializeJson(sendJSON, Serial);
-            Serial.println();
-            Wire.end();
-            break;
-          }
-
-
-        case 3:
-          {
-            SPI.begin(SCL_PIN, SDO_PIN, SDA_PIN, CS_PIN);
-            int result = accel_sensor.beginSPI(BMA250_range_2g, BMA250_update_time_64ms, CS_PIN, &SPI);
 
             if (result == 0) {
               for (int j = 0; j < 25; j++) {
@@ -129,9 +109,43 @@ void loop() {
                   delay(200);
                 }
               }
+            }
+
+            //serializeJson(sendJSON, Serial);
+            //Serial.println();
+            Wire.end();
+            Serial.println("Acabo i2c");
+            break;
+          }
+
+
+        case 3:
+          {
+            digitalWrite(PS_PIN, LOW);
+            SPI.begin(SCL_PIN, SDO_PIN, SDA_PIN, CS_PIN);
+            int result = accel_sensor.beginSPI(BMA250_range_2g, BMA250_update_time_64ms, CS_PIN, &SPI);
+
+            if (result == 0) {
+              for (int j = 0; j < 25; j++) {
+                accel_sensor.read();
+                x = accel_sensor.X;
+                y = accel_sensor.Y;
+                z = accel_sensor.Z;
+                temp = ((accel_sensor.rawTemp * 0.5) + 24.0);
+
+                // Check if the BMA250 is not found or connected correctly
+                if (x != -1 && y != -1 && z != -1) {
+                  showSerial();
+                  showJSON();
+                  serializeJson(sendJSON, Serial);
+                  Serial.println();
+                  delay(200);
+                }
+              }
             } else {
               Serial.println(" FAILED!");
             }
+
             SPI.end();
             break;
           }
