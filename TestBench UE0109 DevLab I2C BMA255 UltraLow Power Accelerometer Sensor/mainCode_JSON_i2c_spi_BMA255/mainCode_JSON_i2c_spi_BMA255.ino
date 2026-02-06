@@ -74,8 +74,8 @@ void loop() {
         case 2:
           {
             Serial.println("Entro i2c");
-            sendJSON.clear();
-            digitalWrite(PS_PIN, HIGH);
+            //sendJSON.clear();
+            //digitalWrite(PS_PIN, HIGH);
             delay(50);
             Wire.begin(SDA_PIN, SCL_PIN);
             delay(50);
@@ -86,13 +86,15 @@ void loop() {
               if (result == 0) {
                 //sendJSON["i2c"] = "OK";
                 //sendJSON["addr"] = String(accel_sensor.I2Caddress, HEX);
-                Serial.println("Encontro dir");
+                Serial.print("Encontro dir: ");
+                Serial.println(accel_sensor.I2Caddress, HEX);
                 break;
               } else {
                 //sendJSON.clear();
                 //sendJSON["i2c"] = "Fail";
                 Serial.println("No encontro dir");
               }
+              delay(10);
             }
 
             if (result == 0) {
@@ -106,7 +108,7 @@ void loop() {
                 // Check if the BMA250 is not found or connected correctly
                 if (x != -1 && y != -1 && z != -1) {
                   showSerial();
-                  delay(200);
+                  delay(100);
                 }
               }
             }
