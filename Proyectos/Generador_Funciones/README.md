@@ -48,6 +48,7 @@ Estos parámetros se aceptan a nivel de diseño (JSON) para:
 PIN_DATA  = 7;   // MOSI
 PIN_CLK   = 6;   // SCK
 PIN_FSYNC = 18;  // CS / FSYNC
+```
 
 ---
 
@@ -71,7 +72,7 @@ A continuación se muestran algunos **ejemplos de comandos JSON** que pueden env
 
 
 #### Senoidal a 500 Hz con desfase de 90°
-'''json 
+```json
 {
   "mode": "fixed",
   "waveform": "sine",
