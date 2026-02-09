@@ -24,15 +24,7 @@ String JSON_salida;  // Variable que envía el JSON de datos
 StaticJsonDocument<200> sendJSON;
 
 // ==== Declaración de variables y constantes ====
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-static bool bOff = false;
-static uint8_t m = 0;
-static MD_AD9833::mode_t modes[] = {
-  MD_AD9833::MODE_TRIANGLE,
-  MD_AD9833::MODE_SQUARE2,
-  MD_AD9833::MODE_SINE,
-  MD_AD9833::MODE_SQUARE1
-};
+
 
 void setup(void) {
   Serial.begin();
