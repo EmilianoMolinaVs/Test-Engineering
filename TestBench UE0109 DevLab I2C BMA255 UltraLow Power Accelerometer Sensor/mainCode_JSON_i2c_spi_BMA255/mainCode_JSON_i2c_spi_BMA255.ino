@@ -3,7 +3,6 @@
 Código de integración para BMA255 con lectura de I2C y SPI 
 */
 
-
 #include <Wire.h>
 #include <Arduino.h>
 #include <SPI.h>
@@ -119,7 +118,7 @@ void loop() {
             }
 
 
-            Wire.end();
+            //Wire.end();
             Serial.println("Acabo i2c");
             break;
           }
@@ -133,8 +132,8 @@ void loop() {
             int result = accel_sensor.beginSPI(BMA250_range_2g, BMA250_update_time_64ms, CS_PIN, &SPI);
 
             if (result == 0) {
-              sendJSON["spi"] = "OK";
-              for (int j = 0; j < 25; j++) {
+              sendJSON["SPI"] = "OK";
+              for (int j = 0; j < 15; j++) {
                 accel_sensor.read();
                 x = accel_sensor.X;
                 y = accel_sensor.Y;
@@ -147,14 +146,14 @@ void loop() {
                   showJSON();
                   serializeJson(sendJSON, Serial);
                   Serial.println();
-                  delay(200);
+                  delay(100);
                 }
               }
             } else {
               Serial.println(" FAILED!");
             }
 
-            SPI.end();
+            //SPI.end();
             break;
           }
       }
@@ -184,7 +183,7 @@ void showSerial() {
 }
 
 void showJSON() {
-  sendJSON["x"] = x;
-  sendJSON["y"] = y;
-  sendJSON["z"] = z;
+  sendJSON["accelX"] = x;
+  sendJSON["accelY"] = y;
+  sendJSON["accelZ"] = z;
 }
