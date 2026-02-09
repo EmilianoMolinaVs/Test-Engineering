@@ -1,6 +1,5 @@
 /*
-  Generador de Funciones DDS con AD9833
-  Controlado por JSON vía Serial
+  Generador de Funciones DDS con AD9833 JSON
 
   Soporta:
   - Modo fijo
@@ -9,7 +8,6 @@
   - Frecuencia
   - Fase
 
-  Autor: Emiliano + ChatGPT 😄
 */
 
 #include <Arduino.h>
