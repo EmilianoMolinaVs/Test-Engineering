@@ -149,3 +149,16 @@ A continuación se muestran algunos **ejemplos de comandos JSON** que pueden env
   }
 }
 ```
+
+#### Barrido lento de baja frecuencia standar
+```json
+{   
+    "mode": "sweep",   
+    "waveform": "sine",   
+    "phase_deg": 0,  
+     "sweep": {     
+        "start_frequency_hz": 0.1,     
+        "stop_frequency_hz": 500,     
+        "step_hz": 0.1,     
+        "interval_ms": 20   } }
+```
