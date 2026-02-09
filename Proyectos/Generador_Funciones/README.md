@@ -43,6 +43,7 @@ Estos parámetros se aceptan a nivel de diseño (JSON) para:
 - UNIT PULSAR C6
 - Comunicación **SPI por conector QWIIC**
 - Osciloscopio (para visualización)
+- La salida del generador se toma de los pines **OUT** y **GND**
 
 ### Pines SPI usados
 ```cpp
