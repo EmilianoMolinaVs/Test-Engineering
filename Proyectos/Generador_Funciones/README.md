@@ -48,6 +48,7 @@ Estos parámetros se aceptan a nivel de diseño (JSON) para:
 PIN_DATA  = 7;   // MOSI
 PIN_CLK   = 6;   // SCK
 PIN_FSYNC = 18;  // CS / FSYNC
+'''
 
 
 
