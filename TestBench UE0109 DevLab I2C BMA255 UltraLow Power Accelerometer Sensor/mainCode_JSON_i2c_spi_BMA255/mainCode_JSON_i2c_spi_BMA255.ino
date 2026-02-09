@@ -12,11 +12,11 @@ Código de integración para BMA255 con lectura de I2C y SPI
 
 
 // ---- Pines Comunicación I2C ySPI ----
-#define SDA_PIN 6   // MOSI
-#define SCL_PIN 7   // SCl
-#define SDO_PIN 21  // MISO
+#define SDA_PIN 6  // MOSI
+#define SCL_PIN 7  // SCl
+#define SDO_PIN 2  // MISO
 #define CS_PIN 18
-#define PS_PIN 14
+#define PS_PIN 21
 
 #define RUN_BUTTON 4  // Botón de Arranque
 
@@ -27,10 +27,10 @@ double temp;
 
 // ==== Declaración de JSON ====
 String JSON_entrada;  // Variable que recibe al JSON en crudo de PagWeb
-StaticJsonDocument<200> receiveJSON;
+StaticJsonDocument<300> receiveJSON;
 
 String JSON_salida;  // Variable que envía el JSON de datos
-StaticJsonDocument<200> sendJSON;
+StaticJsonDocument<300> sendJSON;
 
 void setup() {
 
@@ -73,9 +73,9 @@ void loop() {
         case 2:
           {
             Serial.println("Entro i2c");
-            digitalWrite(PS_PIN, HIGH);
-            digitalWrite(SDO_PIN, HIGH);
-            delay(50);
+            digitalWrite(PS_PIN, HIGH);  // Selector de Portocolo de comunicación
+            digitalWrite(SDO_PIN, LOW);  // Adrr: 0x18 LOW || Addr: 0x19 HIGH
+            delay(100);
 
             Wire.begin(SDA_PIN, SCL_PIN);
             sendJSON.clear();
@@ -94,6 +94,7 @@ void loop() {
                 sendJSON["i2c"] = "Fail";
                 serializeJson(sendJSON, Serial);
                 Serial.println();
+                break;
               }
               delay(10);
             }
@@ -128,6 +129,7 @@ void loop() {
           {
             sendJSON.clear();
             digitalWrite(PS_PIN, LOW);
+            delay(100);
             SPI.begin(SCL_PIN, SDO_PIN, SDA_PIN, CS_PIN);
             int result = accel_sensor.beginSPI(BMA250_range_2g, BMA250_update_time_64ms, CS_PIN, &SPI);
 
