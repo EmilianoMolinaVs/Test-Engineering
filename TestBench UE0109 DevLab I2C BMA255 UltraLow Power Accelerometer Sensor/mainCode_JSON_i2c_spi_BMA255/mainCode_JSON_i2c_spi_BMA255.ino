@@ -37,8 +37,8 @@ void setup() {
   Serial.begin(115200);
 
   // ---- Declaración de pines de Entrada/Salida ----
+  pinMode(SDO_PIN, OUTPUT);
   pinMode(PS_PIN, OUTPUT);
-  digitalWrite(PS_PIN, HIGH);
 }
 
 void loop() {
@@ -53,9 +53,10 @@ void loop() {
 
       int opc = 0;
 
-      if (Function == "ping") opc = 1;      // {"Function":"ping"}
-      else if (Function == "i2c") opc = 2;  // {"Function":"i2c"}
-      else if (Function == "spi") opc = 3;  // {"Function":"spi"}
+      if (Function == "ping") opc = 1;        // {"Function":"ping"}
+      else if (Function == "i2c18") opc = 2;  // {"Function":"i2c18"}
+      else if (Function == "i2c19") opc = 3;  // {"Function":"i2c19"}
+      else if (Function == "spi") opc = 4;    // {"Function":"spi"}
 
       switch (opc) {
 
@@ -69,47 +70,48 @@ void loop() {
             break;
           }
 
-        // ---- Lectura de sensor con I2C 0x18 || 0x19 ----
+        // ---- Lectura de sensor con I2C 0x18 ----
         case 2:
           {
-            Serial.println("Entro i2c");
+            sendJSON.clear();
+            Serial.println("--- Inicio de I2C ---");
             digitalWrite(PS_PIN, HIGH);  // Selector de Portocolo de comunicación
             digitalWrite(SDO_PIN, LOW);  // Adrr: 0x18 LOW || Addr: 0x19 HIGH
             delay(100);
 
             Wire.begin(SDA_PIN, SCL_PIN);
-            sendJSON.clear();
             int result = 10;
 
             for (int i = 0; i < 10; i++) {
               result = accel_sensor.begin(BMA250_range_2g, BMA250_update_time_64ms);
+              delay(50);
               if (result == 0) {
-                sendJSON["i2c"] = "OK";
-                sendJSON["addr"] = String(accel_sensor.I2Caddress, HEX);
-                Serial.print("Encontro dir: ");
+                Serial.print("Addr I2C: ");
                 Serial.println(accel_sensor.I2Caddress, HEX);
                 break;
               } else {
                 sendJSON.clear();
-                sendJSON["i2c"] = "Fail";
+                sendJSON["i2c0x18"] = "Fail";
                 serializeJson(sendJSON, Serial);
                 Serial.println();
                 break;
               }
-              delay(10);
+              delay(100);
             }
 
             if (result == 0) {
-              for (int j = 0; j < 25; j++) {
+              for (int j = 0; j < 20; j++) {
                 accel_sensor.read();
                 x = accel_sensor.X;
                 y = accel_sensor.Y;
                 z = accel_sensor.Z;
-                temp = ((accel_sensor.rawTemp * 0.5) + 24.0);
+                //temp = ((accel_sensor.rawTemp * 0.5) + 24.0);
 
                 // Check if the BMA250 is not found or connected correctly
                 if (x != -1 && y != -1 && z != -1) {
-                  //showSerial();
+                  sendJSON.clear();
+                  sendJSON["i2c0x18"] = "OK";
+                  sendJSON["addr"] = String(accel_sensor.I2Caddress, HEX);
                   showJSON();
                   serializeJson(sendJSON, Serial);
                   Serial.println();
@@ -118,14 +120,65 @@ void loop() {
               }
             }
 
-
-            //Wire.end();
             Serial.println("Acabo i2c");
             break;
           }
 
-
+        // ---- Lectura de sensor con I2C 0x19 ----
         case 3:
+          {
+            sendJSON.clear();
+            Serial.println("--- Inicio de I2C ---");
+            digitalWrite(PS_PIN, HIGH);   // Selector de Portocolo de comunicación
+            digitalWrite(SDO_PIN, HIGH);  // Adrr: 0x18 LOW || Addr: 0x19 HIGH
+            delay(100);
+
+            Wire.begin(SDA_PIN, SCL_PIN);
+            int result = 10;
+
+            for (int i = 0; i < 10; i++) {
+              result = accel_sensor.begin(BMA250_range_2g, BMA250_update_time_64ms);
+              delay(50);
+              if (result == 0) {
+                Serial.print("Addr I2C: ");
+                Serial.println(accel_sensor.I2Caddress, HEX);
+                break;
+              } else {
+                sendJSON.clear();
+                sendJSON["i2c0x19"] = "Fail";
+                serializeJson(sendJSON, Serial);
+                Serial.println();
+                break;
+              }
+              delay(100);
+            }
+
+            if (result == 0) {
+              for (int j = 0; j < 20; j++) {
+                accel_sensor.read();
+                x = accel_sensor.X;
+                y = accel_sensor.Y;
+                z = accel_sensor.Z;
+                //temp = ((accel_sensor.rawTemp * 0.5) + 24.0);
+
+                // Check if the BMA250 is not found or connected correctly
+                if (x != -1 && y != -1 && z != -1) {
+                  sendJSON.clear();
+                  sendJSON["i2c0x19"] = "OK";
+                  sendJSON["addr"] = String(accel_sensor.I2Caddress, HEX);
+                  showJSON();
+                  serializeJson(sendJSON, Serial);
+                  Serial.println();
+                  delay(100);
+                }
+              }
+            }
+
+            Serial.println("Acabo i2c");
+            break;
+          }
+
+        case 4:
           {
             sendJSON.clear();
             digitalWrite(PS_PIN, LOW);
@@ -133,8 +186,7 @@ void loop() {
             SPI.begin(SCL_PIN, SDO_PIN, SDA_PIN, CS_PIN);
             int result = accel_sensor.beginSPI(BMA250_range_2g, BMA250_update_time_64ms, CS_PIN, &SPI);
 
-            if (result == 0) {
-              sendJSON["SPI"] = "OK";
+            if (result == 0) {  // Correcta inicialización del sensor
               for (int j = 0; j < 15; j++) {
                 accel_sensor.read();
                 x = accel_sensor.X;
@@ -142,9 +194,9 @@ void loop() {
                 z = accel_sensor.Z;
                 temp = ((accel_sensor.rawTemp * 0.5) + 24.0);
 
-                // Check if the BMA250 is not found or connected correctly
                 if (x != -1 && y != -1 && z != -1) {
-                  //showSerial();
+                  sendJSON.clear();
+                  sendJSON["SPI"] = "OK";
                   showJSON();
                   serializeJson(sendJSON, Serial);
                   Serial.println();
@@ -152,10 +204,12 @@ void loop() {
                 }
               }
             } else {
-              Serial.println(" FAILED!");
+              sendJSON.clear();
+              sendJSON["SPI"] = "Fail";
+              serializeJson(sendJSON, Serial);
+              Serial.println();
             }
 
-            //SPI.end();
             break;
           }
       }
