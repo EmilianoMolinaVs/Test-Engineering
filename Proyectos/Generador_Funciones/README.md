@@ -39,8 +39,8 @@ Estos parámetros se aceptan a nivel de diseño (JSON) para:
 ## 🧩 Hardware utilizado
 
 - Módulo **AD9833 DDS**
-- Microcontrolador compatible con Arduino
-- Comunicación **SPI por pines arbitrarios**
+- UNIT PULSAR C6
+- Comunicación **SPI por conector QWIIC**
 - Osciloscopio (para visualización)
 
 ### Pines SPI usados
@@ -48,8 +48,8 @@ Estos parámetros se aceptan a nivel de diseño (JSON) para:
 PIN_DATA  = 7;   // MOSI
 PIN_CLK   = 6;   // SCK
 PIN_FSYNC = 18;  // CS / FSYNC
-'''
 
+---
 
 
 ## 🧪 Ejemplos de comandos JSON
