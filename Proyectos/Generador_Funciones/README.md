@@ -69,6 +69,7 @@ A continuación se muestran algunos **ejemplos de comandos JSON** que pueden env
   "frequency_hz": 1000,
   "phase_deg": 0
 }
+```
 
 
 #### Senoidal a 500 Hz con desfase de 90°
@@ -79,3 +80,4 @@ A continuación se muestran algunos **ejemplos de comandos JSON** que pueden env
   "frequency_hz": 500,
   "phase_deg": 90
 }
+```
