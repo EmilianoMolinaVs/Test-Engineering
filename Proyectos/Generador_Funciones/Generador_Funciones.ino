@@ -1,6 +1,15 @@
 /*
-Código básico para Generar Funciones Seno/Triangular/Cuadrada empleando el generador MD_AD9833
-por medio de JSON en Monitor Serie
+  Generador de Funciones DDS con AD9833
+  Controlado por JSON vía Serial
+
+  Soporta:
+  - Modo fijo
+  - Modo sweep (barrido)
+  - Seno / Triángulo / Cuadrada
+  - Frecuencia
+  - Fase
+
+  Autor: Emiliano + ChatGPT 😄
 */
 
 #include <Arduino.h>
@@ -8,80 +17,138 @@ por medio de JSON en Monitor Serie
 #include <MD_AD9833.h>
 #include <SPI.h>
 
-// ==== Declaración de pines de comunicación SPI ====
-const uint8_t PIN_DATA = 7;    ///< SPI Data pin number
-const uint8_t PIN_CLK = 6;     ///< SPI Clock pin number
-const uint8_t PIN_FSYNC = 18;  ///< SPI Load pin number (FSYNC in AD9833 usage)
+// ===================== PINES SPI =====================
+const uint8_t PIN_DATA = 7;
+const uint8_t PIN_CLK = 6;
+const uint8_t PIN_FSYNC = 18;
 
-// ==== Creación de Objeto Gen Func ====
+// ===================== OBJETO DDS ====================
 MD_AD9833 AD(PIN_DATA, PIN_CLK, PIN_FSYNC);
 
-// ==== Declaración de JSON====
-String JSON_entrada;
-StaticJsonDocument<200> receiveJSON;
+// ===================== JSON ==========================
+StaticJsonDocument<256> receiveJSON;
 
-String JSON_salida;  // Variable que envía el JSON de datos
-StaticJsonDocument<200> sendJSON;
+// ===================== SWEEP =========================
+bool sweepActive = false;
+float sweepFreq = 0;
+float sweepStart = 0;
+float sweepStop = 0;
+float sweepStep = 0;
+unsigned long sweepInterval = 50;
+unsigned long lastSweepTime = 0;
 
-// ==== Declaración de variables y constantes ====
+// ====================================================
+// ===== FUNCIONES AUXILIARES =========================
+// ====================================================
 
+MD_AD9833::mode_t getWaveform(String w) {
+  w.toLowerCase();
+  if (w == "sine") return MD_AD9833::MODE_SINE;
+  if (w == "triangle") return MD_AD9833::MODE_TRIANGLE;
+  if (w == "square1") return MD_AD9833::MODE_SQUARE1;
+  if (w == "square2") return MD_AD9833::MODE_SQUARE2;
+  return MD_AD9833::MODE_OFF;
+}
 
-void setup(void) {
-  Serial.begin();
-  Serial.println("Serial Inicializado...");
+// ----------------------------------------------------
+
+void applyFixedMode(JsonDocument& doc) {
+  float freq = doc["frequency_hz"] | 1000.0;
+  float phase = doc["phase_deg"] | 0.0;
+  String wave = doc["waveform"] | "sine";
+
+  AD.setMode(getWaveform(wave));
+  AD.setFrequency(MD_AD9833::CHAN_0, freq);
+  AD.setPhase(MD_AD9833::CHAN_0, (uint16_t)(phase * 10));
+
+  sweepActive = false;
+
+  Serial.println(F("Modo FIXED aplicado"));
+}
+
+// ----------------------------------------------------
+
+void setupSweep(JsonObject sweep) {
+  sweepStart = sweep["start_frequency_hz"];
+  sweepStop = sweep["stop_frequency_hz"];
+  sweepStep = sweep["step_hz"];
+  sweepInterval = sweep["interval_ms"] | 50;
+
+  sweepFreq = sweepStart;
+  sweepActive = true;
+
+  Serial.println(F("Modo SWEEP iniciado"));
+}
+
+// ----------------------------------------------------
+
+void runSweep() {
+  if (!sweepActive) return;
+
+  if (millis() - lastSweepTime >= sweepInterval) {
+    lastSweepTime = millis();
+
+    AD.setFrequency(MD_AD9833::CHAN_0, sweepFreq);
+    sweepFreq += sweepStep;
+
+    if (sweepFreq > sweepStop) {
+      sweepActive = false;
+      Serial.println(F("Sweep terminado"));
+    }
+  }
+}
+
+// ====================================================
+// ===================== SETUP =========================
+// ====================================================
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println(F("Generador DDS AD9833 listo"));
 
   AD.begin();
   AD.setMode(MD_AD9833::MODE_OFF);
 }
 
-void loop(void) {
+// ====================================================
+// ====================== LOOP =========================
+// ====================================================
 
+void loop() {
+
+  // ====== LECTURA JSON ======
   if (Serial.available()) {
+    String input = Serial.readStringUntil('\n');
 
-    JSON_entrada = Serial.readStringUntil('\n');
-    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
+    DeserializationError error = deserializeJson(receiveJSON, input);
+    if (error) {
+      Serial.println(F("Error JSON"));
+      return;
+    }
 
-    if (!error) {
-      String Function = receiveJSON["Function"];
-      int opc = 0;
+    String mode = receiveJSON["mode"];
 
-      if (Function == "Sine") opc = 1;       // {"Function":"Sine"}
-      else if (Function == "Sqr1") opc = 2;  // {"Function":"Sqr1"}
-      else if (Function == "Sqr2") opc = 3;  // {"Function":"Sqr2"}
-      else if (Function == "Trg") opc = 4;   // {"Function":"Trg"}
-      else if (Function == "Off") opc = 5;   // {"Function":"Off"}
+    // ---------- MODO FIJO ----------
+    if (mode == "fixed") {
+      applyFixedMode(receiveJSON);
+    }
 
-      switch (opc) {
-        case 1:
-          {
-            AD.setMode(MD_AD9833::MODE_SINE);
-            break;
-          }
+    // ---------- MODO SWEEP ----------
+    else if (mode == "sweep") {
+      String wave = receiveJSON["waveform"] | "sine";
+      float phase = receiveJSON["phase_deg"] | 0.0;
 
-        case 2:
-          {
-            AD.setMode(MD_AD9833::MODE_SQUARE1);
-            break;
-          }
+      AD.setMode(getWaveform(wave));
+      AD.setPhase(MD_AD9833::CHAN_0, (uint16_t)(phase * 10));
 
-        case 3:
-          {
-            AD.setMode(MD_AD9833::MODE_SQUARE2);
-            break;
-          }
+      setupSweep(receiveJSON["sweep"]);
+    }
 
-        case 4:
-          {
-            AD.setMode(MD_AD9833::MODE_TRIANGLE);
-            break;
-          }
-
-        case 5:
-          {
-            AD.setMode(MD_AD9833::MODE_OFF);
-            break;
-          }
-      }
+    else {
+      Serial.println(F("Modo desconocido"));
     }
   }
+
+  // ====== EJECUCIÓN SWEEP ======
+  runSweep();
 }
