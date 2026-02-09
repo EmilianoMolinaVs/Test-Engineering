@@ -39,53 +39,57 @@ void setup(void) {
   Serial.println("Serial Inicializado...");
 
   AD.begin();
+  AD.setMode(MD_AD9833::MODE_OFF);
 }
 
 void loop(void) {
 
   if (Serial.available()) {
 
-    JSON_entrada = Serial.readStringUntil('\n'); 
+    JSON_entrada = Serial.readStringUntil('\n');
+    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
 
-    char cmd = Serial.read();
-    int opc = 0;
+    if (!error) {
+      String Function = receiveJSON["Function"];
+      int opc = 0;
 
-    if (cmd == 'S') opc = 1;
-    else if (cmd == 'a') opc = 2;
-    else if (cmd == 'b') opc = 3;
-    else if (cmd == 'T') opc = 4;
-    else if (cmd == 'O') opc = 5;
+      if (Function == "Sine") opc = 1;       // {"Function":"Sine"}
+      else if (Function == "Sqr1") opc = 2;  // {"Function":"Sqr1"}
+      else if (Function == "Sqr2") opc = 3;  // {"Function":"Sqr2"}
+      else if (Function == "Trg") opc = 4;   // {"Function":"Trg"}
+      else if (Function == "Off") opc = 5;   // {"Function":"Off"}
 
-    switch (opc) {
-      case 1:
-        {
-          AD.setMode(MD_AD9833::MODE_SINE);
-          break;
-        }
+      switch (opc) {
+        case 1:
+          {
+            AD.setMode(MD_AD9833::MODE_SINE);
+            break;
+          }
 
-      case 2:
-        {
-          AD.setMode(MD_AD9833::MODE_SQUARE1);
-          break;
-        }
+        case 2:
+          {
+            AD.setMode(MD_AD9833::MODE_SQUARE1);
+            break;
+          }
 
-      case 3:
-        {
-          AD.setMode(MD_AD9833::MODE_SQUARE2);
-          break;
-        }
+        case 3:
+          {
+            AD.setMode(MD_AD9833::MODE_SQUARE2);
+            break;
+          }
 
-      case 4:
-        {
-          AD.setMode(MD_AD9833::MODE_TRIANGLE);
-          break;
-        }
+        case 4:
+          {
+            AD.setMode(MD_AD9833::MODE_TRIANGLE);
+            break;
+          }
 
-      case 5:
-        {
-          AD.setMode(MD_AD9833::MODE_OFF);
-          break;
-        }
+        case 5:
+          {
+            AD.setMode(MD_AD9833::MODE_OFF);
+            break;
+          }
+      }
     }
   }
 }
