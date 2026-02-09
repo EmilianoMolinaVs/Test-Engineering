@@ -1,6 +1,6 @@
 # 🎛️ AD9833 DDS Function Generator (JSON Controlled)
 
-Generador de funciones basado en el **AD9833** controlado mediante **JSON vía Serial** usando Arduino.  
+Generador de funciones basado en el **AD9833** controlado mediante **JSON vía Serial** usando una UNIT PULSAR C6.  
 Este proyecto implementa un **instrumento programable** capaz de generar señales senoidales, triangulares y cuadradas, con modos de operación **fijo** y **barrido (sweep)**.
 
 ---
@@ -14,7 +14,8 @@ Este proyecto implementa un **instrumento programable** capaz de generar señale
 - ✅ Formas de onda:
   - Senoidal
   - Triangular
-  - Cuadrada (Square1 y Square2)
+  - Cuadrada Square 1 (Mantiene la **frecuencia original**)
+  - Cuadrada Square 2 (Divide la **frecuencia a la mitad**)
 - ✅ Control de:
   - Frecuencia
   - Fase
