@@ -29,3 +29,8 @@ Thumbs.db
 # Site-packages & wheel caches (avoid vendorized packages)
 */site-packages/
 
+# Cocket Nova (UE0090) - ignore folder variants inside the UE0090 testbench
+TestBench UE0090/**/cocket nova/
+TestBench UE0090/**/cocket_nova/
+TestBench UE0090/**/cocket-nova/
+
