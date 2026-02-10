@@ -7,7 +7,7 @@ StaticJsonDocument<128> docOut;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Arduino listo para JSON");
+  Serial.println("Pulsar C6 listo para JSON");
 }
 
 void loop() {
