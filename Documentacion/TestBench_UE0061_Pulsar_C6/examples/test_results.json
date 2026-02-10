@@ -1,0 +1,10 @@
+{
+  "mac": "AA:BB:CC:DD:EE:FF",
+  "wifi_ok": true,
+  "ip": "192.168.4.50",
+  "oled_ok": true,
+  "sd_detected": true,
+  "sd_rw": true,
+  "filename": "test.txt",
+  "content": "SD OK"
+}
