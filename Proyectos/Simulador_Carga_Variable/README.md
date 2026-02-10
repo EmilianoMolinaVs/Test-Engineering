@@ -35,8 +35,11 @@ Sketch → Include Library → Manage Libraries → Buscar "ArduinoJson" → Ins
 
 ```json
 {
-  "Funcion": "Other",
-  "Start": "Read"
+    "Funcion": "Other", 
+    "Config": {
+        "Resolution": [], 
+        "Range": []}, 
+        "Start": "Read"
 }
 ```
 
