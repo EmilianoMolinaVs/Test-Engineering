@@ -1,0 +1,10 @@
+cd windows_interface/
+pip install -r requirements.txt
+ ./generate_ssl_certs.sh   si ya estan estonce teclear N
+
+ python locknode_agent_https.py
+
+
+copiar IP local 
+
+y pegarla en esta pagina: https://192.168.15.6:6443/modulos/locknode-programacion

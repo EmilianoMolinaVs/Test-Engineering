@@ -1,0 +1,3 @@
+./install_simple.bat
+
+./flash_simple.bat firmware_test_locknode.bin

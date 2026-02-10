@@ -1,2 +1,31 @@
-TestBench UE0093 LockNode/
 TestBench UE0061 Pulsar Nano C6/testbench_esp32c6_nano
+
+# Python virtual environments
+venv/
+**/venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+.pytest_cache/
+htmlcov/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Site-packages & wheel caches (avoid vendorized packages)
+*/site-packages/
+
