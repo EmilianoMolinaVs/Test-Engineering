@@ -70,6 +70,7 @@ void setup() {
   np.show();
 }
 
+/*
 void loop() {
 
   sendJSON.clear();
@@ -170,17 +171,97 @@ void loop() {
   delay(100);
 }
 
+*/
+
+void loop() {
+
+  sendJSON.clear();
+
+  // ---- HEADER ---
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(25, 0);
+  display.println("TEMPERATURA");
+  display.drawLine(0, 12, animX, 12, SSD1306_WHITE);  // Línea animada
+  animX += 4;                                         // velocidad
+  if (animX > 127) animX = 0;
+
+
+  // ---- Valores de Temperatura y muestreo ----
+
+  float t3 = readTempC(SENS_3);
+
+  float t1 = 0;
+  float t2 = 0;
+  float t4 = 0;
+  float t5 = 0;
+  float t6 = 0;
+
+  display.setTextSize(3);
+  display.setCursor(5, 30);
+  display.print("T: ");
+  display.print(t3, 0);
+  //display.println(" C");
+
+
+  sendJSON["s1"] = String(0, 2);
+  sendJSON["s2"] = String(0, 2);
+  sendJSON["s3"] = String(t3, 2);
+
+  sendJSON["s4"] = String(0, 2);
+  sendJSON["s5"] = String(0, 2);
+  sendJSON["s6"] = String(0, 2);
+
+
+  // ---- Botón de Switch ---
+  if (digitalRead(SWITCH) == LOW) {
+    delay(30);  // debounce
+    if (digitalRead(SWITCH) == LOW) {
+      flagSW = !flagSW;
+      while (digitalRead(SWITCH) == LOW)
+        ;  // espera a soltar
+    }
+  }
+
+
+  display.setCursor(100, 0);
+  if (flagSW == true) {
+    digitalWrite(RELAY, LOW);
+    //display.println("ON");
+    sendJSON["relay"] = "1";
+  } else {
+    digitalWrite(RELAY, HIGH);
+    //display.println("OFF");
+    sendJSON["relay"] = "2";
+  }
+
+  display.display();
+
+  if (t1 > 30 || t2 > 30 || t3 > 30 || t4 > 30 || t5 > 30 || t6 > 30) {
+    np.setPixelColor(0, np.Color(255, 0, 0));
+    np.show();
+  } else {
+    np.setPixelColor(0, np.Color(0, 255, 0));
+    np.show();
+  }
+
+  serializeJson(sendJSON, Serial);
+  Serial.println();
+  delay(50);
+}
+
 
 
 
 // ---- Funciones Auxiliares -----
 float readTempC(uint8_t PIN) {
-  const int N = 5;
+  const int N = 25;
   long sum_mv = 0;
 
   for (int i = 0; i < N; i++) {
     sum_mv += analogReadMilliVolts(PIN);
-    delay(5);
+    delay(10);
   }
 
   float v_mv = sum_mv / (float)N;
