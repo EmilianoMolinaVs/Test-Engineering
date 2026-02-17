@@ -1,61 +1,85 @@
-#include <ArduinoJson.h>
 #include <Arduino.h>
 
-// ---- Pines de lectura analógicos [2]----
-#define Vin 6
-#define Vout 0
+// ---- Pines de lectura analógicos ----
+#define Vin  6
+#define Vout 1
+
+// ---- Estructura para retornar datos ----
+struct ResultadoMedicion {
+  uint16_t vinMin;
+  uint16_t vinMax;
+  uint16_t voutMin;
+  uint16_t voutMax;
+  uint16_t deltaVout;   // <-- nuevo
+  float ganancia;
+};
 
 void setup() {
   Serial.begin(115200);
 
-  // ---- Configuración del ADC ----
-  analogReadResolution(12);
-  analogSetAttenuation(ADC_11db);
+  //analogReadResolution(12);
+  //analogSetAttenuation(ADC_11db);
+
+  // Encabezado en columnas
+  Serial.println("VinMin\tVinMax\tVoutMin\tVoutMax\tDeltaVout\tGanancia");
 }
 
 void loop() {
-  float ganancia, v_sal = medirGanancia(Vin, Vout, 1, 400);
 
-  Serial.println(ganancia);
+  ResultadoMedicion datos = medirGanancia(Vin, Vout, 10, 400);
 
-  delay(50);  // tiempo entre frecuencias
+  // Mostrar en columnas ordenadas
+  Serial.print(datos.vinMin);     Serial.print("\t");
+  Serial.print(datos.vinMax);     Serial.print("\t");
+  Serial.print(datos.voutMin);    Serial.print("\t");
+  Serial.print(datos.voutMax);    Serial.print("\t");
+  Serial.print(datos.deltaVout);  Serial.print("\t");
+  Serial.println(datos.ganancia, 4);
+
+  delay(50);
 }
 
+// -----------------------------------------------------
 
+ResultadoMedicion medirGanancia(uint8_t pinIn, uint8_t pinOut,
+                                 uint32_t tiempoEstabilizacion_ms,
+                                 uint32_t tiempoMedicion_ms)
+{
+  ResultadoMedicion res;
 
-float medirGanancia(uint8_t pinIn, uint8_t pinOut,
-                    uint32_t tiempoEstabilizacion_ms,
-                    uint32_t tiempoMedicion_ms) {
-  // 1️⃣ Esperar estabilización
   delay(tiempoEstabilizacion_ms);
 
-  uint16_t vinMax = 0;
-  uint16_t vinMin = 4095;
-  uint16_t voutMax = 0;
-  uint16_t voutMin = 4095;
+  res.vinMax  = 0;
+  res.vinMin  = 4095;
+  res.voutMax = 0;
+  res.voutMin = 4095;
 
-  // 2️⃣ Medición durante ventana
+  uint32_t tiempoMedicion_us = tiempoMedicion_ms * 1000UL;
   uint32_t inicio = micros();
- while (micros() - inicio < tiempoMedicion_ms)
 
+  while (micros() - inicio < tiempoMedicion_us)
   {
-    uint16_t vin = analogRead(pinIn);
+    uint16_t vin  = analogRead(pinIn);
     uint16_t vout = analogRead(pinOut);
 
-    if (vin > vinMax) vinMax = vin;
-    if (vin < vinMin) vinMin = vin;
+    if (vin  > res.vinMax)  res.vinMax  = vin;
+    if (vin  < res.vinMin)  res.vinMin  = vin;
 
-    if (vout > voutMax) voutMax = vout;
-    if (vout < voutMin) voutMin = vout;
+    if (vout > res.voutMax) res.voutMax = vout - 130;
+    if (vout < res.voutMin) res.voutMin = vout - 130;
   }
 
-  // 3️⃣ Calcular amplitudes
-  float ampIn = (vinMax - vinMin) / 2.0;
-  float ampOut = (voutMax - voutMin) / 2.0;
+  // Calcular delta Vout (pico a pico)
+  res.deltaVout = res.voutMax - res.voutMin;
 
-  //if (ampIn < 1) return 0;  // evitar división rara
+  float ampIn  = (res.vinMax  - res.vinMin)  / 2.0;
+  float ampOut = res.deltaVout / 2.0;
 
-  float ganancia = ampOut / ampIn;
+  if (ampIn < 1) {
+    res.ganancia = 0;
+  } else {
+    res.ganancia = ampOut / ampIn;
+  }
 
-  return ganancia, voutMax;
+  return res;
 }
