@@ -29,7 +29,9 @@ Manejo  de protocolos I2C 4-Addr y SPI vinculado a PagWeb
 
 // ==== Inicialización de objetos ====
 HardwareSerial PagWeb(1);  // Objeto para UART2 en PULSAR como PagWeb
-DFRobot_BMM150_I2C *bmm150 = nullptr;
+
+DFRobot_BMM150_I2C *bmm150_i2c = nullptr;
+DFRobot_BMM150_SPI *bmm150_spi = nullptr;
 
 
 // Variables de JSON
@@ -39,8 +41,8 @@ StaticJsonDocument<200> receiveJSON;
 String JSON_salida;  // Variable que envía el JSON de datos
 StaticJsonDocument<200> sendJSON;
 
-bool bmm150_initialized = false;
-uint8_t bmm150_addr = 0;
+bool bmm150_initialized_i2c = false;
+bool bmm150_initialized_spi = false;
 
 void setup() {
 
@@ -98,7 +100,8 @@ void loop() {
 
       if (Function == "ping") opc = 1;           // {"Function":"ping"}
       else if (Function == "i2c_init") opc = 2;  // {"Function":"i2c_init", "Address": "0x10"}
-      else if (Function == "i2c_read") opc = 3;  // {"Function":"i2c_read"}
+      else if (Function == "spi_init") opc = 3;  // {"Function":"spi_init"}
+      else if (Function == "mag_read") opc = 4;  // {"Function":"mag_read"}
 
 
       switch (opc) {
@@ -114,6 +117,7 @@ void loop() {
         case 2:
           {
             sendJSON.clear();
+            bmm150_initialized_i2c = false;
 
             uint8_t addr = (uint8_t)strtol(Address.c_str(), NULL, 16);
 
@@ -159,15 +163,14 @@ void loop() {
               return;
             }
 
-
             // Liberar si ya existía
-            if (bmm150 != nullptr) {
-              delete bmm150;
+            if (bmm150_i2c != nullptr) {
+              delete bmm150_i2c;
             }
 
-            bmm150 = new DFRobot_BMM150_I2C(&Wire, addr_scan);
+            bmm150_i2c = new DFRobot_BMM150_I2C(&Wire, addr_scan);
 
-            if (bmm150->begin()) {
+            if (bmm150_i2c->begin()) {
               sendJSON["status"] = "FAIL";
               sendJSON["msg"] = "Init failed";
               serializeJson(sendJSON, PagWeb);
@@ -175,12 +178,12 @@ void loop() {
               break;
             }
 
-            bmm150->setOperationMode(BMM150_POWERMODE_NORMAL);
-            bmm150->setPresetMode(BMM150_PRESETMODE_HIGHACCURACY);
-            bmm150->setRate(BMM150_DATA_RATE_10HZ);
-            bmm150->setMeasurementXYZ();
+            bmm150_i2c->setOperationMode(BMM150_POWERMODE_NORMAL);
+            bmm150_i2c->setPresetMode(BMM150_PRESETMODE_HIGHACCURACY);
+            bmm150_i2c->setRate(BMM150_DATA_RATE_10HZ);
+            bmm150_i2c->setMeasurementXYZ();
 
-            bmm150_initialized = true;
+            bmm150_initialized_i2c = true;
 
             char addrStr[6];
             sprintf(addrStr, "0x%02X", addr_scan);
@@ -192,13 +195,60 @@ void loop() {
             break;
           }
 
-
-
         case 3:
+          {
+            bmm150_initialized_spi = false;
+
+            pinMode(CSS_PIN, OUTPUT);
+            digitalWrite(PSS_PIN, LOW);  // PS HIGH -> I2C | PS LOW -> SPI
+            digitalWrite(CSS_PIN, LOW);
+
+            if (bmm150_spi != nullptr) {
+              delete bmm150_spi;
+            }
+
+            SPI.begin(SCL_PIN, SDO_PIN, SDA_PIN, CSS_PIN);
+
+            bmm150_spi = new DFRobot_BMM150_SPI(CSS_PIN, &SPI);
+
+            if (bmm150_spi->begin()) {
+              sendJSON["status"] = "FAIL";
+              sendJSON["msg"] = "SPI init failed";
+              serializeJson(sendJSON, PagWeb);
+              PagWeb.println();
+              return;
+            }
+
+            bmm150_initialized_spi = true;
+
+            bmm150_spi->setOperationMode(BMM150_POWERMODE_NORMAL);
+            bmm150_spi->setPresetMode(BMM150_PRESETMODE_HIGHACCURACY);
+            bmm150_spi->setRate(BMM150_DATA_RATE_30HZ);
+            bmm150_spi->setMeasurementXYZ();
+
+            Serial.println(bmm150_spi->selfTest(BMM150_SELF_TEST_NORMAL));
+            Serial.print("rate is ");
+            Serial.println(bmm150_spi->getRate());
+
+            bmm150_spi->softReset();
+
+            bmm150_spi->setOperationMode(BMM150_POWERMODE_NORMAL);
+            bmm150_spi->setPresetMode(BMM150_PRESETMODE_HIGHACCURACY);
+            bmm150_spi->setRate(BMM150_DATA_RATE_30HZ);
+            bmm150_spi->setMeasurementXYZ();
+
+
+            break;
+          }
+
+        case 4:
           {
             sendJSON.clear();
 
-            if (!bmm150_initialized || bmm150 == nullptr) {
+            if ((bmm150_initialized_i2c && bmm150_i2c == nullptr)
+                || (bmm150_initialized_spi && bmm150_spi == nullptr)
+                || (!bmm150_initialized_i2c && !bmm150_initialized_spi)) {
+
               sendJSON["status"] = "FAIL";
               sendJSON["msg"] = "Sensor not initialized";
               serializeJson(sendJSON, PagWeb);
@@ -213,7 +263,6 @@ void loop() {
 
             break;
           }
-
 
 
         default:
@@ -239,13 +288,19 @@ uint8_t detectBMM150Address() {
 
 
 void readMagnetometer() {
-  sBmm150MagData_t magData = bmm150->getGeomagneticData();
+  sBmm150MagData_t magData;
+
+  if (bmm150_initialized_i2c) {
+    magData = bmm150_i2c->getGeomagneticData();
+  } else if (bmm150_initialized_spi) {
+    magData = bmm150_spi->getGeomagneticData();
+  }
 
   sendJSON.clear();
   sendJSON["x_uT"] = magData.x;
   sendJSON["y_uT"] = magData.y;
   sendJSON["z_uT"] = magData.z;
-  sendJSON["compass_deg"] = bmm150->getCompassDegree();
+  //sendJSON["compass_deg"] = bmm150->getCompassDegree();
 
   serializeJson(sendJSON, PagWeb);
   PagWeb.println();

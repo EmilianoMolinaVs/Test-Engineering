@@ -4,8 +4,10 @@
 // Pines personalizados para ESP32-C6
 #define PIN_MOSI 6
 #define PIN_MISO 2
-#define PIN_SCK  7
-#define PIN_CS   18
+#define PIN_SCK 7
+#define PIN_CS 18
+
+#define PIN_PS 3
 
 // Crear instancia SPI con pines personalizados
 SPIClass mySPI(FSPI);  // FSPI es el SPI principal en ESP32-C6
@@ -15,7 +17,12 @@ DFRobot_BMM150_SPI bmm150(/*cs=*/PIN_CS, &mySPI);
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial)
+    ;
+
+  pinMode(PIN_PS, OUTPUT);
+  digitalWrite(PIN_PS, LOW);
+  delay(100); 
 
   // Inicializar SPI con pines personalizados
   mySPI.begin(PIN_SCK, PIN_MISO, PIN_MOSI, PIN_CS);
@@ -65,5 +72,5 @@ void loop() {
   Serial.print(magData.z);
   Serial.println(" uT");
 
-  delay(100); // 1 Hz (ajusta según frecuencia de datos)
+  delay(100);  // 1 Hz (ajusta según frecuencia de datos)
 }
