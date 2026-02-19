@@ -2,7 +2,7 @@
 // Relay Blink with On/Off Messages
 // --------------------------------------------------
 
-int IN_PIN  = 23;  // Digital pin where the IN pin is connected
+int IN_PIN  = D0;  // Digital pin where the IN pin is connected
 int T = 1000;     // Interval in milliseconds
 
 void setup() {

@@ -2,6 +2,7 @@
 
 // --- BIBLIOTECAS ---
 #include <Wire.h>
+
 #include <Adafruit_INA219.h>
 #include <HardwareSerial.h>
 #include <ArduinoJson.h>
@@ -24,7 +25,7 @@
 #define RELAYA 8  //Problema no agarra
 #define RELAYB 9
 
-
+#define RUN_BUTTON 4  // Botón de Arranque
 
 // Comunicación UART Creación Objeto
 HardwareSerial PagWeb(1);  // Crear objeto para UART2 en PULSAR como PagWeb
@@ -70,14 +71,13 @@ void setup() {
   // Configurar pines de relés como salida
   pinMode(RELAY1, OUTPUT);
   pinMode(RELAY2, OUTPUT);
-
   pinMode(RELAYA, OUTPUT);
   pinMode(RELAYB, OUTPUT);
+  pinMode(RUN_BUTTON, INPUT);
 
   // Apagar todos los relés al inicio (HIGH = apagado)
   digitalWrite(RELAY1, HIGH);
   digitalWrite(RELAY2, HIGH);
-
   digitalWrite(RELAYA, LOW);
   digitalWrite(RELAYB, LOW);
 
@@ -87,6 +87,18 @@ void setup() {
 
 
 void loop() {
+
+
+  if (digitalRead(RUN_BUTTON) == HIGH) {
+    delay(100);
+
+    if (digitalRead(RUN_BUTTON) == LOW) {
+      enviarJSON["Run"] = "OK";           // Envio de corriente JSON para corto
+      serializeJson(enviarJSON, Serial);  // Envío de datos por JSON a la PagWeb
+      Serial.println();
+    }
+  }
+
 
   if (PagWeb.available()) {
 
