@@ -39,7 +39,8 @@ StaticJsonDocument<200> receiveJSON;
 String JSON_salida;  // Variable que envía el JSON de datos
 StaticJsonDocument<200> sendJSON;
 
-
+bool bmm150_initialized = false;
+uint8_t bmm150_addr = 0;
 
 void setup() {
 
@@ -55,8 +56,7 @@ void setup() {
   pinMode(SDO_PIN, OUTPUT);
   pinMode(CSS_PIN, OUTPUT);
 
-
-  digitalWrite(PSS_PIN, HIGH);
+  digitalWrite(PSS_PIN, HIGH);  // PS HIGH -> I2C | PS LOW -> SPI
   digitalWrite(SDO_PIN, HIGH);
   digitalWrite(CSS_PIN, HIGH);
 
@@ -72,7 +72,6 @@ void setup() {
 
 void loop() {
 
-  /*
   if (digitalRead(RUN_BUTTON) == HIGH) {
     delay(200);
     sendJSON.clear();  // Limpia cualquier dato previo
@@ -83,7 +82,7 @@ void loop() {
       serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
       PagWeb.println();
     }
-  }*/
+  }
 
 
   if (PagWeb.available()) {
@@ -93,11 +92,14 @@ void loop() {
 
     if (!error) {
       String Function = receiveJSON["Function"];
+      String Address = receiveJSON["Address"];
 
       int opc = 0;
 
-      if (Function == "ping") opc = 1;      // {"Function":"ping"}
-      else if (Function == "i2c") opc = 2;  // {"Function":"i2c"}
+      if (Function == "ping") opc = 1;           // {"Function":"ping"}
+      else if (Function == "i2c_init") opc = 2;  // {"Function":"i2c_init", "Address": "0x10"}
+      else if (Function == "i2c_read") opc = 3;  // {"Function":"i2c_read"}
+
 
       switch (opc) {
         case 1:
@@ -111,12 +113,45 @@ void loop() {
 
         case 2:
           {
+            sendJSON.clear();
 
-            Wire.begin(6, 7);
+            uint8_t addr = (uint8_t)strtol(Address.c_str(), NULL, 16);
 
-            uint8_t addr = detectBMM150Address();
+            switch (addr) {
+              case 0x10:
+                digitalWrite(SDO_PIN, LOW);
+                digitalWrite(CSS_PIN, LOW);
+                break;
 
-            if (addr == 0) {
+              case 0x11:
+                digitalWrite(SDO_PIN, HIGH);
+                digitalWrite(CSS_PIN, LOW);
+                break;
+
+              case 0x12:
+                digitalWrite(SDO_PIN, LOW);
+                digitalWrite(CSS_PIN, HIGH);
+                break;
+
+              case 0x13:
+                digitalWrite(SDO_PIN, HIGH);
+                digitalWrite(CSS_PIN, HIGH);
+                break;
+
+
+              default:
+                sendJSON["status"] = "FAIL";
+                sendJSON["msg"] = "Invalid address";
+                serializeJson(sendJSON, PagWeb);
+                PagWeb.println();
+                return;
+            }
+
+            Wire.begin(SDA_PIN, SCL_PIN);
+
+            uint8_t addr_scan = detectBMM150Address();
+
+            if (addr_scan == 0) {
               sendJSON.clear();
               sendJSON["error"] = "BMM150 not detected";
               serializeJson(sendJSON, PagWeb);
@@ -125,31 +160,61 @@ void loop() {
             }
 
 
-            Serial.print("✅ BMM150 detectado en 0x");
-            Serial.println(addr, HEX);
-
-            // Crear el objeto con la dirección detectada
-            bmm150 = new DFRobot_BMM150_I2C(&Wire, addr);
-
-            while (bmm150->begin()) {
-              Serial.println("BMM150 init failed, retrying...");
-              delay(1000);
+            // Liberar si ya existía
+            if (bmm150 != nullptr) {
+              delete bmm150;
             }
 
-            Serial.println("BMM150 init success!");
+            bmm150 = new DFRobot_BMM150_I2C(&Wire, addr_scan);
+
+            if (bmm150->begin()) {
+              sendJSON["status"] = "FAIL";
+              sendJSON["msg"] = "Init failed";
+              serializeJson(sendJSON, PagWeb);
+              PagWeb.println();
+              break;
+            }
 
             bmm150->setOperationMode(BMM150_POWERMODE_NORMAL);
             bmm150->setPresetMode(BMM150_PRESETMODE_HIGHACCURACY);
             bmm150->setRate(BMM150_DATA_RATE_10HZ);
             bmm150->setMeasurementXYZ();
 
+            bmm150_initialized = true;
+
+            char addrStr[6];
+            sprintf(addrStr, "0x%02X", addr_scan);
+
+            sendJSON["status"] = "OK";
+            sendJSON["addr"] = addrStr;
+            serializeJson(sendJSON, PagWeb);
+            PagWeb.println();
+            break;
+          }
+
+
+
+        case 3:
+          {
+            sendJSON.clear();
+
+            if (!bmm150_initialized || bmm150 == nullptr) {
+              sendJSON["status"] = "FAIL";
+              sendJSON["msg"] = "Sensor not initialized";
+              serializeJson(sendJSON, PagWeb);
+              PagWeb.println();
+              break;
+            }
+
             for (int i = 0; i < 10; i++) {
-              readMegnetometer();
+              readMagnetometer();
               delay(50);
             }
 
             break;
           }
+
+
 
         default:
           Serial.println("Opción no válida");
@@ -173,7 +238,7 @@ uint8_t detectBMM150Address() {
 }
 
 
-void readMegnetometer() {
+void readMagnetometer() {
   sBmm150MagData_t magData = bmm150->getGeomagneticData();
 
   sendJSON.clear();
