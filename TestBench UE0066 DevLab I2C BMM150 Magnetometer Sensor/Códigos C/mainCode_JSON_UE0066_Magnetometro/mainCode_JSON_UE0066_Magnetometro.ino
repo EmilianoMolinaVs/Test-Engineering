@@ -55,12 +55,7 @@ void setup() {
   // ==== Declaración de Entradas | Salidas
   pinMode(RUN_BUTTON, INPUT);
   pinMode(PSS_PIN, OUTPUT);
-  pinMode(SDO_PIN, OUTPUT);
-  pinMode(CSS_PIN, OUTPUT);
-
   digitalWrite(PSS_PIN, HIGH);  // PS HIGH -> I2C | PS LOW -> SPI
-  digitalWrite(SDO_PIN, HIGH);
-  digitalWrite(CSS_PIN, HIGH);
 
   /*
   SDO | CSS | Address
@@ -70,7 +65,6 @@ void setup() {
   1       1     0x13
   */
 }
-
 
 void loop() {
 
@@ -102,7 +96,7 @@ void loop() {
       else if (Function == "i2c_init") opc = 2;  // {"Function":"i2c_init", "Address": "0x10"}
       else if (Function == "spi_init") opc = 3;  // {"Function":"spi_init"}
       else if (Function == "mag_read") opc = 4;  // {"Function":"mag_read"}
-
+      else if (Function == "reboot") opc = 5;    // {"Function":"reboot"}
 
       switch (opc) {
         case 1:
@@ -116,8 +110,14 @@ void loop() {
 
         case 2:
           {
+            pinMode(CSS_PIN, OUTPUT);
+            pinMode(SDO_PIN, OUTPUT);
+
+
+            digitalWrite(PSS_PIN, HIGH);  // PS HIGH -> I2C | PS LOW -> SPI
             sendJSON.clear();
             bmm150_initialized_i2c = false;
+            bmm150_initialized_spi = false;
 
             uint8_t addr = (uint8_t)strtol(Address.c_str(), NULL, 16);
 
@@ -197,6 +197,8 @@ void loop() {
 
         case 3:
           {
+            sendJSON.clear();
+            bmm150_initialized_i2c = false;
             bmm150_initialized_spi = false;
 
             pinMode(CSS_PIN, OUTPUT);
@@ -220,6 +222,10 @@ void loop() {
             }
 
             bmm150_initialized_spi = true;
+            sendJSON["status"] = "OK";
+            sendJSON["msg"] = "SPI  initialize";
+            serializeJson(sendJSON, PagWeb);
+            PagWeb.println();
 
             bmm150_spi->setOperationMode(BMM150_POWERMODE_NORMAL);
             bmm150_spi->setPresetMode(BMM150_PRESETMODE_HIGHACCURACY);
@@ -262,6 +268,16 @@ void loop() {
             }
 
             break;
+          }
+
+        case 5:
+          {
+            sendJSON.clear();
+            sendJSON["status"] = "RESTARTING";
+            serializeJson(sendJSON, PagWeb);
+            PagWeb.println();
+            delay(100);
+            ESP.restart();
           }
 
 
