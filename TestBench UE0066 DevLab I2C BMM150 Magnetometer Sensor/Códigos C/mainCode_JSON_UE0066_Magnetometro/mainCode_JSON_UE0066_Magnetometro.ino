@@ -189,7 +189,7 @@ void loop() {
             sprintf(addrStr, "0x%02X", addr_scan);
 
             sendJSON["status"] = "OK";
-            sendJSON["addr"] = addrStr;
+            sendJSON["addr_0x" + String(addr, HEX)] = addrStr;
             serializeJson(sendJSON, PagWeb);
             PagWeb.println();
             break;
