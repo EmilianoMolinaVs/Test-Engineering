@@ -188,7 +188,7 @@ void loop() {
             char addrStr[6];
             sprintf(addrStr, "0x%02X", addr_scan);
 
-            sendJSON["status"] = "OK";
+            sendJSON["status_0x" + String(addr, HEX)] = "OK";
             sendJSON["addr_0x" + String(addr, HEX)] = addrStr;
             serializeJson(sendJSON, PagWeb);
             PagWeb.println();
@@ -223,6 +223,7 @@ void loop() {
 
             bmm150_initialized_spi = true;
             sendJSON["status"] = "OK";
+            sendJSON["spi"] = "OK";
             sendJSON["msg"] = "SPI  initialize";
             serializeJson(sendJSON, PagWeb);
             PagWeb.println();
