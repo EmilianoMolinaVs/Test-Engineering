@@ -120,9 +120,9 @@ void loop() {
 
       int opc = 0;
 
-      if (Function == "scan") opc = 1;
-      else if (Function == "TestBuz") opc = 2;
-      else if (Function == "TestRelay") opc = 3;
+      if (Function == "scan") opc = 1;            // {"Function":"scan"}
+      else if (Function == "TestBuz") opc = 2;    //{"Function":"TestBuz", "Address": "0X42"}
+      else if (Function == "TestRelay") opc = 3;  //{"Function":"TestRelay", "Address": "0X42"}
       else if (Function == "TestNeo") opc = 4;
       else if (Function == "TestAll") opc = 5;
 
