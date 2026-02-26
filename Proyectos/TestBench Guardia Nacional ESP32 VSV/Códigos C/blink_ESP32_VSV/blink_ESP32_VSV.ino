@@ -81,7 +81,7 @@ void setup() {
   display.setTextColor(BLACK);
 
   display.setCursor(0, 0);
-  display.println("Hola Mundo!");
+  display.println("Hola Mundooo!");
   display.println("Prueba VSV :D");
   display.display();
 }
@@ -99,8 +99,13 @@ void loop() {
       String Function = receiveJSON["Function"];  // Function es la variable de interés del JSON
       int opc = 0;                                // Variable de switcheo
 
-      if (Function == "ping") opc = 1;          // {"Function":"ping"}
-      else if (Function == "testAll") opc = 2;  // {"Function":"testAll"}
+      if (Function == "ping") opc = 1;            // {"Function":"ping"}
+      else if (Function == "mac") opc = 2;        // {"Function":"mac"}
+      else if (Function == "RGB_Red") opc = 3;    // {"Function":"RGB_Red"}
+      else if (Function == "RGB_Blue") opc = 4;   // {"Function":"RGB_Blue"}
+      else if (Function == "RGB_Green") opc = 5;  // {"Function":"RGB_Green"}
+      else if (Function == "testAll") opc = 6;    // {"Function":"testAll"}
+
 
       switch (opc) {
         case 1:
@@ -113,6 +118,59 @@ void loop() {
           }
 
         case 2:
+          {
+            sendJSON.clear();  // Limpia cualquier dato previo
+
+            // Obtener MAC (64 bits)
+            uint64_t chipid = ESP.getEfuseMac();
+
+            // Formatear MAC a string tipo XX:XX:XX:XX:XX:XX
+            char macStr[18];
+            sprintf(macStr, "%02X:%02X:%02X:%02X:%02X:%02X",
+                    (uint8_t)(chipid >> 40),
+                    (uint8_t)(chipid >> 32),
+                    (uint8_t)(chipid >> 24),
+                    (uint8_t)(chipid >> 16),
+                    (uint8_t)(chipid >> 8),
+                    (uint8_t)(chipid));
+
+            sendJSON["Function"] = "mac";
+            sendJSON["MAC"] = macStr;
+
+            serializeJson(sendJSON, PagWeb);
+            PagWeb.println();
+
+            break;
+          }
+
+        case 3:  // Rojo
+          {
+            digitalWrite(RGB_R, LOW);
+            digitalWrite(RGB_G, HIGH);
+            digitalWrite(RGB_B, HIGH);
+            delay(8000);
+            break;
+          }
+
+        case 4:  // Azul
+          {
+            digitalWrite(RGB_R, LOW);
+            digitalWrite(RGB_G, LOW);
+            digitalWrite(RGB_B, HIGH);
+            delay(8000);
+            break;
+          }
+
+        case 5:  // Verde
+          {
+            digitalWrite(RGB_R, HIGH);
+            digitalWrite(RGB_G, LOW);
+            digitalWrite(RGB_B, HIGH);
+            delay(8000);
+            break;
+          }
+
+        case 6:
           {
             sendJSON.clear();  // Limpia cualquier dato previo
             sendJSON["Result"] = "OK";

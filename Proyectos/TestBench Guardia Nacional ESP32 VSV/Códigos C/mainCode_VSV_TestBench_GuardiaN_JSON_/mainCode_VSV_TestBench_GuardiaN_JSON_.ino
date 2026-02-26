@@ -13,13 +13,12 @@ se conecta al bus de pines GPIO01 y GPIO02 UARTL
 #include <Arduino.h>
 
 // ==== Declaración de pines
-#define RX2 D1        // GPIO como RXD
-#define TX2 D0        // GPIO como TXD
-#define RUN_BUTTON 4  // Botón de Arranque
-#define RELAYCV 5     // Relay de control para demanda con CV
-
-// Relevadores de Accionamiento de Fuente
-#define RELAYA 8
+#define RX2 4         // GPIO como RXD
+#define TX2 5         // GPIO como TXD
+#define RUN_BUTTON 2  // Botón de Arranque
+#define RELAYREG D1
+#define POWERREG D0
+#define RELAYA 8  // Relevadores de Accionamiento de Fuente
 #define RELAYB 9
 
 // ==== Inicialización de objetos
@@ -47,11 +46,13 @@ void setup() {
   pinMode(RUN_BUTTON, INPUT);
   pinMode(RELAYA, OUTPUT);
   pinMode(RELAYB, OUTPUT);
-  pinMode(RELAYCV, OUTPUT);
+  pinMode(POWERREG, OUTPUT);
+  pinMode(RELAYREG, OUTPUT);
 
   digitalWrite(RELAYA, LOW);
   digitalWrite(RELAYB, LOW);
-  digitalWrite(RELAYCV, LOW);
+  digitalWrite(POWERREG, HIGH);
+  digitalWrite(RELAYREG, LOW);
 }
 
 void loop() {
@@ -77,10 +78,14 @@ void loop() {
       String Function = receiveJSON["Function"];  // Function es la variable de interés del JSON
       int opc = 0;                                // Variable de switcheo
 
-      if (Function == "ping") opc = 1;          // {"Function":"ping"}
+      if (Function == "ping") opc = 1;           // {"Function":"ping"}
+      else if (Function == "test5V") opc = 3;    // {"Function":"test5V"}
+      else if (Function == "test3V") opc = 4;    // {"Function":"test3V"}
+      else if (Function == "RGB_Red") opc = 5;   // {"Function":"RGB_Red"}
+      else if (Function == "RGB_Blue") opc = 6;  // {"Function":"RGB_Blue"}
+      else if (Function == "mac") opc = 7;       // {"Function":"mac"}
+
       else if (Function == "testAll") opc = 2;  // {"Function":"testAll"}
-      else if (Function == "stepUp") opc = 3;   // {"Function":"testAll"}
-      else if (Function == "reg") opc = 4;      // {"Function":"testAll"}
 
       switch (opc) {
         case 1:
@@ -103,13 +108,13 @@ void loop() {
 
         case 3:  // Demanda de corriente en 5V StepUp
           {
-            digitalWrite(RELAYCV, LOW);
+            digitalWrite(RELAYREG, LOW);
             break;
           }
 
         case 4:  // Demanda de corriente en 3.3V regulador de voltaje
           {
-            digitalWrite(RELAYCV, HIGH);
+            digitalWrite(RELAYREG, HIGH);
             break;
           }
       }
