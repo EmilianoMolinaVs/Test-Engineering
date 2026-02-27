@@ -1,30 +1,29 @@
 # Programador Test Producción
 
-Este directorio contiene las herramientas y los binarios finales usados por el equipo de fabricación para programar las placas ESP32 y RP2040.
+Este directorio contiene las herramientas y los binarios finales usados por el equipo de fabricación para programar las placas ESP32.
 
 **Propósito**: flashear lotes de dispositivos de forma rápida y reproducible.
 
-**Archivos importantes en esta carpeta**
-- `DualOneESP32.ino.merged.bin` : binario final para ESP32.
-- `blink_rp2040.ino.uf2` : ejemplo / firmware para RP2040 (incluido como referencia).
+**Archivos en esta carpeta**
+- `blink_ESP32_VSV.ino.merged.bin` : binario final para ESP32.
 - `flash_multi_esp32.sh` : script interactivo para grabar múltiples ESP32 (usa `esptool`).
-- `flash_multi_rp2040.sh` : script interactivo para copiar UF2 a múltiples RP2040.
+- `log_COM34.txt` : log de grabación de pruebas anteriores.
 
 Requisitos previos
 - Tener acceso a un terminal Bash (Git Bash, WSL o similar) en Windows.
-- Python instalado con el paquete `pyserial` y `esptool` disponible (para ESP32):
+- Python instalado con el paquete `pyserial` y `esptool` disponible:
 
 ```bash
 pip install pyserial esptool
 ```
 
-- Permisos para acceder a puertos COM y unidades USB en el equipo de flashing.
+- Permisos para acceder a puertos COM en el equipo de flashing.
 
 Resumen de uso
 
 1) Preparación física
-- Conectar las placas ESP32 por USB. Para RP2040 conectar cada placa en modo BOOTSEL (aparecerán como unidades removibles tipo RPI-RP2).
-- Verificar en el PC los puertos COM (ESP32) o las letras de unidad (RP2040).
+- Conectar las placas ESP32 por USB.
+- Verificar en el PC los puertos COM asignados.
 
 2) Flasheo ESP32 (múltiples)
 - El script `flash_multi_esp32.sh` detecta automáticamente los puertos soportados y ofrece un menú.
@@ -41,62 +40,11 @@ Ejemplo (desde Bash en esta carpeta):
 Pasos típicos dentro del menú:
 - 1 Verificar conexión (chip id) en todos los puertos.
 - 2 Borrar flash en todos.
-- 3 Grabar firmware (usa `DualOneESP32.ino.merged.bin` por defecto).
+- 3 Grabar firmware (usa `blink_ESP32_VSV.ino.merged.bin` por defecto).
 - 4 Redetectar puertos.
 
 Logs
 - En modo paralelo el script crea archivos `log_COMx.txt` por puerto. Si una unidad falla, revisar su `log_<PUERTO>.txt`.
-
-3) Flasheo RP2040 (múltiples)
-- El script `flash_multi_rp2040.sh` detecta unidades tipo RP2040 buscando `INFO_UF2.TXT` en las letras de unidad (d..z).
-- Copia el archivo UF2 (`DualOne.ino.uf2` o `blink_rp2040.ino.uf2`) a cada unidad detectada en paralelo. Las placas se reinician automáticamente después de copiar.
-
-Ejemplo (desde Bash en esta carpeta):
-
-```bash
-./flash_multi_rp2040.sh
-```
-
-Flujo típico en RP2040:
-- Seleccionar opción "Redetectar" para comprobar unidades.
-- Elegir "Flashear TODAS" para copiar el UF2 a todas las unidades detectadas.
-
-Comandos útiles (PowerShell / Bash)
-- Abrir Git Bash o WSL y situarse en esta carpeta:
-
-```bash
-cd "C:/Users/emili/OneDrive/Documentos/Ingenieria de Pruebas/Test-Engineering/TestBench UE0022 MCU_DualOne/Programador Test Produccion"
-./flash_multi_esp32.sh
-./flash_multi_rp2040.sh
-```
-
-# Programador Test Producción
-
-Este directorio contiene las herramientas y los binarios finales usados por el equipo de fabricación para programar las placas ESP32 y RP2040.
-
-**Propósito**: flashear lotes de dispositivos de forma rápida y reproducible.
-
-**Archivos importantes en esta carpeta**
-- `DualOneESP32.ino.merged.bin` : binario final para ESP32.
-- `DualOne.ino.uf2` : firmware final para RP2040.
-- `flash_multi_esp32.sh` : script interactivo para grabar múltiples ESP32 (usa `esptool`).
-- `flash_multi_rp2040.sh` : script interactivo para copiar UF2 a múltiples RP2040.
-
-Requisitos previos
-- Tener acceso a un terminal Bash (Git Bash, WSL o similar) en Windows.
-- Python instalado con el paquete `pyserial` y `esptool` disponible (para ESP32):
-
-```bash
-pip install pyserial esptool
-```
-
-- Permisos para acceder a puertos COM y unidades USB en el equipo de flashing.
-
-Resumen de uso
-
-1) Preparación física
-- Conectar las placas ESP32 por USB. Para RP2040 conectar cada placa en modo BOOTSEL (aparecerán como unidades removibles tipo RPI-RP2).
-- Verificar en el PC los puertos COM (ESP32) o las letras de unidad (RP2040).
 
 2) Flasheo ESP32 (múltiples)
 - El script `flash_multi_esp32.sh` detecta automáticamente los puertos soportados y ofrece un menú.

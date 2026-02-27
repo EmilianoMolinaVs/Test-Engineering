@@ -13,8 +13,8 @@ se conecta al bus de pines GPIO01 y GPIO02 UARTL
 #include <Arduino.h>
 
 // ==== Declaración de pines
-#define RX2 4         // GPIO como RXD
-#define TX2 5         // GPIO como TXD
+#define RX2 5         // GPIO como RXD
+#define TX2 4         // GPIO como TXD
 #define RUN_BUTTON 2  // Botón de Arranque
 #define RELAYREG D1
 #define POWERREG D0
@@ -79,11 +79,11 @@ void loop() {
       int opc = 0;                                // Variable de switcheo
 
       if (Function == "ping") opc = 1;           // {"Function":"ping"}
-      else if (Function == "test5V") opc = 3;    // {"Function":"test5V"}
-      else if (Function == "test3V") opc = 4;    // {"Function":"test3V"}
+      else if (Function == "test3V") opc = 3;    // {"Function":"test3V"}
+      else if (Function == "test5V") opc = 4;    // {"Function":"test5V"}
       else if (Function == "RGB_Red") opc = 5;   // {"Function":"RGB_Red"}
       else if (Function == "RGB_Blue") opc = 6;  // {"Function":"RGB_Blue"}
-      else if (Function == "mac") opc = 7;       // {"Function":"mac"}
+      else if (Function == "mac") opc = 8;       // {"Function":"mac"}
 
       else if (Function == "testAll") opc = 2;  // {"Function":"testAll"}
 
@@ -101,6 +101,42 @@ void loop() {
           {
             sendJSON.clear();  // Limpia cualquier dato previo
             sendJSON["Function"] = "testAll";
+            serializeJson(sendJSON, VSV);  // Envío de datos por JSON a la PagWeb
+            VSV.println();
+            break;
+          }
+
+        case 5:
+          {
+            sendJSON.clear();  // Limpia cualquier dato previo
+            sendJSON["Function"] = "RGB_Red";
+            serializeJson(sendJSON, VSV);  // Envío de datos por JSON a la PagWeb
+            VSV.println();
+            break;
+          }
+
+        case 6:
+          {
+            sendJSON.clear();  // Limpia cualquier dato previo
+            sendJSON["Function"] = "RGB_Blue";
+            serializeJson(sendJSON, VSV);  // Envío de datos por JSON a la PagWeb
+            VSV.println();
+            break;
+          }
+
+        case 7:
+          {
+            sendJSON.clear();  // Limpia cualquier dato previo
+            sendJSON["Function"] = "RGB_Green";
+            serializeJson(sendJSON, VSV);  // Envío de datos por JSON a la PagWeb
+            VSV.println();
+            break;
+          }
+
+        case 8:
+          {
+            sendJSON.clear();  // Limpia cualquier dato previo
+            sendJSON["Function"] = "mac";
             serializeJson(sendJSON, VSV);  // Envío de datos por JSON a la PagWeb
             VSV.println();
             break;
@@ -127,8 +163,19 @@ void loop() {
 
   // ---- VSV → SERIAL (respuesta) ----
   if (VSV.available()) {
-    char c = VSV.read();
-    Serial.write(c);
+
+    String rxLine = VSV.readStringUntil('\n');
+
+    StaticJsonDocument<200> filterJSON;
+    DeserializationError error = deserializeJson(filterJSON, rxLine);
+
+    if (!error) {
+      // ✅ Solo si es JSON válido se reenvía
+      serializeJson(filterJSON, Serial);
+      Serial.println();
+    }
+
+    // ❌ Si no es JSON válido se descarta automáticamente
 
     waitingResponse = false;
   }

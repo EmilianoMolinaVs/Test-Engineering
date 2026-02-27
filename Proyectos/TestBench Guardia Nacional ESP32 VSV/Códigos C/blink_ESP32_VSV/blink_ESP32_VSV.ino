@@ -214,7 +214,7 @@ void loop() {
   if (lastWakeupState == HIGH && currentState == LOW) {
     Serial.println("Botón presionado SW2 WakeUp");
 
-    contador++;  // 🔥 incrementa contador
+    contador++; 
     buttonMode = true;
     buttonTime = millis();
 

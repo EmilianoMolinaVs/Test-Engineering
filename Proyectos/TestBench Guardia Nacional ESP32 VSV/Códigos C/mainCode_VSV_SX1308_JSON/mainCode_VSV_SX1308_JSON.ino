@@ -19,8 +19,6 @@
 // --- DEFINICIÓN DE PINES ---
 #define RX2 D4        // Pin RX para UART2 (GPIO15)
 #define TX2 D5        // Pin TX para UART2 (GPIO19)
-
-
 #define RELAYA 8      // Relé A - Control de fuente de alimentación
 #define RELAYB 9      // Relé B - Control de fuente de alimentación
 #define RUN_BUTTON 4  // Botón de arranque manual
