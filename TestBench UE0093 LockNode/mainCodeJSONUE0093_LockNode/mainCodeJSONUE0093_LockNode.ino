@@ -19,6 +19,8 @@
 #define RelayNO 4  // Lectura de conmutación en relevador
 #define RelayNC 5
 
+#define RUN_BUTTON 2  // Botón de Arranque
+
 #define switchGPIO 3
 
 // ==== Inicialización de objetos
@@ -61,6 +63,7 @@ void setup() {
   // Declaración de pines de entrada de relevador
   pinMode(RelayNO, INPUT);
   pinMode(RelayNC, INPUT);
+  pinMode(RUN_BUTTON, INPUT);
 
   pinMode(switchGPIO, OUTPUT);
   digitalWrite(switchGPIO, HIGH);
@@ -93,6 +96,18 @@ void loop() {
   }
   */
 
+  if (digitalRead(RUN_BUTTON) == HIGH) {
+    delay(100);
+
+    if (digitalRead(RUN_BUTTON) == LOW) {
+      sendJSON["Run"] = "OK";           // Envio de corriente JSON para corto
+      serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+      PagWeb.println();
+    }
+  }
+
+
+
   // Process user commands
   if (Serial.available()) {
     String cmd = Serial.readStringUntil('\n');
@@ -121,9 +136,9 @@ void loop() {
       int opc = 0;
 
       if (Function == "scan") opc = 1;            // {"Function":"scan"}
-      else if (Function == "TestBuz") opc = 2;    //{"Function":"TestBuz", "Address": "0X42"}
-      else if (Function == "TestRelay") opc = 3;  //{"Function":"TestRelay", "Address": "0X42"}
-      else if (Function == "TestNeo") opc = 4;
+      else if (Function == "TestBuz") opc = 2;    // {"Function":"TestBuz", "Address": "0X42"}
+      else if (Function == "TestRelay") opc = 3;  // {"Function":"TestRelay", "Address": "0X42"}
+      else if (Function == "TestNeo") opc = 4;    // {"Function":"TestNeo", "Address": "0X42"}
       else if (Function == "TestAll") opc = 5;
 
       switch (opc) {
@@ -164,18 +179,15 @@ void loop() {
 
         case 3:  // Ejecución de prueba única de Relay
           {
-            deviceManager.cmdRelay(address, true, 1);  // Accionamiento
-            delay(100);
-            deviceManager.cmdRelay(address, false, 1);
-            delay(100);
-            deviceManager.cmdRelay(address, true, 1);  // Accionamiento
-            delay(100);
-            deviceManager.cmdRelay(address, false, 1);
-            delay(100);
-            deviceManager.cmdRelay(address, true, 1);  // Accionamiento
-            delay(100);
-            deviceManager.cmdRelay(address, false, 1);
-            delay(100);
+            int iteraciones = 10;
+            int DELAY_ms = 200;
+
+            for (int i = 0; i < iteraciones; i++) {
+              deviceManager.cmdRelay(address, true, 1);  // Accionamiento
+              delay(DELAY_ms);
+              deviceManager.cmdRelay(address, false, 1);
+              delay(DELAY_ms);
+            }
             break;
           }
 
