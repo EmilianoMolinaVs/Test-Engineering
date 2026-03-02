@@ -93,6 +93,27 @@ void setup() {
   pinMode(PIN_11, INPUT);
   pinMode(PIN_17, INPUT);
   pinMode(PIN_18, INPUT);
+
+  for (int i = 0; i < 5; i++) {
+    pixels.setPixelColor(0, pixels.Color(50, 0, 0));
+    pixels.show();
+    delay(100);
+    pixels.setPixelColor(0, pixels.Color(0, 50, 0));
+    pixels.show();
+    delay(100);
+    pixels.setPixelColor(0, pixels.Color(0, 0, 50));
+    pixels.show();
+    delay(100);
+    pixels.setPixelColor(0, pixels.Color(50, 50, 0));
+    pixels.show();
+    delay(100);
+    pixels.setPixelColor(0, pixels.Color(50, 0, 50));
+    pixels.show();
+    delay(100);
+    pixels.setPixelColor(0, pixels.Color(0, 50, 50));
+    pixels.show();
+    delay(100);
+  }
 }
 
 
@@ -109,9 +130,9 @@ void loop() {
 
       int opc = 0;
 
-      if (Function == "ping") opc = 1;       // {"Function":"ping"}
-      else if (Function == "mac") opc = 2;   // {"Function":"mac"}
-      else if (Function == "read") opc = 3;  // {"Function":"read", "PIN":"1"}
+      if (Function == "ping") opc = 1;      // {"Function":"ping"}
+      else if (Function == "mac") opc = 2;  // {"Function":"mac"}
+      // else if (Function == "read") opc = 3;  // {"Function":"read", "PIN":"1"}
 
       switch (opc) {
 
@@ -146,40 +167,6 @@ void loop() {
             break;
           }
 
-        case 3:
-          {
-            if (receiveJSON.containsKey("PIN")) {
-
-              uint8_t NoPin = atoi(receiveJSON["PIN"]);
-              pinMode(NoPin, INPUT);
-
-              delay(50);
-              int value = 0;
-              int items = 10;
-
-              for (int i = 0; i < items; i++) {
-                value += analogRead(NoPin);
-                delay(20);
-              }
-
-              int average = value / items;
-
-              sendJSON.clear();
-              sendJSON["PIN"] = NoPin;
-              sendJSON["value"] = average;
-
-              serializeJson(sendJSON, Serial);
-              Serial.println();
-            } else {
-              sendJSON.clear();
-              sendJSON["error"] = "PIN not provided";
-              serializeJson(sendJSON, Serial);
-              Serial.println();
-            }
-
-            break;
-          }
-
         default:
           Serial.print("Opción no válida");
           break;
@@ -189,17 +176,19 @@ void loop() {
 
   }
 
-  else if (analogRead(PIN_1) > 1100) {
-    pixels.setPixelColor(0, pixels.Color(20, 0, 0));
+  else if (analogRead(PIN_1) > 1000) {
+    pixels.setPixelColor(0, pixels.Color(50, 0, 0));
     pixels.show();
-  } else if (analogRead(PIN_2) > 1100) {
-    pixels.setPixelColor(0, pixels.Color(0, 20, 0));
+  } else if (analogRead(PIN_2) > 1000) {
+    pixels.setPixelColor(0, pixels.Color(0, 50, 0));
+    pixels.show();
+  } else if (analogRead(PIN_3) > 1000) {
+    pixels.setPixelColor(0, pixels.Color(0, 0, 50));
     pixels.show();
   }
 
   else {
   }
-
 }
 
 // Función de escritura de status en OLED D2 y D3
