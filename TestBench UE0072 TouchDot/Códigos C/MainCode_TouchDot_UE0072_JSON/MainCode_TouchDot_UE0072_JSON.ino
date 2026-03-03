@@ -16,7 +16,8 @@
 #define PIN_SDA 5        // SDA pin para OLED
 #define PIN_NEOPIXEL 45  // PIN de Neopixel
 
-#define PIN_1 1  // Pines Exteriores
+#define BUTTON_PIN 0  // Boton
+#define PIN_1 1       // Pines Exteriores
 #define PIN_2 2
 #define PIN_3 3
 #define PIN_4 4
@@ -55,6 +56,22 @@ StaticJsonDocument<200> receiveJSON;
 String JSON_salida;  // Variable que envía el JSON de datos
 StaticJsonDocument<200> sendJSON;
 
+uint32_t colors[] = {
+  pixels.Color(128, 0, 0),
+  pixels.Color(0, 128, 0),
+  pixels.Color(0, 0, 128),
+  pixels.Color(128, 128, 0),
+  pixels.Color(0, 128, 128),
+  pixels.Color(128, 0, 128),
+  pixels.Color(128, 128, 128),
+  pixels.Color(64, 64, 0),
+  pixels.Color(0, 64, 64),
+  pixels.Color(64, 0, 64),
+  pixels.Color(0, 0, 0)
+};
+
+int colorIndex = 0;
+
 void setup() {
 
   // ==== Inicialización de Comunicación Serie ====
@@ -88,10 +105,20 @@ void setup() {
 
   // ==== Declaración de Modos en GPIOs ====
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 }
 
 
 void loop() {
+
+  bool currentButton = digitalRead(BUTTON_PIN);
+
+  if (currentButton == LOW) {
+    colorIndex = (colorIndex + 1) % (sizeof(colors) / sizeof(colors[0]));
+    pixels.setPixelColor(0, colors[colorIndex]);
+    pixels.show();
+    delay(1000);
+  }
 
   if (Serial.available()) {
 
