@@ -147,18 +147,20 @@ void loop() {
           {
             sendJSON.clear();  // Limpia cualquier dato previo
 
-            bool state1 = testGpios(PIN_1, PIN_2);
-            sendJSON["A"] = state1;
+            String state1 = testGpios(PIN_D15, PIN_D17);
+            sendJSON["Int1"] = state1;
 
-            bool state2 = testGpios(PIN_1, PIN_2);
-            Serial.println("El estado es: " + String(state1));
+            String state2 = testGpios(PIN_D19, PIN_D27);
+            sendJSON["Int2"] = state2;
 
-            bool state3 = testGpios(PIN_1, PIN_2);
-            Serial.println("El estado es: " + String(state1));
+            String state3 = testGpios(PIN_D16, PIN_D18);
+            sendJSON["Int3"] = state3;
 
-            bool state4 = testGpios(PIN_1, PIN_2);
-            Serial.println("El estado es: " + String(state1));
+            String state4 = testGpios(PIN_D20, PIN_D28);
+            sendJSON["Int4"] = state4;
 
+            serializeJson(sendJSON, Serial);
+            Serial.println();
             break;
           }
 
@@ -167,7 +169,23 @@ void loop() {
           {
             sendJSON.clear();  // Limpia cualquier dato previo
 
+            String state1 = testGpios(PIN_1, PIN_2);
+            sendJSON["Ext1"] = state1;
 
+            String state2 = testGpios(PIN_3, PIN_4);
+            sendJSON["Ext2"] = state2;
+
+            String state3 = testGpios(PIN_8, PIN_9);
+            sendJSON["Ext3"] = state3;
+
+            String state4 = testGpios(PIN_10, PIN_11);
+            sendJSON["Ext4"] = state4;
+
+            String state5 = testGpios(PIN_17, PIN_18);
+            sendJSON["Ext5"] = state5;
+
+            serializeJson(sendJSON, Serial);
+            Serial.println();
             break;
           }
 
