@@ -87,8 +87,8 @@ void setup() {
   //pinMode(PIN_3, INPUT_PULLDOWN);
   //pinMode(PIN_4, INPUT_PULLDOWN);
 
-  pinMode(PIN_8, INPUT);
-  pinMode(PIN_9, INPUT);
+  // pinMode(PIN_8, INPUT);
+  // pinMode(PIN_9, INPUT);
   pinMode(PIN_10, INPUT);
   pinMode(PIN_11, INPUT);
   pinMode(PIN_17, INPUT);
@@ -185,7 +185,18 @@ void loop() {
   } else if (analogRead(PIN_3) > 1000) {
     pixels.setPixelColor(0, pixels.Color(0, 0, 50));
     pixels.show();
-  }
+  } else if (analogRead(PIN_4) > 1000) {
+
+    for (int i = 0; i < 3; i++) {
+      pixels.setPixelColor(0, pixels.Color(0, 50, 0));
+      pixels.show();
+      delay(100);
+      pixels.setPixelColor(0, pixels.Color(0, 0, 0));
+      pixels.show();
+      delay(100);
+    }
+
+  } 
 
   else {
   }
