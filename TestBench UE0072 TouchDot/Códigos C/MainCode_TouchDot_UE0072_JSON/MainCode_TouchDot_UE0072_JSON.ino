@@ -11,17 +11,15 @@
 #include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
 #endif
 
-
 // ---- Declaración de pines ----
 #define PIN_SCL 6        // SCL pin para OLED
 #define PIN_SDA 5        // SDA pin para OLED
 #define PIN_NEOPIXEL 45  // PIN de Neopixel
 
-#define PIN_1 1  // Pines Táctiles
+#define PIN_1 1  // Pines Exteriores
 #define PIN_2 2
 #define PIN_3 3
 #define PIN_4 4
-
 #define PIN_8 8
 #define PIN_9 9
 #define PIN_10 10
@@ -29,6 +27,14 @@
 #define PIN_17 17
 #define PIN_18 18
 
+#define PIN_D15 D15  // Pines interiores
+#define PIN_D17 D17
+#define PIN_D19 D19
+#define PIN_D27 D27
+#define PIN_D16 D16
+#define PIN_D18 D18
+#define PIN_D20 D20
+#define PIN_D28 D28
 
 // ---- Declaración de Constantes en Objetos ----
 #define OLED_RESET -1     // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -66,7 +72,7 @@ void setup() {
     Serial.println("SSD1306 no encontrada en I2C");
     status_OLED = "FAIL";
   } else {
-    Serial.println("SSD1306 detectada");
+    //Serial.println("SSD1306 detectada");
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     status_OLED = "OK";
   }
@@ -82,38 +88,6 @@ void setup() {
 
   // ==== Declaración de Modos en GPIOs ====
   pinMode(LED_BUILTIN, OUTPUT);
-  //pinMode(PIN_1, INPUT_PULLDOWN);
-  //pinMode(PIN_2, INPUT_PULLDOWN);
-  //pinMode(PIN_3, INPUT_PULLDOWN);
-  //pinMode(PIN_4, INPUT_PULLDOWN);
-
-  // pinMode(PIN_8, INPUT);
-  // pinMode(PIN_9, INPUT);
-  pinMode(PIN_10, INPUT);
-  pinMode(PIN_11, INPUT);
-  pinMode(PIN_17, INPUT);
-  pinMode(PIN_18, INPUT);
-
-  for (int i = 0; i < 5; i++) {
-    pixels.setPixelColor(0, pixels.Color(50, 0, 0));
-    pixels.show();
-    delay(100);
-    pixels.setPixelColor(0, pixels.Color(0, 50, 0));
-    pixels.show();
-    delay(100);
-    pixels.setPixelColor(0, pixels.Color(0, 0, 50));
-    pixels.show();
-    delay(100);
-    pixels.setPixelColor(0, pixels.Color(50, 50, 0));
-    pixels.show();
-    delay(100);
-    pixels.setPixelColor(0, pixels.Color(50, 0, 50));
-    pixels.show();
-    delay(100);
-    pixels.setPixelColor(0, pixels.Color(0, 50, 50));
-    pixels.show();
-    delay(100);
-  }
 }
 
 
@@ -130,9 +104,10 @@ void loop() {
 
       int opc = 0;
 
-      if (Function == "ping") opc = 1;      // {"Function":"ping"}
-      else if (Function == "mac") opc = 2;  // {"Function":"mac"}
-      // else if (Function == "read") opc = 3;  // {"Function":"read", "PIN":"1"}
+      if (Function == "ping") opc = 1;          // {"Function":"ping"}
+      else if (Function == "mac") opc = 2;      // {"Function":"mac"}
+      else if (Function == "gpioIn") opc = 3;   // {"Function":"gpioIn"}
+      else if (Function == "gpioOut") opc = 4;  // {"Function":"gpioOut"}
 
       switch (opc) {
 
@@ -167,6 +142,37 @@ void loop() {
             break;
           }
 
+          // Testeo de gpios dentro de la PCB
+        case 3:
+          {
+            sendJSON.clear();  // Limpia cualquier dato previo
+
+            bool state1 = testGpios(PIN_1, PIN_2);
+            sendJSON["A"] = state1;
+
+            bool state2 = testGpios(PIN_1, PIN_2);
+            Serial.println("El estado es: " + String(state1));
+
+            bool state3 = testGpios(PIN_1, PIN_2);
+            Serial.println("El estado es: " + String(state1));
+
+            bool state4 = testGpios(PIN_1, PIN_2);
+            Serial.println("El estado es: " + String(state1));
+
+            break;
+          }
+
+          // Testeo de gpios en el exterior de la PCB
+        case 4:
+          {
+            sendJSON.clear();  // Limpia cualquier dato previo
+
+
+            break;
+          }
+
+
+
         default:
           Serial.print("Opción no válida");
           break;
@@ -174,31 +180,8 @@ void loop() {
     }
 
 
-  }
-
-  else if (analogRead(PIN_1) > 1000) {
-    pixels.setPixelColor(0, pixels.Color(50, 0, 0));
-    pixels.show();
-  } else if (analogRead(PIN_2) > 1000) {
-    pixels.setPixelColor(0, pixels.Color(0, 50, 0));
-    pixels.show();
-  } else if (analogRead(PIN_3) > 1000) {
-    pixels.setPixelColor(0, pixels.Color(0, 0, 50));
-    pixels.show();
-  } else if (analogRead(PIN_4) > 1000) {
-
-    for (int i = 0; i < 3; i++) {
-      pixels.setPixelColor(0, pixels.Color(0, 50, 0));
-      pixels.show();
-      delay(100);
-      pixels.setPixelColor(0, pixels.Color(0, 0, 0));
-      pixels.show();
-      delay(100);
-    }
-
-  } 
-
-  else {
+  } else {
+    ledDemo();
   }
 }
 
@@ -209,9 +192,44 @@ bool i2cCheckDevice(uint8_t address) {
   return (error == 0);
 }
 
+String testGpios(uint8_t gpioA, uint8_t gpioB) {
+
+  bool resultAB = testSequence(gpioA, gpioB);
+  if (!resultAB) return "Fail";
+
+  delay(10);
+
+  bool resultBA = testSequence(gpioB, gpioA);
+  if (!resultBA) return "Fail";
+
+  return "OK";
+}
+
+bool testSequence(uint8_t gpioOut, uint8_t gpioIn) {
+
+  pinMode(gpioOut, OUTPUT);
+  pinMode(gpioIn, INPUT_PULLDOWN);  // Declaración de GPIO con PULLDOWN
+
+  uint8_t testPattern[] = { 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1 };
+
+  for (int i = 0; i < sizeof(testPattern); i++) {
+
+    digitalWrite(gpioOut, testPattern[i]);
+    delay(10);
+
+    int readValue = digitalRead(gpioIn);
+
+    if (readValue != testPattern[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 
 void ledDemo() {
-  int tm_delay = 150;
+  int tm_delay = 100;
 
   digitalWrite(LED_BUILTIN, HIGH);
   pixels.setPixelColor(0, pixels.Color(20, 0, 0));
