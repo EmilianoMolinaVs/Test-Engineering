@@ -135,27 +135,30 @@ void setup() {
   delay(100);
 
   // Detección e inicialización de pantalla OLED
+  bool oledConnected = false;
+
   if (!i2cCheckDevice(0x3C)) {
-    //Serial.println("✗ ERROR: Pantalla SSD1306 no detectada en I2C");
     status_OLED = "FAIL";
   } else {
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     status_OLED = "OK";
-    //Serial.println("✓ Pantalla OLED inicializada en dirección 0x3C");
+    oledConnected = true;
   }
 
   // Mostrar mensaje de bienvenida en OLED
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(20, 0);
-  display.println(F("Test de Prueba"));
-  display.setCursor(30, 10);
-  display.println(F("TouchDot"));
-  display.setCursor(10, 25);
-  display.print(F("Status OLED:  "));
-  display.println(status_OLED);
-  display.display();
+  if (oledConnected) {
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(20, 0);
+    display.println(F("Test de Prueba"));
+    display.setCursor(30, 10);
+    display.println(F("TouchDot"));
+    display.setCursor(10, 25);
+    display.print(F("Status OLED:  "));
+    display.println(status_OLED);
+    display.display();
+  }
 
   // Inicialización de GPIOs
   pinMode(LED_BUILTIN, OUTPUT);       // LED interno del MCU

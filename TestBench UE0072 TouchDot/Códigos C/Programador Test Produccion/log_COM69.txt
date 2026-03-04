@@ -13,22 +13,22 @@ Changing baud rate to 921600
 Changed.
 Configuring flash size...
 Flash will be erased from 0x00000000 to 0x003fffff...
-Compressed 4194304 bytes to 221298...
+Compressed 4194304 bytes to 221336...
 Writing at 0x00000000... (7 %)
-Writing at 0x0001181c... (14 %)
+Writing at 0x00011817... (14 %)
 Writing at 0x0001d351... (21 %)
-Writing at 0x0002b691... (28 %)
-Writing at 0x000311bc... (35 %)
-Writing at 0x00036d44... (42 %)
-Writing at 0x0003c8c0... (50 %)
-Writing at 0x0004226a... (57 %)
-Writing at 0x00047b72... (64 %)
-Writing at 0x0004d59d... (71 %)
-Writing at 0x000541e5... (78 %)
-Writing at 0x0005e454... (85 %)
-Writing at 0x00063e05... (92 %)
-Writing at 0x00069b6c... (100 %)
-Wrote 4194304 bytes (221298 compressed) at 0x00000000 in 11.2 seconds (effective 3005.5 kbit/s)...
+Writing at 0x0002b685... (28 %)
+Writing at 0x0003119d... (35 %)
+Writing at 0x00036d21... (42 %)
+Writing at 0x0003c8a0... (50 %)
+Writing at 0x0004226c... (57 %)
+Writing at 0x00047b74... (64 %)
+Writing at 0x0004d58e... (71 %)
+Writing at 0x000541a3... (78 %)
+Writing at 0x0005e41c... (85 %)
+Writing at 0x00063db7... (92 %)
+Writing at 0x00069b40... (100 %)
+Wrote 4194304 bytes (221336 compressed) at 0x00000000 in 11.2 seconds (effective 3001.7 kbit/s)...
 Hash of data verified.
 
 Leaving...
