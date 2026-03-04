@@ -121,14 +121,14 @@ void setup() {
   // Inicialización de comunicación UART serie
   Serial.begin(115200);
   delay(500);  // Espera a que la comunicación se estabilice
-  Serial.println("\n=== Sistema TouchDot Iniciado ===");
-  Serial.println("Serial a 115200 baud...");
+  //Serial.println("\n=== Sistema TouchDot Iniciado ===");
+  //Serial.println("Serial a 115200 baud...");
 
   // Inicialización del LED Neopixel RGB
   pixels.begin();
   pixels.clear();  // Apaga todos los LEDs
   pixels.show();
-  Serial.println("✓ Neopixel inicializado");
+  //Serial.println("✓ Neopixel inicializado");
 
   // Inicialización de bus I2C para pantalla OLED
   Wire.begin(PIN_SDA, PIN_SCL);
@@ -136,12 +136,12 @@ void setup() {
 
   // Detección e inicialización de pantalla OLED
   if (!i2cCheckDevice(0x3C)) {
-    Serial.println("✗ ERROR: Pantalla SSD1306 no detectada en I2C");
+    //Serial.println("✗ ERROR: Pantalla SSD1306 no detectada en I2C");
     status_OLED = "FAIL";
   } else {
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     status_OLED = "OK";
-    Serial.println("✓ Pantalla OLED inicializada en dirección 0x3C");
+    //Serial.println("✓ Pantalla OLED inicializada en dirección 0x3C");
   }
 
   // Mostrar mensaje de bienvenida en OLED
@@ -161,8 +161,8 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);       // LED interno del MCU
   pinMode(BUTTON_PIN, INPUT_PULLUP);  // Botón con resistencia interna de pull-up
 
-  Serial.println("✓ GPIOs configurados");
-  Serial.println("=== Sistema listo para pruebas ===\n");
+  //Serial.println("✓ GPIOs configurados");
+  //Serial.println("=== Sistema listo para pruebas ===\n");
 }
 
 
