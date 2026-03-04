@@ -1,112 +1,166 @@
-# Programador Test Producción
+# Programador Test Producción - TouchDot UE0072
 
-Este directorio contiene las herramientas y los binarios finales usados por el equipo de fabricación para programar las placas ESP32.
+Sistema automático para flashear y programar placas **ESP32-S3** con firmware **TouchDot UE0072**.
 
-**Propósito**: flashear lotes de dispositivos de forma rápida y reproducible.
+**Propósito**: Programación rápida y reproducible de múltiples dispositivos ESP32-S3 en línea de producción.
 
-**Archivos en esta carpeta**
-- `blink_ESP32_VSV.ino.merged.bin` : binario final para ESP32.
-- `flash_multi_esp32.sh` : script interactivo para grabar múltiples ESP32 (usa `esptool`).
-- `log_COM34.txt` : log de grabación de pruebas anteriores.
+---
 
-Requisitos previos
-- Tener acceso a un terminal Bash (Git Bash, WSL o similar) en Windows.
-- Python instalado con el paquete `pyserial` y `esptool` disponible:
+## Contenido de la Carpeta
 
-```bash
+### Scripts de Flasheo
+- **`flash_prod_esp32.sh`** - Script automático para producción. Espera indefinidamente a que conectes un ESP32, lo flashea y vuelve a esperar (ideal para línea de montaje).
+- **`flash_multi_esp32.sh`** - Script interactivo con menú para programar múltiples ESP32 ó modificar configuración.
+
+### Firmware
+- **`blink_TouchDot.ino.merged.bin`** - Binario compilado listo para flashear. Incluye bootloader y particiones.
+
+### Código Fuente
+- **`MainCode_TouchDot_UE0072_JSON/`** - Carpeta con el código fuente (.ino) y proyecto de compilación.
+  - `MainCode_TouchDot_UE0072_JSON.ino` - Código principal
+  - `build/` - Artefactos compilados
+
+### Logs
+- **`log_COMxx.txt`** - Archivos de registro de flasheos previos (para debugging).
+
+### Carpetas
+- **`build/`** - Caché de compilación y binarios intermedios.
+
+---
+
+## Requisitos Previos (Windows)
+
+### 1. **Python 3.6 o superior**
+Descargar e instalar desde [python.org](https://www.python.org/downloads/)
+- ✅ Marcar **"Add Python to PATH"** durante la instalación
+- Verificar: Abrir PowerShell y ejecutar:
+  ```powershell
+  python --version
+  ```
+
+### 2. **Git Bash (para ejecutar scripts .sh)**
+Descargar desde [git-scm.com](https://git-scm.com/download/win)
+- Instalar con opciones por defecto
+- Permite ejecutar scripts Bash en Windows
+
+### 3. **Paquetes Python necesarios**
+Abrir PowerShell o Command Prompt y ejecutar:
+
+```powershell
 pip install pyserial esptool
 ```
 
-- Permisos para acceder a puertos COM en el equipo de flashing.
+Verificar instalación:
+```powershell
+esptool.py version
+pip list | findstr esptool
+```
 
-Resumen de uso
+### 4. **Drivers USB para ESP32-S3**
+Los drivers suelen ser automáticos, pero si aparece dispositivo sin reconocer en Device Manager:
 
-1) Preparación física
-- Conectar las placas ESP32 por USB.
-- Verificar en el PC los puertos COM asignados.
+**Opción A - CH340 (común en placas chinas):**
+- Descargar: [CH340 Driver](http://www.wch.cn/downloads/CH341SER_EXE.html)
+- Instalar y reiniciar
 
-2) Flasheo ESP32 (múltiples)
-- El script `flash_multi_esp32.sh` detecta automáticamente los puertos soportados y ofrece un menú.
-- Modos de grabación configurables dentro del script:
-  - `S` = Secuencial (uno a uno).
-  - `P` = Paralelo (graba todos a la vez y genera logs `log_<PUERTO>.txt`).
+**Opción B - Verificar con esptool:**
+```powershell
+esptool.py chip_id
+```
+Conecta el ESP32 y ejecuta esto. Si detecta automáticamente, el driver está OK.
 
-Ejemplo (desde Bash en esta carpeta):
+---
+
+## Cómo Usar
+
+### **Opción 1: Modo Producción (RECOMENDADO para línea de montaje)**
+
+```bash
+./flash_prod_esp32.sh
+```
+
+**Flujo:**
+1. Script espera indefinidamente
+2. Conecta un ESP32 por USB
+3. Se detecta automáticamente
+4. Se flashea con `blink_TouchDot.ino.merged.bin`
+5. Vuelve a esperar por el siguiente dispositivo
+6. Presiona `q` para salir
+
+### **Opción 2: Múltiples Dispositivos (modo interactivo)**
 
 ```bash
 ./flash_multi_esp32.sh
 ```
 
-Pasos típicos dentro del menú:
-- 1 Verificar conexión (chip id) en todos los puertos.
-- 2 Borrar flash en todos.
-- 3 Grabar firmware (usa `blink_ESP32_VSV.ino.merged.bin` por defecto).
-- 4 Redetectar puertos.
+**Menú disponible:**
+- **1** - Verificar ID de chip en todos los puertos
+- **2** - Borrar memoria flash de todos
+- **3** - Grabar firmware
+- **4** - Redetectar puertos conectados
+- **R** - Cambiar velocidad BAUD
+- **Q** - Salir
 
-Logs
-- En modo paralelo el script crea archivos `log_COMx.txt` por puerto. Si una unidad falla, revisar su `log_<PUERTO>.txt`.
+### **Opción 3: Flashear un ESP32 Individual (desde PowerShell)**
 
-2) Flasheo ESP32 (múltiples)
-- El script `flash_multi_esp32.sh` detecta automáticamente los puertos soportados y ofrece un menú.
-- Modos de grabación configurables dentro del script:
-  - `S` = Secuencial (uno a uno).
-  - `P` = Paralelo (graba todos a la vez y genera logs `log_<PUERTO>.txt`).
-
-Ejemplo (desde Bash en esta carpeta):
-
-```bash
-./flash_multi_esp32.sh
+```powershell
+esptool.py --port COM3 write_flash -z 0x0 ./blink_TouchDot.ino.merged.bin
 ```
 
-Pasos típicos dentro del menú:
-- 1 Verificar conexión (chip id) en todos los puertos.
-- 2 Borrar flash en todos.
-- 3 Grabar firmware (usa `DualOneESP32.ino.merged.bin` por defecto).
-- 4 Redetectar puertos.
+Reemplaza `COM3` por el puerto correcto.
 
-Logs
-- En modo paralelo el script crea archivos `log_COMx.txt` por puerto. Si una unidad falla, revisar su `log_<PUERTO>.txt`.
+---
 
-3) Flasheo RP2040 (múltiples)
-- El script `flash_multi_rp2040.sh` detecta unidades tipo RP2040 buscando `INFO_UF2.TXT` en las letras de unidad (d..z).
-- Copia el archivo UF2 (`DualOne.ino.uf2`) a cada unidad detectada en paralelo. Las placas se reinician automáticamente después de copiar.
+## Troubleshooting
 
-Ejemplo (desde Bash en esta carpeta):
+### ❌ **Error: "esptool: command not found"**
+- Reinstala Python y asegúrate que está en PATH
+- Intenta: `python -m esptool ...` en lugar de `esptool ...`
 
-```bash
-./flash_multi_rp2040.sh
+### ❌ **Error: "No devices detected" / "ListPorts failed"**
+- Abre Device Manager (Win+X → Device Manager)
+- Busca "COM" en los puertos
+- Si aparece con símbolo `⚠`, falta driver USB
+- Instala drivers CH340 o FTDI según corresponda
+
+### ❌ **Port busy o access denied**
+- Cierra Arduino IDE, PuTTY, o cualquier software que use el puerto
+- Reinicia VS Code o la terminal
+
+### ❌ **Flasheo fallando a mitad**
+- Intenta con velocidad BAUD más baja: edita `BAUD="460800"` en el script
+- Revisa el cable USB (algunos cables no soportan datos)
+- Prueba otro puerto USB en el PC
+
+### ✅ **Verificar que la programación fue exitosa**
+```powershell
+esptool.py --port COM3 chip_id
 ```
 
-Flujo típico en RP2040:
-- Seleccionar opción "Redetectar" para comprobar unidades.
-- Elegir "Flashear TODAS" para copiar el UF2 a todas las unidades detectadas.
+Debería mostrar el ID del chip ESP32-S3.
 
-Comandos útiles (PowerShell / Bash)
-- Abrir Git Bash o WSL y situarse en esta carpeta:
+---
+
+## Notas Importantes
+
+- Los scripts detectan automáticamente puertos COM asignados a ESP32 (busca IDs: 10C4, 1A86, 303A)
+- En modo paralelo, se generan logs `log_COMx.txt` por cada dispositivo
+- El firmware es `.merged.bin` (incluye bootloader + app + particiones)
+- La configuración BAUD por defecto es 921600 bps (muy rápido)
+
+---
+
+## Comandos de Prueba Rápida
 
 ```bash
-cd "C:/Users/emili/OneDrive/Documentos/Ingenieria de Pruebas/Test-Engineering/TestBench UE0022 MCU_DualOne/Programador Test Produccion"
-./flash_multi_esp32.sh
-./flash_multi_rp2040.sh
+# Desde Git Bash en esta carpeta:
+
+# Detectar puertos disponibles
+python -c "import serial.tools.list_ports; [print(p.device) for p in serial.tools.list_ports.comports()]"
+
+# Ver ID del chip
+esptool.py --port COM3 chip_id
+
+# Ver info de flash
+esptool.py --port COM3 flash_id
 ```
-
-Notas de verificación (post-flash)
-- ESP32: usar `esptool --port COMx chip_id` o verificar que el dispositivo responde.
-- RP2040: la unidad desaparece al reiniciarse; comprobar que el dispositivo aparece en el sistema como prevista la placa de destino.
-
-Solución de problemas rápida
-- Si no detecta ESP32: comprobar drivers CP210x/CH340/USB-Serial y que el cable soporta datos.
-- Si no detecta RP2040: asegurar que la placa está en modo BOOTSEL y que aparece como unidad removible.
-- Revisa los archivos `log_<PUERTO>.txt` generados por `flash_multi_esp32.sh`.
-- Permisos: ejecutar Bash con permisos suficientes para acceder a COM/USB.
-
-Buenas prácticas para fabricación
-- Mantener los cables y hubs USB dedicados y probados.
-- Usar un host con puertos estables y fuente de alimentación adecuada.
-- Antes de lanzar un lote, probar 2-3 unidades en el proceso completo.
-
-Contacto
-- Si hay problemas recurrentes, contactar con el equipo de ingeniería con el log correspondiente.
-
------
-Archivo creado automáticamente para el equipo de fabricación. Si quiere que añada ejemplos adicionales o un script de verificación post-flash, indíquelo y lo añado.
