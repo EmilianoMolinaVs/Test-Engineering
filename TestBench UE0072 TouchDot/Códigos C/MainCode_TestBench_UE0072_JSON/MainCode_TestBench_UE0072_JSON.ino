@@ -13,12 +13,12 @@ se conecta al bus de pines GPIO01 y GPIO02 UARTL
 #include <Arduino.h>
 
 // ==== Declaración de pines
-#define RX2 5         // GPIO como RXD
-#define TX2 4         // GPIO como TXD
+#define RX2 D1        // GPIO como RXD
+#define TX2 D0        // GPIO como TXD
 #define RUN_BUTTON 2  // Botón de Arranque
-#define RELAYREG D1
-#define POWERREG D0
-#define RELAYA 8  // Relevadores de Accionamiento de Fuente
+#define RELAYREG 5
+#define POWERREG 4  // no se usa
+#define RELAYA 8    // Relevadores de Accionamiento de Fuente
 #define RELAYB 9
 
 // ==== Inicialización de objetos
@@ -52,7 +52,7 @@ void setup() {
   digitalWrite(RELAYA, LOW);
   digitalWrite(RELAYB, LOW);
   digitalWrite(POWERREG, HIGH);
-  digitalWrite(RELAYREG, LOW);
+  digitalWrite(RELAYREG, HIGH);
 }
 
 void loop() {
@@ -61,6 +61,7 @@ void loop() {
   if (digitalRead(RUN_BUTTON) == HIGH) {
     delay(100);
     if (digitalRead(RUN_BUTTON) == LOW) {
+      sendJSON.clear();  // Limpia cualquier dato previo
       sendJSON["Run"] = "OK";
       serializeJson(sendJSON, Serial);
       Serial.println();
@@ -126,9 +127,6 @@ void loop() {
       }
     }
   }
-
-
-
 
 
   // ---- VSV → SERIAL (respuesta) ----

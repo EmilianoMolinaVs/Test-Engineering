@@ -28,7 +28,7 @@ void loop() {
 
       // ===== Lecturas simuladas =====
       float voltaje   = 3;
-      float corriente = 0.3;
+      float corriente = 0.1;
       float potencia  = voltaje * corriente;
 
       // ===== Formato solicitado =====
