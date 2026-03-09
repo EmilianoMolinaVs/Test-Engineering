@@ -29,7 +29,7 @@
 #define SCREEN_WIDTH 128                                                   // OLED display width, in pixels
 #define SCREEN_HEIGHT 64                                                   // OLED display height, in pixels
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);  // Objeto de la OLED
-String status_OLED;                                                        // Estado de inicialización OLED
+String stateI2C;                                                           // Estado de inicialización OLED
 bool debugOLED = false;                                                    // Bandera de debug en OLED
 
 // Pines para LEDs RGB (activos a BAJAS)
@@ -42,13 +42,13 @@ bool debugOLED = false;                                                    // Ba
 #define TX2 17  // TX Serial 2 para puente con RP2040
 
 // Pines para SPI BME688 Sensor de Temperatura
-#define CS_PIN 15        // Chip Select para SPI
-#define MOSI_PIN 23      // MOSI para SPI
-#define MISO_PIN 19      // MISO para SPI
-#define SCK_PIN 18       // SCK para SPI
-SPIClass mySPI(VSPI);    // Bus SPI #0 para ESP32
-Bme68x bme;              // Objeto de Sensor de Temperatura
-bool debug_BME = false;  // Estado de inicialización de BME688
+#define CS_PIN 15       // Chip Select para SPI
+#define MOSI_PIN 23     // MOSI para SPI
+#define MISO_PIN 19     // MISO para SPI
+#define SCK_PIN 18      // SCK para SPI
+SPIClass mySPI(VSPI);   // Bus SPI #0 para ESP32
+Bme68x bme;             // Objeto de Sensor de Temperatura
+bool stateSPI = false;  // Estado de inicialización de BME688
 
 // ===== VARIABLES GLOBALES =====
 // Comunicación JSON
@@ -81,11 +81,11 @@ void setup() {
   Wire.begin(SDA_OLED, SCL_OLED);
   if (!i2cCheckDevice(0x3C)) {
     Serial.println("SSD1306 no encontrada en I2C");
-    status_OLED = "FAIL";
+    stateI2C = "FAIL";
   } else {
     Serial.println("SSD1306 detectada");
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-    status_OLED = "OK";
+    stateI2C = "OK";
     debugOLED = true;
   }
 
@@ -111,7 +111,7 @@ void setup() {
     Serial.println("Advertencia: " + bme.statusString());
   } else {
     Serial.println("Sensor BME688 SPI listo.");
-    debug_BME = true;
+    stateSPI = true;
     bme.setTPH();
     bme.setHeaterProf(300, 100);
   }
@@ -177,32 +177,40 @@ void loop() {
         case 4:  // Lectura de sensor de temperatura
           {
             sendJSON.clear();
-            Serial.println("Entro en case 4");
+
+            if (!stateSPI) {
+              sendJSON["stateSPI"] = "FAIL";
+              serializeJson(sendJSON, Serial);
+              Serial.println();
+              break;
+            }
 
             bme.setTPH();
             bme.setHeaterProf(300, 100);
 
             bme68xData data;
-            
-            for (int i = 0; i < 10; i++) {
 
+            for (int i = 0; i < 10; i++) {
+              sendJSON.clear();
               bme.setOpMode(BME68X_FORCED_MODE);
               delayMicroseconds(bme.getMeasDur());
 
               if (bme.fetchData()) {
                 bme.getData(data);
-
-                Serial.print(data.temperature);
-                Serial.print(", ");
-                Serial.print(data.pressure);
-                Serial.print(", ");
-                Serial.print(data.humidity);
-                Serial.print(", ");
-                Serial.print(data.gas_resistance);
-                Serial.print(", ");
-                Serial.println(data.status, HEX);
-                delay(500);
+                sendJSON["temp"] = data.temperature;
+                sendJSON["press"] = data.pressure;
+                sendJSON["hum"] = data.humidity;
+                sendJSON["gas"] = data.gas_resistance;
+              } else {
+                sendJSON["temp"] = "-";
+                sendJSON["press"] = "-";
+                sendJSON["hum"] = "-";
+                sendJSON["gas"] = "-";
               }
+
+              serializeJson(sendJSON, Serial);
+              Serial.println();
+              delay(500);
             }
 
             break;
