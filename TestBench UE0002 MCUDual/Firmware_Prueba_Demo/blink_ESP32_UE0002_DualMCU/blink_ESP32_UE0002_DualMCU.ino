@@ -14,13 +14,15 @@
 // ===== INCLUDES =====
 #include <Arduino.h>
 #include <Wire.h>
+#include <SPI.h>
 #include <WiFi.h>
 #include <ArduinoJson.h>
 #include <HardwareSerial.h>
 #include <Adafruit_SSD1306.h>
+#include "bme68xLibrary.h"
 
 // ===== DEFINES =====
-// Configuración de OLED
+// Configuración de OLED I2C
 #define SCL_OLED 22                                                        // SCL pin
 #define SDA_OLED 21                                                        // SDA pin
 #define OLED_RESET -1                                                      // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -38,6 +40,15 @@ bool debugOLED = false;                                                    // Ba
 // Pines para comunicación serial con RP2040
 #define RX2 16  // RX Serial 2 para puente con RP2040
 #define TX2 17  // TX Serial 2 para puente con RP2040
+
+// Pines para SPI BME688 Sensor de Temperatura
+#define CS_PIN 15        // Chip Select para SPI
+#define MOSI_PIN 23      // MOSI para SPI
+#define MISO_PIN 19      // MISO para SPI
+#define SCK_PIN 18       // SCK para SPI
+SPIClass mySPI(VSPI);    // Bus SPI #0 para ESP32
+Bme68x bme;              // Objeto de Sensor de Temperatura
+bool debug_BME = false;  // Estado de inicialización de BME688
 
 // ===== VARIABLES GLOBALES =====
 // Comunicación JSON
@@ -59,6 +70,9 @@ void setup() {
   // Inicializar comunicación serial UART0
   Serial.begin(115200);
   Serial.println("UART0 listo para comunicación...");
+
+  // Inicializar comunicación serial UART2 para puente con RP2040
+  Bridge.begin(115200, SERIAL_8N1, RX2, TX2);
 
   // Configurar WiFi en modo estación (necesario para obtener MAC)
   WiFi.mode(WIFI_MODE_STA);
@@ -86,8 +100,22 @@ void setup() {
     display.display();  // Show initial text
   }
 
-    // Inicializar comunicación serial UART2 para puente con RP2040
-    Bridge.begin(115200, SERIAL_8N1, RX2, TX2);
+  // Inicializar SPI con pines personalizados
+  Serial.println("OK Antes de mySPI");
+  mySPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN);
+  Serial.println("OK Antes de bme");
+  bme.begin(CS_PIN, mySPI);  // Iniciar BME688 en modo SPI
+  if (bme.checkStatus() == BME68X_ERROR) {
+    Serial.println("Error: no se pudo inicializar el sensor.");
+  } else if (bme.checkStatus() == BME68X_WARNING) {
+    Serial.println("Advertencia: " + bme.statusString());
+  } else {
+    Serial.println("Sensor BME688 SPI listo.");
+    debug_BME = true;
+    bme.setTPH();
+    bme.setHeaterProf(300, 100);
+  }
+
 
   // Configurar pines de LEDs RGB como salidas
   pinMode(RGB_RED, OUTPUT);
@@ -114,6 +142,7 @@ void loop() {
       if (Function == "ping") opc = 1;              // Comando ping: {"Function":"ping"}
       else if (Function == "passthrough") opc = 2;  // Comando passthrough: {"Function":"passthrough"}
       else if (Function == "mac") opc = 3;          // Comando MAC: {"Function":"mac"}
+      else if (Function == "bme") opc = 4;          // Comando BME: {"Function":"bme"}
 
       // Ejecutar la acción correspondiente
       switch (opc) {
@@ -144,7 +173,46 @@ void loop() {
             Serial.println();
             break;
           }
+
+        case 4:  // Lectura de sensor de temperatura
+          {
+            sendJSON.clear();
+            Serial.println("Entro en case 4");
+
+            bme.setTPH();
+            bme.setHeaterProf(300, 100);
+
+            bme68xData data;
+            
+            for (int i = 0; i < 10; i++) {
+
+              bme.setOpMode(BME68X_FORCED_MODE);
+              delayMicroseconds(bme.getMeasDur());
+
+              if (bme.fetchData()) {
+                bme.getData(data);
+
+                Serial.print(data.temperature);
+                Serial.print(", ");
+                Serial.print(data.pressure);
+                Serial.print(", ");
+                Serial.print(data.humidity);
+                Serial.print(", ");
+                Serial.print(data.gas_resistance);
+                Serial.print(", ");
+                Serial.println(data.status, HEX);
+                delay(500);
+              }
+            }
+
+            break;
+          }
       }
+
+
+
+
+
     } else {
       // Error en la deserialización del JSON
       sendJSON.clear();
