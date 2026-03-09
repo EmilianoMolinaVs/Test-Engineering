@@ -42,13 +42,19 @@ bool debugOLED = false;                                                    // Ba
 #define TX2 17  // TX Serial 2 para puente con RP2040
 
 // Pines para SPI BME688 Sensor de Temperatura
-#define CS_PIN 15       // Chip Select para SPI
+#define CS_PIN 5        // Chip Select para SPI
 #define MOSI_PIN 23     // MOSI para SPI
 #define MISO_PIN 19     // MISO para SPI
 #define SCK_PIN 18      // SCK para SPI
 SPIClass mySPI(VSPI);   // Bus SPI #0 para ESP32
 Bme68x bme;             // Objeto de Sensor de Temperatura
 bool stateSPI = false;  // Estado de inicialización de BME688
+
+// Pines con evaluación de entrada y salida
+#define PIN_15 15
+#define PIN_02 2
+#define PIN_39 39
+#define PIN_36 36
 
 // ===== VARIABLES GLOBALES =====
 // Comunicación JSON
@@ -114,6 +120,8 @@ void setup() {
     bme.setHeaterProf(300, 100);
   }
 
+  analogSetPinAttenuation(36, ADC_11db);
+  analogSetPinAttenuation(39, ADC_11db);
 
   // Configurar pines de LEDs RGB como salidas
   pinMode(RGB_RED, OUTPUT);
@@ -142,6 +150,7 @@ void loop() {
       else if (Function == "mac") opc = 3;          // Comando MAC: {"Function":"mac"}
       else if (Function == "bme") opc = 4;          // Comando BME: {"Function":"bme"}
       else if (Function == "testAll") opc = 5;      // Comando de Test: {"Function":"testAll"}
+      else if (Function == "6") opc = 6;            // Comando de Test: {"Function":"6"}
 
       // Ejecutar la acción correspondiente
       switch (opc) {
@@ -218,8 +227,11 @@ void loop() {
 
         case 5:  // Test completo de ESP32
           {
-
             sendJSON.clear();
+            display.clearDisplay();
+            display.setCursor(20, 0);
+            display.println(F("Test DualMCU"));
+            display.display();  // Show initial text
 
             // Estado de bus I2C
             display.setCursor(5, 15);
@@ -240,11 +252,44 @@ void loop() {
             }
             display.display();  // Show initial text
 
+            // Evaluación Pines Par 1
+            String state1 = testGpios(PIN_02, PIN_15);
+            display.setCursor(5, 35);
+            display.print("GPIOS Dig: ");
+            display.println(state1);
+            display.display();  // Show initial text
+
+            // Evaluación Pines Analógicos ADC
+            float analog1 = readADCavg(36);
+            delay(1000);
+            float analog2 = readADCavg(39);
+            Serial.println(analog1);
+            Serial.println(analog2);
+            display.setCursor(5, 45);
+            display.print("Analog: ");
+            display.display();  // Show initial text
 
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
           }
+
+
+
+        case 6:
+          {
+            for (int i = 0; i < 20; i++) {
+              float analog1 = readADCavg(36);
+              delay(1000);
+              float analog2 = readADCavg(39);
+              Serial.println("I36: " + String(analog1));
+              Serial.println("I39: " + String(analog2));
+              delay(100);
+            }
+            break;
+          }
+
+        default: break;
       }
 
 
@@ -364,4 +409,14 @@ bool testSequence(uint8_t gpioOut, uint8_t gpioIn) {
   }
 
   return true;  // Todos los bits coincidieron correctamente
+}
+
+// Función de promedio de lecturas en ADC
+int readADCavg(int pin) {
+  long sum = 0;
+  for (int i = 0; i < 8; i++) {
+    analogRead(pin);
+    sum += analogRead(pin);
+  }
+  return sum / 8;
 }
