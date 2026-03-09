@@ -94,9 +94,7 @@ void setup() {
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(20, 0);
-    display.println(F("Test de Prueba"));
-    display.setCursor(30, 10);
-    display.println(F("DualMCU"));
+    display.println(F("Test DualMCU"));
     display.display();  // Show initial text
   }
 
@@ -143,6 +141,7 @@ void loop() {
       else if (Function == "passthrough") opc = 2;  // Comando passthrough: {"Function":"passthrough"}
       else if (Function == "mac") opc = 3;          // Comando MAC: {"Function":"mac"}
       else if (Function == "bme") opc = 4;          // Comando BME: {"Function":"bme"}
+      else if (Function == "testAll") opc = 5;      // Comando de Test: {"Function":"testAll"}
 
       // Ejecutar la acción correspondiente
       switch (opc) {
@@ -215,6 +214,37 @@ void loop() {
 
             break;
           }
+
+
+        case 5:  // Test completo de ESP32
+          {
+
+            sendJSON.clear();
+
+            // Estado de bus I2C
+            display.setCursor(5, 15);
+            display.print("I2C: ");
+            display.println(stateI2C);
+            sendJSON["i2c"] = stateI2C;
+            display.display();  // Show initial text
+
+            // Estado de bus SPI
+            display.setCursor(5, 25);
+            display.print("SPI: ");
+            if (stateSPI) {
+              display.println("OK");
+              sendJSON["spi"] = "OK";
+            } else {
+              display.println("FAIL");
+              sendJSON["spi"] = "FAIL";
+            }
+            display.display();  // Show initial text
+
+
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+            break;
+          }
       }
 
 
@@ -270,4 +300,68 @@ bool i2cCheckDevice(uint8_t address) {
   Wire.beginTransmission(address);
   byte error = Wire.endTransmission();
   return (error == 0);
+}
+
+
+/*
+ * testGpios(uint8_t gpioA, uint8_t gpioB): Prueba integridad bidireccional
+ * Realiza pruebas en ambas direcciones: A->B y B->A
+ * 
+ * Parámetros:
+ *   - gpioA: Primer pin GPIO a probar
+ *   - gpioB: Segundo pin GPIO a probar
+ * Retorna:
+ *   - "OK" si ambas pruebas son exitosas
+ *   - "Fail" si hay fallos en cualquier dirección
+ */
+String testGpios(uint8_t gpioA, uint8_t gpioB) {
+
+  // Prueba A -> B
+  bool resultAB = testSequence(gpioA, gpioB);
+  if (!resultAB) return "Fail";
+
+  delay(10);  // Pausa entre pruebas
+
+  // Prueba B -> A (bidireccional)
+  bool resultBA = testSequence(gpioB, gpioA);
+  if (!resultBA) return "Fail";
+
+  return "OK";  // Ambas pruebas correctas
+}
+
+/*
+ * testSequence(uint8_t gpioOut, uint8_t gpioIn): Prueba secuencia de bit
+ * Envía un patrón de bits a través de gpioOut y verifica lectura en gpioIn
+ * 
+ * Parámetros:
+ *   - gpioOut: Pin configurado como salida
+ *   - gpioIn: Pin configurado como entrada
+ * Retorna:
+ *   - true si todos los bits coinciden
+ *   - false si hay algún error de correspondencia
+ */
+bool testSequence(uint8_t gpioOut, uint8_t gpioIn) {
+
+  // Configuración de pines
+  pinMode(gpioOut, OUTPUT);
+  pinMode(gpioIn, INPUT_PULLDOWN);  // Configuración con resistencia pull-down
+
+  // Patrón de prueba: secuencia de bits con patrones de repetición
+  uint8_t testPattern[] = { 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1 };
+
+  // Envío y verificación de cada bit del patrón
+  for (int i = 0; i < sizeof(testPattern); i++) {
+
+    digitalWrite(gpioOut, testPattern[i]);  // Envía bit
+    delay(10);                              // Espera de estabilización
+
+    int readValue = digitalRead(gpioIn);  // Lee bit
+
+    // Si la lectura no coincide con lo enviado, fallido
+    if (readValue != testPattern[i]) {
+      return false;
+    }
+  }
+
+  return true;  // Todos los bits coincidieron correctamente
 }
