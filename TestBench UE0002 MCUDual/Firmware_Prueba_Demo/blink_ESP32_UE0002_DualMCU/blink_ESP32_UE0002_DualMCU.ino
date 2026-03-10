@@ -70,6 +70,9 @@ HardwareSerial Bridge(1);
 // ===== PROTOTIPOS DE FUNCIONES =====
 void demoLED();  // Función de demostración para LEDs
 bool i2cCheckDevice(uint8_t);
+String testGpios(uint8_t gpioA, uint8_t gpioB);
+bool testSequence(uint8_t gpioOut, uint8_t gpioIn);
+int readADCavg(int pin);
 
 // ===== SETUP =====
 void setup() {
@@ -101,7 +104,7 @@ void setup() {
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(10, 0);
     display.println(F("Test DualMCU ESP32"));
-    display.display();  // Show initial text
+    display.display();  // Mostrar texto inicial
   }
 
   // Inicializar SPI con pines personalizados
@@ -231,14 +234,14 @@ void loop() {
             display.clearDisplay();
             display.setCursor(10, 0);
             display.println(F("Test DualMCU ESP32"));
-            display.display();  // Show initial text
+            display.display();  // Mostrar texto inicial
 
             // Estado de bus I2C
             display.setCursor(5, 15);
             display.print("I2C: ");
             display.println(stateI2C);
             sendJSON["i2c"] = stateI2C;
-            display.display();  // Show initial text
+            display.display();  // Mostrar texto
 
             // Estado de bus SPI
             display.setCursor(5, 25);
@@ -250,7 +253,7 @@ void loop() {
               display.println("FAIL");
               sendJSON["spi"] = "FAIL";
             }
-            display.display();  // Show initial text
+            display.display();  // Mostrar texto
 
             // Evaluación Pines Par Digital
             String stateDig = testGpios(PIN_02, PIN_15);
@@ -258,7 +261,7 @@ void loop() {
             display.print("GPIOS Dig: ");
             display.println(stateDig);
             sendJSON["dig"] = stateDig;
-            display.display();  // Show initial text
+            display.display();  // Mostrar texto
 
             // Evaluación Pines Analógicos ADC
             float analog1 = readADCavg(36);
@@ -269,8 +272,8 @@ void loop() {
             display.setCursor(5, 45);
             display.print("Analog: ");
             display.println(String(analog1) + "|" + String(analog2));
-            sendJSON["analog"] = stateDig;
-            display.display();  // Show initial text
+            sendJSON["analog"] = String(analog1) + "|" + String(analog2);  // Corregido: enviar valores analógicos
+            display.display();  // Mostrar texto
 
             serializeJson(sendJSON, Serial);
             Serial.println();
@@ -324,16 +327,19 @@ void loop() {
 void demoLED() {
   int delay_ms = 200;
 
+  // Rojo
   digitalWrite(RGB_RED, LOW);
   digitalWrite(RGB_GREEN, HIGH);
   digitalWrite(RGB_BLUE, HIGH);
   delay(delay_ms);
 
+  // Verde
   digitalWrite(RGB_RED, HIGH);
   digitalWrite(RGB_GREEN, LOW);
   digitalWrite(RGB_BLUE, HIGH);
   delay(delay_ms);
 
+  // Azul
   digitalWrite(RGB_RED, HIGH);
   digitalWrite(RGB_GREEN, HIGH);
   digitalWrite(RGB_BLUE, LOW);
@@ -416,7 +422,7 @@ bool testSequence(uint8_t gpioOut, uint8_t gpioIn) {
 int readADCavg(int pin) {
   long sum = 0;
   for (int i = 0; i < 8; i++) {
-    analogRead(pin);
+    analogRead(pin);  // Lectura dummy para estabilizar
     sum += analogRead(pin);
   }
   return sum / 8;
