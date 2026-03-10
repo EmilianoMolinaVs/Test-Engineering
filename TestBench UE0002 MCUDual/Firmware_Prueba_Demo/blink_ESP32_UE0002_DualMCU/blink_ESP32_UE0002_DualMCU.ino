@@ -99,8 +99,8 @@ void setup() {
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
-    display.setCursor(20, 0);
-    display.println(F("Test DualMCU"));
+    display.setCursor(10, 0);
+    display.println(F("Test DualMCU ESP32"));
     display.display();  // Show initial text
   }
 
@@ -229,8 +229,8 @@ void loop() {
           {
             sendJSON.clear();
             display.clearDisplay();
-            display.setCursor(20, 0);
-            display.println(F("Test DualMCU"));
+            display.setCursor(10, 0);
+            display.println(F("Test DualMCU ESP32"));
             display.display();  // Show initial text
 
             // Estado de bus I2C
@@ -252,11 +252,12 @@ void loop() {
             }
             display.display();  // Show initial text
 
-            // Evaluación Pines Par 1
-            String state1 = testGpios(PIN_02, PIN_15);
+            // Evaluación Pines Par Digital
+            String stateDig = testGpios(PIN_02, PIN_15);
             display.setCursor(5, 35);
             display.print("GPIOS Dig: ");
-            display.println(state1);
+            display.println(stateDig);
+            sendJSON["dig"] = stateDig;
             display.display();  // Show initial text
 
             // Evaluación Pines Analógicos ADC
@@ -267,14 +268,14 @@ void loop() {
             Serial.println(analog2);
             display.setCursor(5, 45);
             display.print("Analog: ");
+            display.println(String(analog1) + "|" + String(analog2));
+            sendJSON["analog"] = stateDig;
             display.display();  // Show initial text
 
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
           }
-
-
 
         case 6:
           {

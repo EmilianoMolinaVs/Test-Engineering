@@ -5,13 +5,20 @@
 #include <Adafruit_NeoPixel.h>
 #include <HardwareSerial.h>
 
-
 #define NEOP_PIN 16
 #define LED_BUIL 25
 
+// GPIOS a validar por medio de secuencia
+#define PIN_14 14
+#define PIN_11 11
+#define PIN_10 10
+#define PIN_15 15
+#define PIN_22 22
+#define PIN_23 23
+#define PIN_6 6
+#define PIN_25 25
 
-Adafruit_NeoPixel np = Adafruit_NeoPixel(1, NEOP_PIN, NEO_GRB + NEO_KHZ800);  // Objeto NeoPixel
-
+Adafruit_NeoPixel np(1, NEOP_PIN, NEO_GRB + NEO_KHZ800);  // Objeto NeoPixel
 
 // ==== Declaración de variables ====
 String JSON_entrada;
@@ -26,15 +33,19 @@ void demoLED();
 
 void setup() {
 
-  Serial1.begin(115200);
-  Serial2.begin(115200);
+  Serial.begin(115200);
+  Serial1.begin(115200);  // Inicializado en GPIO0 GPIO1
+
+  Serial2.setRX(9);
+  Serial2.setTX(8);
+  Serial2.begin(115200);  // Inicializado en GPIO4 GPIO5
 
   pinMode(LED_BUIL, OUTPUT);
 
   np.begin();  // Inicialización de objeto NeoPixel
-  np.setBrightness(20);
+  np.clear();  // Limpiar estado inicial
+  np.show();
 }
-
 
 
 void loop() {
@@ -64,7 +75,7 @@ void loop() {
         case 2:
           {
             sendJSON.clear();
-            sendJSON["ping"] = "pongRP2040";
+            sendJSON["ping"] = "pong_RP2040";
             serializeJson(sendJSON, Serial1);
             Serial1.println();
             break;
@@ -89,7 +100,7 @@ void loop() {
         case 1:
           {
             sendJSON.clear();
-            sendJSON["ping"] = "pong";
+            sendJSON["ping"] = "pong_local";
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
