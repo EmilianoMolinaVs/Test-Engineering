@@ -12,16 +12,26 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+#include <SPI.h>
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
 #include <HardwareSerial.h>
-#include <Adafruit_SSD1306.h>
+// #include <Adafruit_SSD1306.h>
+#include <Adafruit_DRV2605.h>
+#include <Adafruit_ST7735.h>  // Librería para ST7735
+#include "Adafruit_GFX.h"
+
 
 // Definiciones de pines
 #define NEOP_PIN 16  // Pin para el NeoPixel
 #define LED_BUIL 25  // Pin para el LED integrado
 #define SCL_OLED 13  // SCL OLED GPIO 13 JST
 #define SDA_OLED 12  // SDA OLED GPIO 12 JST
+#define CS_PIN 21    // Chip Select SPI Display
+#define DC_PIN 23    // DC SPI Display
+#define RST_PIN 22   // Reset SPI Display
+#define SCL_PIN 18   // Señal de Reloj SPI Display
+#define SDA_PIN 19   // Bus de datos SPI Display
 
 // GPIOS a validar por medio de secuencia
 #define PIN_14 14
@@ -33,16 +43,15 @@
 #define PIN_6 6
 #define PIN_25 25
 
+Adafruit_ST7735 display = Adafruit_ST7735(CS_PIN, DC_PIN, SDA_PIN, SCL_PIN, RST_PIN);
+
 // Objeto NeoPixel: 1 LED, en pin NEOP_PIN, tipo GRB + 800KHz
 Adafruit_NeoPixel np(1, NEOP_PIN, NEO_GRB + NEO_KHZ800);
 
-// Objeto OLED y declaraciones
-#define OLED_RESET -1                                                      // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_WIDTH 128                                                   // OLED display width, in pixels
-#define SCREEN_HEIGHT 64                                                   // OLED display height, in pixels
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);  // Objeto de la OLED
-String statusOLED;                                                         // Resultado de inicialización I2C
-bool stateOLED = false;                                                    // Estado inicial del bloque I2C
+// Objeto DRV en I2C y declaraciones
+Adafruit_DRV2605 drv;
+String statusI2C;
+bool stateI2c = false;
 
 // ==== Declaración de variables ====
 String JSON_entrada;                  // Cadena para almacenar datos JSON entrantes
@@ -53,6 +62,7 @@ StaticJsonDocument<200> sendJSON;     // Documento JSON para enviar datos
 // ===== PROTOTIPOS DE FUNCIONES =====
 void demoLED();  // Función de demostración para LEDs
 bool i2cCheckDevice(uint8_t);
+void hapticMode();
 
 
 void setup() {
@@ -60,33 +70,56 @@ void setup() {
   // Inicializar comunicación serial
   Serial.begin(115200);   // Puerto serial principal (USB)
   Serial1.begin(115200);  // Puerto serial secundario (GPIO0 GPIO1) para puente con ESP32
+  Serial.println("Serial inicializado...");
 
-  // ==== Chequeo e inicialización de OLED por I2C ====
+
+  // ==== Chequeo e inicialización de Display por SPI ====
+  display.initR(INITR_MINI160x80);
+  display.setRotation(1);
+  display.fillScreen(ST77XX_BLACK);
+
+  // Barra superior
+  display.fillRect(0, 0, 160, 15, ST77XX_BLUE);
+
+  display.setTextColor(ST77XX_WHITE);
+  display.setTextSize(1);
+  display.setCursor(5, 4);
+  display.print("UELECTRONICS");
+
+  // Titulo grande
+  display.setTextColor(ST77XX_CYAN);
+  display.setTextSize(2);
+  display.setCursor(10, 25);
+  display.print("MCU");
+
+  // Subtitulo
+  display.setTextColor(ST77XX_YELLOW);
+  display.setTextSize(2);
+  display.setCursor(65, 25);
+  display.print("DUAL");
+
+  // Línea separadora
+  display.drawLine(0, 50, 160, 50, ST77XX_GREEN);
+
+  // Mensaje estado
+  display.setTextSize(1);
+  display.setTextColor(ST77XX_WHITE);
+  display.setCursor(20, 60);
+  display.print("RP2040 ONLINE");
+
+
+  // ==== Chequeo e inicialización de Haptic Motor por I2C ====
   Wire.setSDA(SDA_OLED);
   Wire.setSCL(SCL_OLED);
-  Wire.begin();  // Inicialización de I2C de OLED
-
-  if (!i2cCheckDevice(0x3C)) {
-    Serial.println("SSD1306 no encontrada en I2C");
-    statusOLED = "FAIL";
+  Wire.begin();
+  if (!drv.begin()) {
+    Serial.println("Could not find DRV2605");
   } else {
-    Serial.println("SSD1306 detectada");
-    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-    statusOLED = "OK";
-    stateOLED = true;
+    stateI2c = true;
+    Serial.println("Haptic Motor inicializado...");
+    drv.selectLibrary(1);
+    drv.setMode(DRV2605_MODE_INTTRIG);
   }
-
-  if (stateOLED) {  // Debug de inicialización de OLED
-    display.clearDisplay();
-    display.setTextSize(1.5);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(20, 0);
-    display.println(F("Test de Prueba"));
-    display.setCursor(30, 10);
-    display.println(F("MCU DualOne"));
-    display.display();  // Show initial text
-  }
-
 
   // Configurar pin del LED integrado como salida
   pinMode(LED_BUIL, OUTPUT);
@@ -156,6 +189,7 @@ void loop() {
       // Determinar la opción basada en la función
       int opc = 0;
       if (Function == "ping") opc = 1;
+      if (Function == "hp") opc = 2;  // {"Function":"hp"}
 
       // Ejecutar la acción correspondiente
       switch (opc) {
@@ -165,6 +199,16 @@ void loop() {
             sendJSON["ping"] = "pong_local";  // Respuesta local
             serializeJson(sendJSON, Serial);  // Serializar y enviar por Serial
             Serial.println();                 // Enviar salto de línea
+            break;
+          }
+
+        case 2:
+          {
+            Serial.println("Vibrandoooo0o0o0o0");
+            for (int i = 0; i < 5; i++) {
+              hapticMode();
+              delay(1000);
+            }
             break;
           }
       }
@@ -216,4 +260,11 @@ bool i2cCheckDevice(uint8_t address) {
   Wire.beginTransmission(address);
   byte error = Wire.endTransmission();
   return (error == 0);
+}
+
+void hapticMode() {
+  drv.setWaveform(0, 118);  // vibración fuerte
+  drv.setWaveform(1, 0);    // fin
+  drv.go();
+  delay(100);
 }
