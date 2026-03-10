@@ -34,14 +34,21 @@
 #define SDA_PIN 19   // Bus de datos SPI Display
 
 // GPIOS a validar por medio de secuencia
+#define PIN_2 2
+#define PIN_3 3
+#define PIN_8 8
+#define PIN_9 9
 #define PIN_14 14
 #define PIN_11 11
 #define PIN_10 10
 #define PIN_15 15
-#define PIN_22 22
-#define PIN_23 23
-#define PIN_6 6
-#define PIN_25 25
+
+// GPIOS Analógicos para lectura de temperatura
+#define PIN_ANALOG0 26
+#define PIN_ANALOG1 27
+#define PIN_ANALOG2 28
+#define PIN_ANALOG3 29
+
 
 Adafruit_ST7735 display = Adafruit_ST7735(CS_PIN, DC_PIN, SDA_PIN, SCL_PIN, RST_PIN);
 
@@ -51,7 +58,7 @@ Adafruit_NeoPixel np(1, NEOP_PIN, NEO_GRB + NEO_KHZ800);
 // Objeto DRV en I2C y declaraciones
 Adafruit_DRV2605 drv;
 String statusI2C;
-bool stateI2c = false;
+bool stateI2C = false;
 
 // ==== Declaración de variables ====
 String JSON_entrada;                  // Cadena para almacenar datos JSON entrantes
@@ -63,6 +70,9 @@ StaticJsonDocument<200> sendJSON;     // Documento JSON para enviar datos
 void demoLED();  // Función de demostración para LEDs
 bool i2cCheckDevice(uint8_t);
 void hapticMode();
+float readTempC(uint8_t TMP_PIN);
+bool testGpios(uint8_t gpioA, uint8_t gpioB);
+bool testSequence(uint8_t gpioOut, uint8_t gpioIn);
 
 
 void setup() {
@@ -105,7 +115,7 @@ void setup() {
   display.setTextSize(1);
   display.setTextColor(ST77XX_WHITE);
   display.setCursor(20, 60);
-  display.print("RP2040 ONLINE");
+  display.print("RP2040");
 
 
   // ==== Chequeo e inicialización de Haptic Motor por I2C ====
@@ -114,8 +124,11 @@ void setup() {
   Wire.begin();
   if (!drv.begin()) {
     Serial.println("Could not find DRV2605");
+    stateI2C = false;
+    statusI2C = "FAIL";
   } else {
-    stateI2c = true;
+    stateI2C = true;
+    statusI2C = "OK";
     Serial.println("Haptic Motor inicializado...");
     drv.selectLibrary(1);
     drv.setMode(DRV2605_MODE_INTTRIG);
@@ -133,23 +146,26 @@ void setup() {
 
 void loop() {
   // Verificar si hay datos disponibles en Serial1 (comunicación con ESP32)
-  if (Serial1.available()) {
-    // Leer la cadena JSON hasta encontrar un salto de línea
-    JSON_entrada = Serial1.readStringUntil('\n');
-    // Deserializar el JSON recibido
-    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
+  if (Serial.available() || Serial1.available()) {
 
-    // Si no hay error en la deserialización
-    if (!error) {
-      // Extraer la función solicitada del JSON
-      String Function = receiveJSON["Function"];
+    if (Serial.available()) {
+      JSON_entrada = Serial.readStringUntil('\n');  // Leer la cadena JSON hasta encontrar un salto de línea
+    } else {
+      JSON_entrada = Serial1.readStringUntil('\n');  // Leer la cadena JSON hasta encontrar un salto de línea
+    }
 
-      // Determinar la opción basada en la función
+    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);  // Deserializar el JSON recibido
+
+    if (!error) {  // Si no hay error en la deserialización
+
+      String Function = receiveJSON["Function"];  // Extraer la función solicitada del JSON
+
       int opc = 0;
-      if (Function == "ping") opc = 1;
-      else if (Function == "passthrough") opc = 2;
+      if (Function == "ping_rp") opc = 1;       // {"Function":"ping_rp"}
+      else if (Function == "hmotor") opc = 2;   // {"Function":"hmotor"}
+      else if (Function == "analog") opc = 3;   // {"Function":"analog"}
+      else if (Function == "testAll") opc = 4;  // {"Function":"testAll"}
 
-      // Ejecutar la acción correspondiente
       switch (opc) {
         case 1:  // Función ping
           {
@@ -160,61 +176,117 @@ void loop() {
             break;
           }
 
-        case 2:  // Función passthrough
+        case 2:
           {
             sendJSON.clear();
-            sendJSON["ping"] = "pong_RP2040";  // Respuesta específica del RP2040
-            serializeJson(sendJSON, Serial1);
-            Serial1.println();
+            if (stateI2C) {
+              Serial.println("Inicio de Haptic Motor...");
+              for (int i = 0; i < 5; i++) {
+                hapticMode();
+                delay(200);
+              }
+            } else {
+              sendJSON["error"] = "haptic motor no initialized";
+              serializeJson(sendJSON, Serial);
+              Serial.println();
+            }
             break;
+          }
+
+        case 3:  // Lectura de valores analógicos
+          {
+            int delay_ms = 200;
+
+            float analog0 = readTempC(PIN_ANALOG0);
+            delay(delay_ms);
+            float analog1 = readTempC(PIN_ANALOG1);
+            delay(delay_ms);
+            float analog2 = readTempC(PIN_ANALOG2);
+            delay(delay_ms);
+            float analog3 = readTempC(PIN_ANALOG3);
+            delay(delay_ms);
+
+            Serial.println("Lectura analógico 0: " + String(analog0));
+            Serial.println("Lectura analógico 1: " + String(analog1));
+            Serial.println("Lectura analógico 2: " + String(analog2));
+            Serial.println("Lectura analógico 3: " + String(analog3));
+            break;
+          }
+
+        case 4:
+          {
+            sendJSON.clear();
+            int delay_ms = 100;
+
+            display.fillScreen(ST77XX_BLACK);  // Limpiar pantalla
+            display.setCursor(20, 60);
+            display.print("RP2040");
+
+            // ==== Estado de Bloque I2C ====
+            sendJSON["i2c"] = statusI2C;
+            for (int i = 0; i < 5; i++) {
+              hapticMode();
+              delay(200);
+            }
+
+            // ==== Chequeo de GPIOs digitales con secuencia lógica ====
+            bool stateDig0 = testGpios(PIN_2, PIN_3);
+            delay(delay_ms);
+            bool stateDig1 = testGpios(PIN_8, PIN_9);
+            delay(delay_ms);
+            bool stateDig2 = testGpios(PIN_10, PIN_15);
+            delay(delay_ms);
+            bool stateDig3 = testGpios(PIN_11, PIN_14);
+            delay(delay_ms);
+
+            if (stateDig0 && stateDig1 && stateDig2 && stateDig3) {
+              sendJSON["dig"] = "OK";
+            } else {
+              sendJSON["dig"] = "FAIL";
+
+              JsonArray err = sendJSON.createNestedArray("error_dig");
+
+              if (!stateDig0) err.add("GPIO2-3");
+              if (!stateDig1) err.add("GPIO8-9");
+              if (!stateDig2) err.add("GPIO10-15");
+              if (!stateDig3) err.add("GPIO11-14");
+            }
+
+            // ==== Chequeo de GPIOs analógicos con lectura de temperatura ====
+            float analog0 = readTempC(PIN_ANALOG0);
+            delay(delay_ms);
+            float analog1 = readTempC(PIN_ANALOG1);
+            delay(delay_ms);
+            float analog2 = readTempC(PIN_ANALOG2);
+            delay(delay_ms);
+            float analog3 = readTempC(PIN_ANALOG3);
+            delay(delay_ms);
+
+            // Validar rango esperado
+            bool a0 = (analog0 > 15 && analog0 < 35);
+            bool a1 = (analog1 > 15 && analog1 < 35);
+            bool a2 = (analog2 > 15 && analog2 < 35);
+            bool a3 = (analog3 > 15 && analog3 < 35);
+
+            if (a0 && a1 && a2 && a3) {
+              sendJSON["analog"] = "OK";
+            } else {
+              sendJSON["analog"] = "FAIL";
+              JsonArray errA = sendJSON.createNestedArray("error_analog");
+              if (!a0) errA.add("A0");
+              if (!a1) errA.add("A1");
+              if (!a2) errA.add("A2");
+              if (!a3) errA.add("A3");
+            }
+
+            serializeJson(sendJSON, Serial);
+            Serial.println();
           }
 
         default: break;  // No hacer nada para opciones no reconocidas
       }
     }
   }
-
-  // Verificar si hay datos disponibles en Serial (comunicación local/USB)
-  if (Serial.available()) {
-    // Leer la cadena JSON hasta encontrar un salto de línea
-    JSON_entrada = Serial.readStringUntil('\n');
-    // Deserializar el JSON recibido
-    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
-
-    // Si no hay error en la deserialización
-    if (!error) {
-      // Extraer la función solicitada del JSON
-      String Function = receiveJSON["Function"];
-
-      // Determinar la opción basada en la función
-      int opc = 0;
-      if (Function == "ping") opc = 1;
-      if (Function == "hp") opc = 2;  // {"Function":"hp"}
-
-      // Ejecutar la acción correspondiente
-      switch (opc) {
-        case 1:  // Función ping local
-          {
-            sendJSON.clear();                 // Limpiar documento JSON de salida
-            sendJSON["ping"] = "pong_local";  // Respuesta local
-            serializeJson(sendJSON, Serial);  // Serializar y enviar por Serial
-            Serial.println();                 // Enviar salto de línea
-            break;
-          }
-
-        case 2:
-          {
-            Serial.println("Vibrandoooo0o0o0o0");
-            for (int i = 0; i < 5; i++) {
-              hapticMode();
-              delay(1000);
-            }
-            break;
-          }
-      }
-    }
-  }
-
 
   // Si no hay datos en ninguno de los puertos seriales, ejecutar demostración de LEDs
   if (!Serial.available() && !Serial1.available()) {
@@ -262,9 +334,91 @@ bool i2cCheckDevice(uint8_t address) {
   return (error == 0);
 }
 
+// Función de modo de operación de HapticMotor
 void hapticMode() {
   drv.setWaveform(0, 118);  // vibración fuerte
   drv.setWaveform(1, 0);    // fin
   drv.go();
   delay(100);
+}
+
+// Función de lectura analógica de sensor TMP235
+float readTempC(uint8_t TMP_PIN) {
+  const int N = 20;
+  long sum_adc = 0;
+
+  for (int i = 0; i < N; i++) {
+    sum_adc += analogRead(TMP_PIN);
+    //Serial.println("analogRead: " + String(analogRead(TMP_PIN)));
+    delay(5);
+  }
+
+  float adc = sum_adc / (float)N;
+  float v_mv = adc * (3300.0 / 4095.0);
+  float tempC = (v_mv - 500.0f) / 10.0f;  // Curva: 0°C = 500mV, 10mV/°C
+  return tempC;
+}
+
+
+/*
+ * testGpios(uint8_t gpioA, uint8_t gpioB): Prueba integridad bidireccional
+ * Realiza pruebas en ambas direcciones: A->B y B->A
+ * 
+ * Parámetros:
+ *   - gpioA: Primer pin GPIO a probar
+ *   - gpioB: Segundo pin GPIO a probar
+ * Retorna:
+ *   - true si ambas pruebas son exitosas
+ *   - false si hay fallos en cualquier dirección
+ */
+bool testGpios(uint8_t gpioA, uint8_t gpioB) {
+
+  // Prueba A -> B
+  bool resultAB = testSequence(gpioA, gpioB);
+  if (!resultAB) return false;
+
+  delay(10);  // Pausa entre pruebas
+
+  // Prueba B -> A (bidireccional)
+  bool resultBA = testSequence(gpioB, gpioA);
+  if (!resultBA) return false;
+
+  return true;  // Ambas pruebas correctas
+}
+
+/*
+ * testSequence(uint8_t gpioOut, uint8_t gpioIn): Prueba secuencia de bit
+ * Envía un patrón de bits a través de gpioOut y verifica lectura en gpioIn
+ * 
+ * Parámetros:
+ *   - gpioOut: Pin configurado como salida
+ *   - gpioIn: Pin configurado como entrada
+ * Retorna:
+ *   - true si todos los bits coinciden
+ *   - false si hay algún error de correspondencia
+ */
+bool testSequence(uint8_t gpioOut, uint8_t gpioIn) {
+
+  // Configuración de pines
+  pinMode(gpioOut, OUTPUT);
+  pinMode(gpioIn, INPUT_PULLDOWN);  // Configuración con resistencia pull-down
+
+  // Patrón de prueba: secuencia de bits con patrones de repetición
+  uint8_t testPattern[] = { 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1 };
+
+  // Envío y verificación de cada bit del patrón
+  for (int i = 0; i < sizeof(testPattern); i++) {
+
+    digitalWrite(gpioOut, testPattern[i]);  // Envía bit
+    delay(10);                              // Espera de estabilización
+
+    int readValue = digitalRead(gpioIn);  // Lee bit
+
+    // Si la lectura no coincide con lo enviado, fallido
+    if (readValue != testPattern[i]) {
+      return false;
+    }
+  }
+
+  return true;  // Todos los bits coincidieron correctamente
 }

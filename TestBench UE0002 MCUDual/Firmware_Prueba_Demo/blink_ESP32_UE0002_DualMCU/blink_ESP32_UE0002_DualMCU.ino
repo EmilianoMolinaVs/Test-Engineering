@@ -157,10 +157,10 @@ void loop() {
 
       // Ejecutar la acción correspondiente
       switch (opc) {
-        case 1:  // Ping
+        case 1:  // Ping local
           {
             sendJSON.clear();
-            sendJSON["ping"] = "pong";
+            sendJSON["ping"] = "pong_ESP32";
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
@@ -169,7 +169,7 @@ void loop() {
         case 2:  // Passthrough
           {
             sendJSON.clear();
-            sendJSON["Function"] = "passthrough";
+            sendJSON["Function"] = "ping_rp";
             serializeJson(sendJSON, Bridge);
             Bridge.println();
             break;
