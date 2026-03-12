@@ -5,6 +5,10 @@ String jsonEntrada;
 StaticJsonDocument<256> docIn;
 StaticJsonDocument<128> docOut;
 
+float randomFloat(float min, float max) {
+  return min + (random(0, 10000) / 10000.0) * (max - min);
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Pulsar C6 listo para JSON");
@@ -27,8 +31,8 @@ void loop() {
     if (funcion == "Other" && start == "Read") {
 
       // ===== Lecturas simuladas =====
-      float voltaje   = 5;
-      float corriente = 0.5;
+      float voltaje   = randomFloat(4.51, 4.65);
+      float corriente = 1.5;
       float potencia  = voltaje * corriente;
 
       // ===== Formato solicitado =====

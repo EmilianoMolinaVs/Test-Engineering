@@ -189,6 +189,9 @@ void loop() {
               sendJSON["error"] = "haptic motor no initialized";
               serializeJson(sendJSON, Serial);
               Serial.println();
+
+              serializeJson(sendJSON, Serial1);  // Serializar y enviar por Serial1
+              Serial1.println();                 // Enviar salto de línea
             }
             break;
           }
@@ -210,26 +213,40 @@ void loop() {
             Serial.println("Lectura analógico 1: " + String(analog1));
             Serial.println("Lectura analógico 2: " + String(analog2));
             Serial.println("Lectura analógico 3: " + String(analog3));
+            sendJSON["analog0"] = String(analog0);
+            sendJSON["analog1"] = String(analog1);
+            sendJSON["analog2"] = String(analog2);
+            sendJSON["analog3"] = String(analog3);
+
+            serializeJson(sendJSON, Serial1);  // Serializar y enviar por Serial1
+            Serial1.println();                 // Enviar salto de línea
             break;
           }
 
-        case 4:
+        case 4:  // Test Completo
           {
             sendJSON.clear();
             int delay_ms = 100;
 
             display.fillScreen(ST77XX_BLACK);  // Limpiar pantalla
-            display.setCursor(20, 60);
-            display.print("RP2040");
+            display.setCursor(10, 10);
+            display.print("Test de GPIOS RP2040");
+
+            // Línea separadora
+            display.drawLine(0, 25, 160, 25, ST77XX_GREEN);
 
             // ==== Estado de Bloque I2C ====
-            sendJSON["i2c"] = statusI2C;
+            sendJSON["i2c_rp"] = statusI2C;
+            display.setCursor(10, 35);
+            display.print("I2C: ");
+            display.println(statusI2C);
             for (int i = 0; i < 5; i++) {
               hapticMode();
               delay(200);
             }
 
             // ==== Chequeo de GPIOs digitales con secuencia lógica ====
+            display.setCursor(10, 45);
             bool stateDig0 = testGpios(PIN_2, PIN_3);
             delay(delay_ms);
             bool stateDig1 = testGpios(PIN_8, PIN_9);
@@ -240,9 +257,11 @@ void loop() {
             delay(delay_ms);
 
             if (stateDig0 && stateDig1 && stateDig2 && stateDig3) {
-              sendJSON["dig"] = "OK";
+              sendJSON["dig_rp"] = "OK";
+              display.println("Gpios Dig: OK");
             } else {
-              sendJSON["dig"] = "FAIL";
+              sendJSON["dig_rp"] = "FAIL";
+              display.println("Gpios Dig: FAIL");
 
               JsonArray err = sendJSON.createNestedArray("error_dig");
 
@@ -253,6 +272,7 @@ void loop() {
             }
 
             // ==== Chequeo de GPIOs analógicos con lectura de temperatura ====
+            display.setCursor(10, 55);
             float analog0 = readTempC(PIN_ANALOG0);
             delay(delay_ms);
             float analog1 = readTempC(PIN_ANALOG1);
@@ -269,9 +289,11 @@ void loop() {
             bool a3 = (analog3 > 15 && analog3 < 35);
 
             if (a0 && a1 && a2 && a3) {
-              sendJSON["analog"] = "OK";
+              sendJSON["analog_rp"] = "OK";
+              display.println("Gpios Analog: OK");
             } else {
-              sendJSON["analog"] = "FAIL";
+              sendJSON["analog_rp"] = "FAIL";
+              display.println("Gpios Analog: FAIL");
               JsonArray errA = sendJSON.createNestedArray("error_analog");
               if (!a0) errA.add("A0");
               if (!a1) errA.add("A1");
@@ -281,6 +303,9 @@ void loop() {
 
             serializeJson(sendJSON, Serial);
             Serial.println();
+
+            serializeJson(sendJSON, Serial1);  // Serializar y enviar por Serial1
+            Serial1.println();                 // Enviar salto de línea
           }
 
         default: break;  // No hacer nada para opciones no reconocidas
@@ -299,7 +324,7 @@ void loop() {
 // Función de demostración para LEDs
 void demoLED() {
   // Retraso entre cambios de color en milisegundos
-  int delay_ms = 200;
+  int delay_ms = 100;
 
   // Secuencia de colores para la demostración
   // Rojo: LED integrado encendido, NeoPixel rojo

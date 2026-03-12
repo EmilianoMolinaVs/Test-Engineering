@@ -148,12 +148,19 @@ void loop() {
 
       // Determinar la opción basada en la función
       int opc = 0;
-      if (Function == "ping") opc = 1;              // Comando ping: {"Function":"ping"}
-      else if (Function == "passthrough") opc = 2;  // Comando passthrough: {"Function":"passthrough"}
-      else if (Function == "mac") opc = 3;          // Comando MAC: {"Function":"mac"}
-      else if (Function == "bme") opc = 4;          // Comando BME: {"Function":"bme"}
-      else if (Function == "testAll") opc = 5;      // Comando de Test: {"Function":"testAll"}
-      else if (Function == "6") opc = 6;            // Comando de Test: {"Function":"6"}
+
+      // ==== Operaciones de validación de ESP32 ====
+      if (Function == "ping") opc = 1;             // Comando ping: {"Function":"ping"}
+      else if (Function == "mac") opc = 2;         // Comando MAC: {"Function":"mac"}
+      else if (Function == "bme") opc = 3;         // Comando BME: {"Function":"bme"}
+      else if (Function == "test_esp32") opc = 4;  // Comando de Test: {"Function":"test_esp32"}
+      else if (Function == "vn_sensor") opc = 5;   // Comando de Sensores: {"Function":"vn_sensor"}
+
+      // ==== Operaciones de validación de RP2040 ====
+      else if (Function == "passthrough") opc = 6;  // Comando passthrough: {"Function":"passthrough"}
+      else if (Function == "hmotor") opc = 7;       // Comando haptic motor: {"Function":"hmotor"}
+      else if (Function == "analog_rp") opc = 8;    // Comando analógicos RP: {"Function":"analog_rp"}
+      else if (Function == "test_rp") opc = 9;      // Comando Test Rp2040: {"Function":"test_rp"}
 
       // Ejecutar la acción correspondiente
       switch (opc) {
@@ -166,16 +173,7 @@ void loop() {
             break;
           }
 
-        case 2:  // Passthrough
-          {
-            sendJSON.clear();
-            sendJSON["Function"] = "ping_rp";
-            serializeJson(sendJSON, Bridge);
-            Bridge.println();
-            break;
-          }
-
-        case 3:  // Obtener MAC
+        case 2:  // Obtener MAC
           {
             sendJSON.clear();
             String mac = WiFi.macAddress();
@@ -185,7 +183,7 @@ void loop() {
             break;
           }
 
-        case 4:  // Lectura de sensor de temperatura
+        case 3:  // Lectura de sensor de temperatura
           {
             sendJSON.clear();
 
@@ -196,6 +194,7 @@ void loop() {
               break;
             }
 
+            sendJSON["stateSPI"] = "OK";
             bme.setTPH();
             bme.setHeaterProf(300, 100);
 
@@ -228,7 +227,7 @@ void loop() {
           }
 
 
-        case 5:  // Test completo de ESP32
+        case 4:  // Test completo de ESP32
           {
             sendJSON.clear();
             display.clearDisplay();
@@ -240,7 +239,7 @@ void loop() {
             display.setCursor(5, 15);
             display.print("I2C: ");
             display.println(stateI2C);
-            sendJSON["i2c"] = stateI2C;
+            sendJSON["i2c_esp32"] = stateI2C;
             display.display();  // Mostrar texto
 
             // Estado de bus SPI
@@ -248,10 +247,10 @@ void loop() {
             display.print("SPI: ");
             if (stateSPI) {
               display.println("OK");
-              sendJSON["spi"] = "OK";
+              sendJSON["spi_esp32"] = "OK";
             } else {
               display.println("FAIL");
-              sendJSON["spi"] = "FAIL";
+              sendJSON["spi_esp32"] = "FAIL";
             }
             display.display();  // Mostrar texto
 
@@ -260,27 +259,27 @@ void loop() {
             display.setCursor(5, 35);
             display.print("GPIOS Dig: ");
             display.println(stateDig);
-            sendJSON["dig"] = stateDig;
+            sendJSON["dig_esp32"] = stateDig;
             display.display();  // Mostrar texto
 
             // Evaluación Pines Analógicos ADC
             float analog1 = readADCavg(36);
-            delay(1000);
+            delay(500);
             float analog2 = readADCavg(39);
-            Serial.println(analog1);
-            Serial.println(analog2);
+            //Serial.println(analog1);
+            //Serial.println(analog2);
             display.setCursor(5, 45);
             display.print("Analog: ");
             display.println(String(analog1) + "|" + String(analog2));
-            sendJSON["analog"] = String(analog1) + "|" + String(analog2);  // Corregido: enviar valores analógicos
-            display.display();  // Mostrar texto
+            sendJSON["analog_esp32"] = String(analog1) + "|" + String(analog2);  // Corregido: enviar valores analógicos
+            display.display();                                             // Mostrar texto
 
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
           }
 
-        case 6:
+        case 5:
           {
             for (int i = 0; i < 20; i++) {
               float analog1 = readADCavg(36);
@@ -290,6 +289,44 @@ void loop() {
               Serial.println("I39: " + String(analog2));
               delay(100);
             }
+            break;
+          }
+
+
+          // ==== Comandos de Test de RP2040 ====
+        case 6:  // Passthrough
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "ping_rp";
+            serializeJson(sendJSON, Bridge);
+            Bridge.println();
+            break;
+          }
+
+        case 7:  // Control de Haptic Motor
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "hmotor";
+            serializeJson(sendJSON, Bridge);
+            Bridge.println();
+            break;
+          }
+
+        case 8:  // Test de Analógicos de RP2040
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "analog";
+            serializeJson(sendJSON, Bridge);
+            Bridge.println();
+            break;
+          }
+
+        case 9:  // Test Completo de GPIOS RP2040
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "testAll";
+            serializeJson(sendJSON, Bridge);
+            Bridge.println();
             break;
           }
 
