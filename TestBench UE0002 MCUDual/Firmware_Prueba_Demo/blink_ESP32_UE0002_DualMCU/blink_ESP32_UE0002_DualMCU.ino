@@ -220,78 +220,10 @@ void loop() {
             break;
           }
 
+
         case 4:  // Test completo de ESP32
           {
             sendJSON.clear();
-
-
-            display.clearDisplay();
-            display.setCursor(10, 0);
-            display.println(F("Test DualMCU ESP32"));
-            display.display();  // Mostrar texto inicial
-            display.setCursor(5, 15);
-            display.print("I2C: ");
-            display.println(stateI2C);
-            display.display();  // Mostrar texto
-
-            sendJSON["i2c_esp32"] = stateI2C;
-
-
-            // Estado de bus SPI
-            display.setCursor(5, 25);
-            display.print("SPI: ");
-            if (stateSPI) {
-              display.println("OK");
-              sendJSON["spi_esp32"] = "OK";
-            } else {
-              display.println("FAIL");
-              sendJSON["spi_esp32"] = "FAIL";
-            }
-            display.display();  // Mostrar texto
-
-            // Evaluación Pines Par Digital
-            String stateDig = testGpios(PIN_02, PIN_15);
-
-            display.setCursor(5, 35);
-            display.print("GPIOS Dig: ");
-            display.println(stateDig);
-            display.display();  // Mostrar texto
-
-            sendJSON["dig_esp32"] = stateDig;
-
-            // Evaluación Pines Analógicos ADC
-            float analog1 = readADCavg(36);
-            delay(500);
-            float analog2 = readADCavg(39);
-            //Serial.println(analog1);
-            //Serial.println(analog2);
-
-
-            display.setCursor(5, 45);
-            display.print("Analog: ");
-            display.println(String(analog1) + "|" + String(analog2));
-            display.display();  // Mostrar texto
-
-
-            String statusAnalog = "FAIL";
-            if (analog1 < 10 && analog2 < 10) {
-              statusAnalog = "OK";
-            }
-
-            sendJSON["analog_esp32"] = statusAnalog;
-            //sendJSON["analog_esp32"] = String(analog1) + "|" + String(analog2);  // Corregido: enviar valores analógicos
-
-            serializeJson(sendJSON, Serial);
-            Serial.println();
-            break;
-          }
-
-
-          /*
-        case 4:  // Test completo de ESP32
-          {
-            sendJSON.clear();
-
             if (debugOLED) {
               display.clearDisplay();
               display.setCursor(10, 0);
@@ -303,7 +235,6 @@ void loop() {
               display.display();  // Mostrar texto
             }
             sendJSON["i2c_esp32"] = stateI2C;
-
 
             // Estado de bus SPI
             if (debugOLED) display.setCursor(5, 25);
@@ -353,7 +284,7 @@ void loop() {
             Serial.println();
             break;
           }
-        */
+   
 
         case 5:
           {
