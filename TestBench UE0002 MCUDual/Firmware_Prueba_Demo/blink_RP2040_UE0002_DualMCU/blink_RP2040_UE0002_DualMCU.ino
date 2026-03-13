@@ -23,6 +23,7 @@
 
 
 // Definiciones de pines
+#define NEOP_ON 17   // Alimentación del Neopixel
 #define NEOP_PIN 16  // Pin para el NeoPixel
 #define LED_BUIL 25  // Pin para el LED integrado
 #define SCL_OLED 13  // SCL OLED GPIO 13 JST
@@ -136,6 +137,8 @@ void setup() {
 
   // Configurar pin del LED integrado como salida
   pinMode(LED_BUIL, OUTPUT);
+  pinMode(NEOP_ON, OUTPUT); 
+  digitalWrite(NEOP_ON, HIGH); 
 
   // Inicializar NeoPixel
   np.begin();  // Inicialización del objeto NeoPixel
@@ -324,30 +327,30 @@ void loop() {
 // Función de demostración para LEDs
 void demoLED() {
   // Retraso entre cambios de color en milisegundos
-  int delay_ms = 100;
+  int delay_ms = 200;
 
   // Secuencia de colores para la demostración
   // Rojo: LED integrado encendido, NeoPixel rojo
   digitalWrite(LED_BUIL, HIGH);
-  np.setPixelColor(0, np.Color(255, 0, 0));  // Rojo
+  np.setPixelColor(0, np.Color(50, 0, 0));  // Rojo
   np.show();
   delay(delay_ms);
 
   // Verde: LED integrado apagado, NeoPixel verde
   digitalWrite(LED_BUIL, LOW);
-  np.setPixelColor(0, np.Color(0, 255, 0));  // Verde
+  np.setPixelColor(0, np.Color(0, 50, 0));  // Verde
   np.show();
   delay(delay_ms);
 
   // Azul: LED integrado encendido, NeoPixel azul
   digitalWrite(LED_BUIL, HIGH);
-  np.setPixelColor(0, np.Color(0, 0, 255));  // Azul
+  np.setPixelColor(0, np.Color(0, 0, 50));  // Azul
   np.show();
   delay(delay_ms);
 
   // Blanco: LED integrado apagado, NeoPixel blanco
   digitalWrite(LED_BUIL, LOW);
-  np.setPixelColor(0, np.Color(255, 255, 255));  // Blanco
+  np.setPixelColor(0, np.Color(50, 0, 50));  // Blanco
   np.show();
   delay(delay_ms);
 }
