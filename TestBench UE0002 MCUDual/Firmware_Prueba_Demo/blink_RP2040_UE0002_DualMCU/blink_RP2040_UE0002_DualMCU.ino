@@ -344,13 +344,13 @@ void demoLED() {
 
   // Azul: LED integrado encendido, NeoPixel azul
   digitalWrite(LED_BUIL, HIGH);
-  np.setPixelColor(0, np.Color(0, 0, 50));  // Azul
+  np.setPixelColor(0, np.Color(50, 0, 50));  // Violeta
   np.show();
   delay(delay_ms);
 
   // Blanco: LED integrado apagado, NeoPixel blanco
   digitalWrite(LED_BUIL, LOW);
-  np.setPixelColor(0, np.Color(50, 0, 50));  // Blanco
+  np.setPixelColor(0, np.Color(0, 0, 50));  // Azul
   np.show();
   delay(delay_ms);
 }
