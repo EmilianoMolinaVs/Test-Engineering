@@ -52,7 +52,7 @@ float medirCorriente() {
   float load_V = bus_V + shunt_V;
   float power_W = load_V * current_A;
 
-  float current_mA = round(current_A * 1000);
+  float current_mA = current_A * 1000;
 
   return current_mA;
 }
