@@ -28,11 +28,11 @@
 #define LED_BUIL 25  // Pin para el LED integrado
 #define SCL_OLED 13  // SCL OLED GPIO 13 JST
 #define SDA_OLED 12  // SDA OLED GPIO 12 JST
-#define CS_PIN 21    // Chip Select SPI Display
+#define CS_PIN 22    // Chip Select SPI Display
 #define DC_PIN 23    // DC SPI Display
-#define RST_PIN 22   // Reset SPI Display
-#define SCL_PIN 18   // Señal de Reloj SPI Display
-#define SDA_PIN 19   // Bus de datos SPI Display
+#define RST_PIN 21   // Reset SPI Display
+#define SCL_PIN 19   // Señal de Reloj SPI Display
+#define SDA_PIN 18   // Bus de datos SPI Display
 
 // GPIOS a validar por medio de secuencia
 #define PIN_2 2

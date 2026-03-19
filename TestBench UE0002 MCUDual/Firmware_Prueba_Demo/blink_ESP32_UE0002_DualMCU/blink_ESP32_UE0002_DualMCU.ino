@@ -23,13 +23,13 @@
 
 // ===== DEFINES =====
 // Configuración de OLED I2C
-#define SCL_OLED 22                                                        // SCL pin
-#define SDA_OLED 21                                                        // SDA pin
+#define SCL_OLED 21                                                        // SCL pin
+#define SDA_OLED 22                                                        // SDA pin
 #define OLED_RESET -1                                                      // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_WIDTH 128                                                   // OLED display width, in pixels
 #define SCREEN_HEIGHT 64                                                   // OLED display height, in pixels
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);  // Objeto de la OLED
-String stateI2C;                                                           // Estado de inicialización OLED
+String stateI2C;                                                            // Estado de inicialización OLED
 bool debugOLED = false;                                                    // Bandera de debug en OLED
 
 // Pines para LEDs RGB (activos a BAJAS)
