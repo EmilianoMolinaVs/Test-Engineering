@@ -29,7 +29,7 @@
 #define SCREEN_WIDTH 128                                                   // OLED display width, in pixels
 #define SCREEN_HEIGHT 64                                                   // OLED display height, in pixels
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);  // Objeto de la OLED
-String stateI2C;                                                            // Estado de inicialización OLED
+String stateI2C;                                                           // Estado de inicialización OLED
 bool debugOLED = false;                                                    // Bandera de debug en OLED
 
 // Pines para LEDs RGB (activos a BAJAS)
@@ -42,9 +42,9 @@ bool debugOLED = false;                                                    // Ba
 #define TX2 17  // TX Serial 2 para puente con RP2040
 
 // Pines para SPI BME688 Sensor de Temperatura
-#define CS_PIN 5        // Chip Select para SPI
-#define MOSI_PIN 23     // MOSI para SPI
-#define MISO_PIN 19     // MISO para SPI
+#define CS_PIN 23       // Chip Select para SPI
+#define MOSI_PIN 19     // MOSI para SPI SDI
+#define MISO_PIN 5      // MISO para SPI SDO
 #define SCK_PIN 18      // SCK para SPI
 SPIClass mySPI(VSPI);   // Bus SPI #0 para ESP32
 Bme68x bme;             // Objeto de Sensor de Temperatura
@@ -265,7 +265,7 @@ void loop() {
             //Serial.println(analog1);
             //Serial.println(analog2);
 
-            if(debugOLED){
+            if (debugOLED) {
               display.setCursor(5, 45);
               display.print("Analog: ");
               display.println(String(analog1) + "|" + String(analog2));
@@ -284,7 +284,7 @@ void loop() {
             Serial.println();
             break;
           }
-   
+
 
         case 5:
           {
