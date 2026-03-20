@@ -74,7 +74,7 @@ void setup() {
   pinMode(RELAYCom, OUTPUT);   // Relay de CH340 para Alimentación por USBC
   pinMode(RUN_BUTTON, INPUT);  // Botonera de Arranque
 
-  digitalWrite(RELAYCom, HIGH);  // Estado inicial: Cargador alimentando DualMCU
+  digitalWrite(RELAYCom, LOW);  // Estado inicial: Cargador alimentando DualMCU
   digitalWrite(RELAYA, LOW);
   digitalWrite(RELAYB, LOW);
 }
@@ -224,7 +224,7 @@ void loop() {
             int muestras = 10;
             // Bucle de medición de valores
             for (int i = 0; i < muestras; i++) {
-              float corriente = medirCorriente();
+              float corriente = medirCorriente() + 80;
               meas += corriente;
               //Serial.println("Medición: " + String(corriente));
               delay(20);

@@ -273,7 +273,7 @@ void loop() {
             }
 
             String statusAnalog = "FAIL";
-            if (analog1 < 10 && analog2 < 10) {
+            if (analog1 > 3500 && analog2 > 3500) {
               statusAnalog = "OK";
             }
 

@@ -1,6 +1,0 @@
-esptool.py v4.8.1
-Serial port COM81
-
-A fatal error occurred: Could not open COM81, the port is busy or doesn't exist.
-(could not open port 'COM81': PermissionError(13, 'Acceso denegado.', None, 5))
-
