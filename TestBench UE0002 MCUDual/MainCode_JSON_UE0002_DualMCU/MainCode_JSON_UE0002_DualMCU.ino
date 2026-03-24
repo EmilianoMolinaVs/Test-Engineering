@@ -39,24 +39,24 @@
 // ║                    LIBRERÍAS NECESARIAS                       ║
 // ╚════════════════════════════════════════════════════════════════╝
 
-#include <Wire.h>                // Comunicación I2C
-#include <HardwareSerial.h>      // UART por hardware
-#include <ArduinoJson.h>         // Procesamiento de JSON
-#include <Arduino.h>             // Funciones base Arduino
-#include <Adafruit_INA219.h>     // Sensor de corriente INA219
+#include <Wire.h>             // Comunicación I2C
+#include <HardwareSerial.h>   // UART por hardware
+#include <ArduinoJson.h>      // Procesamiento de JSON
+#include <Arduino.h>          // Funciones base Arduino
+#include <Adafruit_INA219.h>  // Sensor de corriente INA219
 
 // ╔════════════════════════════════════════════════════════════════╗
 // ║                   CONFIGURACIÓN DE PINES                      ║
 // ╚════════════════════════════════════════════════════════════════╝
 
-#define RX2 D1         // GPIO04 - Recepción UART para ESP32
-#define TX2 D0         // GPIO05 - Transmisión UART para ESP32
-#define RUN_BUTTON 2   // GPIO02 - Botón de arranque del TestBench
-#define RELAYCom 20    // GPIO20 - Relé para alimentación por USB-C (CH340)
-#define I2C_SDA 6      // GPIO06 - Línea SDA del sensor de corriente
-#define I2C_SCL 7      // GPIO07 - Línea SCL del sensor de corriente
-#define RELAYA 8       // GPIO08 - Relé A de fuente de alimentación
-#define RELAYB 9       // GPIO09 - Relé B de fuente de alimentación
+#define RX2 D1        // GPIO04 - Recepción UART para ESP32
+#define TX2 D0        // GPIO05 - Transmisión UART para ESP32
+#define RUN_BUTTON 2  // GPIO02 - Botón de arranque del TestBench
+#define RELAYCom 20   // GPIO20 - Relé para alimentación por USB-C (CH340)
+#define I2C_SDA 6     // GPIO06 - Línea SDA del sensor de corriente
+#define I2C_SCL 7     // GPIO07 - Línea SCL del sensor de corriente
+#define RELAYA 8      // GPIO08 - Relé A de fuente de alimentación
+#define RELAYB 9      // GPIO09 - Relé B de fuente de alimentación
 
 // ╔════════════════════════════════════════════════════════════════╗
 // ║                   INICIALIZACIÓN DE OBJETOS                   ║
@@ -71,11 +71,11 @@ Adafruit_INA219 ina219_out(0x41);  // Sensor de corriente de salida (dirección 
 // ║                  VARIABLES DE COMUNICACIÓN                    ║
 // ╚════════════════════════════════════════════════════════════════╝
 
-String JSON_entrada;                    // Buffer para recibir JSON desde PagWeb
-StaticJsonDocument<256> receiveJSON;    // Estructura para parsear JSON recibido
+String JSON_entrada;                  // Buffer para recibir JSON desde PagWeb
+StaticJsonDocument<256> receiveJSON;  // Estructura para parsear JSON recibido
 
-String JSON_lectura;                    // Buffer para enviar JSON de datos
-StaticJsonDocument<256> sendJSON;       // Estructura para armar JSON a enviar
+String JSON_lectura;               // Buffer para enviar JSON de datos
+StaticJsonDocument<256> sendJSON;  // Estructura para armar JSON a enviar
 
 
 
@@ -107,7 +107,7 @@ float medirCorriente() {
 
   // Compensación de offset
   shunt_mV -= shuntOffset_mV;
-  
+
   // Cálculos derivados
   float shunt_V = shunt_mV / 1000.0;
   float current_A = shunt_V / R_SHUNT;  // Corriente en Amperios
@@ -135,12 +135,12 @@ float medirCorriente() {
  */
 void setup() {
   // Inicialización de comunicaciones seriales
-  Serial.begin(115200);                      // Serial hacia TestBench/PagWeb
-  USB.begin(115200, SERIAL_8N1, RX2, TX2);   // UART hacia ESP32 de DualMCU
+  Serial.begin(115200);                     // Serial hacia TestBench/PagWeb
+  USB.begin(115200, SERIAL_8N1, RX2, TX2);  // UART hacia ESP32 de DualMCU
 
   // Configuración del bus I2C
   I2CBus.begin(I2C_SDA, I2C_SCL);
-  
+
   // Inicialización del sensor INA219 de entrada
   if (!ina219_in.begin(&I2CBus)) {
     Serial.println("⚠️ Error: INA219 no encontrado en direccion 0x40");
@@ -172,11 +172,11 @@ void setup() {
  *   3. Retransmisión de mensajes JSON desde USB (ESP32)
  */
 void loop() {
-  
+
   // ════════════════════════════════════════════════════════════════
   // ⓵ DETECCIÓN DEL BOTÓN DE ARRANQUE
   // ════════════════════════════════════════════════════════════════
-  
+
   if (digitalRead(RUN_BUTTON) == HIGH) {
     delay(200);  // Anti-debounce
 
@@ -192,7 +192,7 @@ void loop() {
   // ════════════════════════════════════════════════════════════════
   // ⓶ PROCESAMIENTO DE COMANDOS DESDE SERIAL (PagWeb)
   // ════════════════════════════════════════════════════════════════
-  
+
   if (Serial.available()) {
     // Lectura de comando JSON completo
     JSON_entrada = Serial.readStringUntil('\n');
@@ -208,22 +208,22 @@ void loop() {
       // ╰─────────────────────────────────────────────────────────────╯
 
       // ─ Comandos de validación ESP32 ─
-      if (Function == "ping")           opc = 1;
-      else if (Function == "mac")       opc = 2;
-      else if (Function == "bme")       opc = 3;
-      else if (Function == "test_esp32") opc = 4;
-      else if (Function == "vn_sensor") opc = 5;
-      
+      if (Function == "ping") opc = 1;             // {"Function":"ping"}
+      else if (Function == "mac") opc = 2;         // {"Function":"mac"}
+      else if (Function == "bme") opc = 3;         // {"Function":"bme"}
+      else if (Function == "test_esp32") opc = 4;  // {"Function":"test_esp32"}
+      else if (Function == "vn_sensor") opc = 5;   // {"Function":"vn_sensor"}
+
       // ─ Comandos de validación RP2040 ─
-      else if (Function == "passthrough") opc = 6;
-      else if (Function == "hmotor")      opc = 7;
-      else if (Function == "analog_rp")   opc = 8;
-      else if (Function == "test_rp")     opc = 9;
-      
+      else if (Function == "passthrough") opc = 6;  // {"Function":"passthrough"}
+      else if (Function == "hmotor") opc = 7;       // {"Function":"hmotor"}
+      else if (Function == "analog_rp") opc = 8;    // {"Function":"analog_rp"}
+      else if (Function == "test_rp") opc = 9;      // {"Function":"test_rp"}
+
       // ─ Comandos de control TestBench ─
-      else if (Function == "VCC_ON")    opc = 10;
-      else if (Function == "VCC_OFF")   opc = 11;
-      else if (Function == "meas_curr") opc = 12;
+      else if (Function == "VCC_ON") opc = 10;     // {"Function":"VCC_ON"}
+      else if (Function == "VCC_OFF") opc = 11;    // {"Function":"VCC_OFF"}
+      else if (Function == "meas_curr") opc = 12;  // {"Function":"meas_curr"}
 
       // ╭─────────────────────────────────────────────────────────────╮
       // │ EJECUCIÓN DE COMANDOS                                       │
@@ -233,146 +233,158 @@ void loop() {
         // ───────────────────────────────────────────────────────────
         // ESP32 - COMANDO: PING (Verificación de conexión)
         // ───────────────────────────────────────────────────────────
-        case 1: {
-          sendJSON.clear();
-          sendJSON["Function"] = "ping";
-          serializeJson(sendJSON, USB);
-          USB.println();
-          break;
-        }
+        case 1:
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "ping";
+            serializeJson(sendJSON, USB);
+            USB.println();
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // ESP32 - COMANDO: MAC (Solicitar dirección MAC)
         // ───────────────────────────────────────────────────────────
-        case 2: {
-          sendJSON.clear();
-          sendJSON["Function"] = "mac";
-          serializeJson(sendJSON, USB);
-          USB.println();
-          break;
-        }
+        case 2:
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "mac";
+            serializeJson(sendJSON, USB);
+            USB.println();
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // ESP32 - COMANDO: BME (Sensor ambiental)
         // ───────────────────────────────────────────────────────────
-        case 3: {
-          sendJSON.clear();
-          sendJSON["Function"] = "bme";
-          serializeJson(sendJSON, USB);
-          USB.println();
-          break;
-        }
+        case 3:
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "bme";
+            serializeJson(sendJSON, USB);
+            USB.println();
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // ESP32 - COMANDO: TEST_ESP32 (Test general del ESP32)
         // ───────────────────────────────────────────────────────────
-        case 4: {
-          sendJSON.clear();
-          sendJSON["Function"] = "test_esp32";
-          serializeJson(sendJSON, USB);
-          USB.println();
-          break;
-        }
+        case 4:
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "test_esp32";
+            serializeJson(sendJSON, USB);
+            USB.println();
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // ESP32 - COMANDO: VN_SENSOR (Sensor de voltaje nominal)
         // ───────────────────────────────────────────────────────────
-        case 5: {
-          sendJSON.clear();
-          sendJSON["Function"] = "vn_sensor";
-          serializeJson(sendJSON, USB);
-          USB.println();
-          break;
-        }
+        case 5:
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "vn_sensor";
+            serializeJson(sendJSON, USB);
+            USB.println();
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // RP2040 - COMANDO: PASSTHROUGH (Pasar comandos directos)
         // ───────────────────────────────────────────────────────────
-        case 6: {
-          sendJSON.clear();
-          sendJSON["Function"] = "passthrough";
-          serializeJson(sendJSON, USB);
-          USB.println();
-          break;
-        }
+        case 6:
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "passthrough";
+            serializeJson(sendJSON, USB);
+            USB.println();
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // RP2040 - COMANDO: HMOTOR (Motor háptico)
         // ───────────────────────────────────────────────────────────
-        case 7: {
-          sendJSON.clear();
-          sendJSON["Function"] = "hmotor";
-          serializeJson(sendJSON, USB);
-          USB.println();
-          break;
-        }
+        case 7:
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "hmotor";
+            serializeJson(sendJSON, USB);
+            USB.println();
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // RP2040 - COMANDO: ANALOG_RP (Entradas analógicas RP2040)
         // ───────────────────────────────────────────────────────────
-        case 8: {
-          sendJSON.clear();
-          sendJSON["Function"] = "analog_rp";
-          serializeJson(sendJSON, USB);
-          USB.println();
-          break;
-        }
+        case 8:
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "analog_rp";
+            serializeJson(sendJSON, USB);
+            USB.println();
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // RP2040 - COMANDO: TEST_RP (Test general del RP2040)
         // ───────────────────────────────────────────────────────────
-        case 9: {
-          sendJSON.clear();
-          sendJSON["Function"] = "test_rp";
-          serializeJson(sendJSON, USB);
-          USB.println();
-          break;
-        }
+        case 9:
+          {
+            sendJSON.clear();
+            sendJSON["Function"] = "test_rp";
+            serializeJson(sendJSON, USB);
+            USB.println();
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // TESTBENCH - COMANDO: VCC_ON (Activar alimentación)
         // ───────────────────────────────────────────────────────────
-        case 10: {
-          digitalWrite(RELAYCom, HIGH);  // ⚡ Activar relé
-          delay(50);                     // Estabilización
-          break;
-        }
+        case 10:
+          {
+            digitalWrite(RELAYCom, HIGH);  // ⚡ Activar relé
+            delay(50);                     // Estabilización
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // TESTBENCH - COMANDO: VCC_OFF (Desactivar alimentación)
         // ───────────────────────────────────────────────────────────
-        case 11: {
-          digitalWrite(RELAYCom, LOW);   // ⭕ Desactivar relé
-          delay(50);                     // Estabilización
-          break;
-        }
+        case 11:
+          {
+            digitalWrite(RELAYCom, LOW);  // ⭕ Desactivar relé
+            delay(50);                    // Estabilización
+            break;
+          }
 
         // ───────────────────────────────────────────────────────────
         // TESTBENCH - COMANDO: MEAS_CURR (Medir corriente)
         // ───────────────────────────────────────────────────────────
-        case 12: {
-          delay(50);  // Pre-estabilización
-          sendJSON.clear();
-          
-          // Tomar múltiples muestras para promediar
-          float meas = 0;
-          const int muestras = 10;
-          
-          for (int i = 0; i < muestras; i++) {
-            float corriente = medirCorriente();
-            meas += corriente;
-            delay(20);  // Intervalo entre muestras
-          }
-          
-          // Calcular promedio
-          float avg_current = meas / muestras;
+        case 12:
+          {
+            delay(50);  // Pre-estabilización
+            sendJSON.clear();
 
-          // Enviar resultado
-          sendJSON["current"] = avg_current;
-          serializeJson(sendJSON, Serial);
-          Serial.println();
-          break;
-        }
+            // Tomar múltiples muestras para promediar
+            float meas = 0;
+            const int muestras = 10;
+
+            for (int i = 0; i < muestras; i++) {
+              float corriente = medirCorriente();
+              meas += corriente;
+              delay(20);  // Intervalo entre muestras
+            }
+
+            // Calcular promedio
+            float avg_current = meas / muestras;
+
+            // Enviar resultado
+            sendJSON["current"] = avg_current;
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+            break;
+          }
       }
     }
   }
@@ -380,7 +392,7 @@ void loop() {
   // ════════════════════════════════════════════════════════════════
   // ⓷ RETRANSMISIÓN DE MENSAJES DESDE USB (ESP32 → PagWeb)
   // ════════════════════════════════════════════════════════════════
-  
+
   if (USB.available()) {
     String incoming = USB.readStringUntil('\n');  // Leer línea completa desde ESP32
 
