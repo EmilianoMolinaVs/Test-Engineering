@@ -2,158 +2,139 @@
 #include <HardwareSerial.h>
 #include <ArduinoJson.h>
 
-// Pines para la IT8511A (Serial 1)
+// Pines para la carga (Serial 1)
 #define RX1 4 
 #define TX1 5 
 
-// Objetos Serial
 HardwareSerial ITECH(1); 
 
-// Variables de Control
-bool flagFinish = false;
-bool responseStatus = false;
-int numMues = 10;
-String lastConf = "None";
+// --- Variables Globales ---
+struct Step {
+  float current;
+  float duration;
+};
 
-// Tareas de FreeRTOS (Cores)
-TaskHandle_t TaskCore1;
-TaskHandle_t TaskCore2;
+Step softwareList[30]; 
+int totalSteps = 0;
+bool isListReady = false;
+int numSamples = 10; // Default de muestras para el comando "Read"
 
-// --- FUNCIONES DE COMANDO SCPI ---
+// --- Funciones de Comunicación ---
 
-void configLoad(String funcion, JsonArray resolution, JsonArray range) {
-  ITECH.println("SYST:REM");
-  delay(50);
+void sendSCPI(String cmd) {
+  ITECH.println(cmd);
+  // Pequeño respiro para que la carga procese el comando
+  delay(50); 
+}
+
+void configLoad(String funcion, JsonVariant res, JsonVariant range) {
+  sendSCPI("SYST:REM");
+  sendSCPI("INP 0");
+  sendSCPI("*CLS");
 
   if (funcion == "LIST") {
-    int steps = resolution[0];
-    float currStep = resolution[1];
-    float timeStep = resolution[2];
+    totalSteps = res[0] | 0;
+    float stepAmps = res[1] | 0.1;
+    float stepSecs = res[2] | 1.0;
 
-    ITECH.println("FUNC LIST");
-    ITECH.print("CURR:RANG "); ITECH.println(range[0].as<float>());
-    ITECH.print("LIST:STEP "); ITECH.println(steps);
+    // Guardamos la escalera en memoria del ESP32
+    for (int i = 0; i < totalSteps && i < 30; i++) {
+      softwareList[i].current = (i + 1) * stepAmps;
+      softwareList[i].duration = stepSecs;
+    }
     
-    for (int i = 0; i < steps; i++) {
-      float currentVal = (i + 1) * currStep;
-      ITECH.print("LIST:CURR "); ITECH.print(i + 1); ITECH.print(", "); ITECH.println(currentVal, 3);
-      ITECH.print("LIST:WID "); ITECH.print(i + 1); ITECH.print(", "); ITECH.println(timeStep, 3);
-      delay(20);
-    }
-    ITECH.println("LIST:COUNT 0");
-    responseStatus = true;
+    sendSCPI("FUNC CURRent");
+    String rangeCmd = "CURRent:RANGe " + String(range[0].as<float>());
+    sendSCPI(rangeCmd);
+    
+    isListReady = true;
+    Serial.println("{\"DEBUG\":\"Lista preparada por Software (Modo CC)\"}");
   } 
-  else if (funcion == "DYN") {
-    ITECH.println("FUNC DYN");
-    ITECH.print("CURR:RANG "); ITECH.println(range[0].as<float>());
-    ITECH.print("DYN:ALEV "); ITECH.println(resolution[0].as<float>(), 3);
-    ITECH.print("DYN:AWID "); ITECH.println(resolution[1].as<float>(), 3);
-    ITECH.print("DYN:BLEV "); ITECH.println(resolution[2].as<float>(), 3);
-    ITECH.print("DYN:BWID "); ITECH.println(resolution[3].as<float>(), 3);
-    responseStatus = true;
-  }
-  else if (funcion == "RST") {
-    ITECH.println("*RST");
-    responseStatus = true;
-  }
-}
-
-void startLoad(String startCmd) {
-  if (startCmd == "CFG_ON") {
-    ITECH.println("SYST:REM");
-    delay(50);
-    ITECH.println("INP 1");
-  } else if (startCmd == "CFG_OFF") {
-    ITECH.println("INP 0");
+  else if (funcion == "DYNAMic") {
+    // Usamos los nombres largos que confirmaste
+    String rangeCmd = "CURRent:RANGe " + String(range[0].as<float>());
+    sendSCPI(rangeCmd);
+    sendSCPI("FUNC DYNAMic");
+    
+    sendSCPI("DYNAMic:ALEVel " + String(res[0].as<float>(), 3));
+    sendSCPI("DYNAMic:AWIDth " + String(res[1].as<float>(), 3));
+    sendSCPI("DYNAMic:BLEVel " + String(res[2].as<float>(), 3));
+    sendSCPI("DYNAMic:BWIDth " + String(res[3].as<float>(), 3));
+    Serial.println("{\"DEBUG\":\"Modo DYNAMic configurado\"}");
   }
 }
 
-// --- CORE 0: LECTURA DE JSON (PC -> ESP32) ---
-void TaskJSONReader(void * pvParameters) {
-  for (;;) {
-    if (Serial.available()) {
-      StaticJsonDocument<512> doc;
-      DeserializationError error = deserializeJson(doc, Serial);
+void runSoftwareList() {
+  Serial.println("{\"DEBUG\":\"Iniciando secuencia LIST...\"}");
+  sendSCPI("INP 1");
+  for (int i = 0; i < totalSteps; i++) {
+    sendSCPI("CURRent " + String(softwareList[i].current, 3));
+    // Esperamos el tiempo definido para este paso
+    delay(softwareList[i].duration * 1000);
+  }
+  // isListReady = false; // Descomenta si quieres que solo corra una vez
+}
 
-      if (!error) {
-        String funcion = doc["Funcion"] | "";
-        String start = doc["Start"] | "";
+void takeMeasurements() {
+  DynamicJsonDocument res(2048);
+  JsonArray muestras = res.createNestedArray("muestras");
 
-        if (funcion != "Other" && funcion != "") {
-          lastConf = funcion;
-          configLoad(funcion, doc["Config"]["Resolution"], doc["Config"]["Range"]);
-          
-          // Respuesta JSON inmediata
-          StaticJsonDocument<256> res;
-          res["CONF"] = lastConf;
-          res["response"] = responseStatus;
-          res["muestras"] = (char*)NULL;
-          serializeJson(res, Serial);
-          Serial.println();
-        } 
-        else if (start == "Read") {
-          flagFinish = true; // Dispara el CORE 1
-        } 
-        else {
-          startLoad(start);
-          StaticJsonDocument<256> res;
-          res["CONF"] = start;
-          res["response"] = true;
-          serializeJson(res, Serial);
-          Serial.println();
-        }
-      }
+  for (int i = 0; i < numSamples; i++) {
+    ITECH.println("MEAS:VOLT?;CURR?;POW?");
+    
+    unsigned long t = millis();
+    while(!ITECH.available() && (millis() - t < 300)); 
+
+    if (ITECH.available()) {
+      String raw = ITECH.readStringUntil('\n');
+      raw.trim();
+      raw.replace("\t", ";"); 
+      muestras.add(raw);
     }
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+    delay(100); 
   }
+
+  res["CONF"] = "ReadDone";
+  res["response"] = true;
+  serializeJson(res, Serial);
+  Serial.println();
 }
 
-// --- CORE 1: LECTURA DE MEDICIONES (ITECH -> PC) ---
-void TaskMeasure(void * pvParameters) {
-  for (;;) {
-    if (flagFinish) {
-      StaticJsonDocument<1024> res;
-      JsonArray muestras = res.createNestedArray("muestras");
-
-      for (int i = 0; i < numMues; i++) {
-        ITECH.println("MEAS:VOLT?;CURR?;POW?");
-        delay(150); 
-
-        if (ITECH.available()) {
-          String data = ITECH.readStringUntil('\n');
-          data.trim();
-          data.replace("\t", ";"); // Formato voltaje;corriente;potencia
-          muestras.add(data);
-        } else {
-          muestras.add("0.0;0.0;0.0");
-        }
-      }
-
-      res["CONF"] = (char*)NULL;
-      res["response"] = true;
-      serializeJson(res, Serial);
-      Serial.println();
-
-      flagFinish = false;
-    }
-    vTaskDelay(10 / portTICK_PERIOD_MS);
-  }
-}
+// --- Setup y Loop ---
 
 void setup() {
-  Serial.begin(115200); // PC
-  ITECH.begin(9600, SERIAL_8N1, RX1, TX1); // Carga IT8511A
-
-  // Crear Tarea en Core 0 (Manejo de JSON y Comandos)
-  xTaskCreatePinnedToCore(TaskJSONReader, "JSONTask", 10000, NULL, 1, &TaskCore1, 0);
-
-  // Crear Tarea en Core 1 (Mediciones de alta prioridad)
-  xTaskCreatePinnedToCore(TaskMeasure, "MeasureTask", 10000, NULL, 1, &TaskCore2, 1);
-
-  Serial.println("{\"System\":\"Ready\", \"Mode\":\"DualCore\"}");
+  Serial.begin(115200);
+  ITECH.begin(9600, SERIAL_8N1, RX1, TX1);
+  Serial.println("{\"System\":\"Ready\", \"Hardware\":\"IT8511A_TTL\"}");
 }
 
 void loop() {
-  // El loop se queda vacío porque estamos usando Tasks de FreeRTOS
-  vTaskDelete(NULL); 
+  if (Serial.available()) {
+    DynamicJsonDocument doc(1024);
+    DeserializationError err = deserializeJson(doc, Serial);
+
+    if (!err) {
+      String funcion = doc["Funcion"] | "";
+      String start = doc["Start"] | "";
+
+      if (funcion != "Other" && funcion != "") {
+        configLoad(funcion, doc["Config"]["Resolution"], doc["Config"]["Range"]);
+        Serial.print("{\"CONF\":\""); Serial.print(funcion); Serial.println("\",\"response\":true}");
+      } 
+      else if (start == "Read") {
+        takeMeasurements();
+      } 
+      else if (start == "CFG_ON") {
+        if (isListReady) runSoftwareList();
+        else sendSCPI("INP 1");
+        Serial.println("{\"CONF\":\"CFG_ON\",\"response\":true}");
+      }
+      else if (start == "CFG_OFF") {
+        sendSCPI("INP 0");
+        isListReady = false;
+        Serial.println("{\"CONF\":\"CFG_OFF\",\"response\":true}");
+      }
+    }
+  }
+  delay(1);
 }

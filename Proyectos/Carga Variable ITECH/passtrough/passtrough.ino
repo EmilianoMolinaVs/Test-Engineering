@@ -4,8 +4,13 @@
 /*
 *IDN?
 SYS:REM
-
-
+INP 0
+INP 1
+*CLS
+SYST:ERR?
+FUNC CURRent
+CURRent:RANGe 30
+CURRent 0.5
 
 */
 
