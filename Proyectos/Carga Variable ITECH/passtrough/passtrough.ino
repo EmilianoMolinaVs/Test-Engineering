@@ -3,7 +3,7 @@
 
 /*
 *IDN?
-SYS:REM
+SYST:REM
 INP 0
 INP 1
 *CLS
