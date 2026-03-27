@@ -1,14 +1,8 @@
 
 /*
- * Blink ESP32 UE0002 DualMCU
- *
- * Este sketch implementa un firmware de demostración para el módulo ESP32 en el TestBench UE0002 MCUDual.
- * Maneja comunicación JSON a través de UART0 y puentea comandos al RP2040 vía UART2.
- * Incluye control básico de LEDs RGB y soporte para comandos como ping, passthrough y obtener MAC.
- *
- * Autor: Emiliano Molina
- * Fecha: 09 Marzo, 2026
- * Versión: 1.0
+
+
+
  */
 
 // ===== INCLUDES =====
@@ -20,11 +14,14 @@
 #include <HardwareSerial.h>
 #include <Adafruit_SSD1306.h>
 #include "ue_i2c_icp_10111_sen.h"
+#include <Adafruit_DRV2605.h>
 
 ICP101xx sensor;
+Adafruit_DRV2605 drv;
 
 // ===== DEFINES =====
 // Configuración de OLED I2C
+#define RUN_BUTTON 2                                                       // Botón de Arranque
 #define SCL_OLED 23                                                        // SCL pin
 #define SDA_OLED 22                                                        // SDA pin
 #define OLED_RESET -1                                                      // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -43,19 +40,35 @@ bool i2cCheckDevice(uint8_t address) {
   return (error == 0);
 }
 
+// Modo 3: Patrón tipo alarma (fuerte → zumbido largo → fuerte)
+void hapticMode3() {
+  drv.setWaveform(0, 118);  // vibración fuerte
+  drv.setWaveform(1, 0);    // fin
+  drv.go();
+  delay(100);
+}
+
 
 // ===== SETUP =====
 void setup() {
   // Inicializar comunicación serial UART0
   Serial.begin(115200);
 
+  pinMode(RUN_BUTTON, INPUT);
+
+
   Wire.begin(SDA_OLED, SCL_OLED);
+  delay(100);
 
   // Initialize sensor.
   if (!sensor.begin(&Wire)) {
     Serial.println("ERROR: Could not initialize sensor!");
     Serial.println("Check I2C wiring and connections.");
   }
+  delay(100);
+
+
+
 
   // Inicialización de OLED por I2C
   if (!i2cCheckDevice(0x3C)) {
@@ -77,39 +90,54 @@ void setup() {
 }
 
 void loop() {
-  contador++;
 
-  if (debugOLED) {
-    display.clearDisplay();
 
-    display.setTextSize(1);
-    display.setCursor(0, 0);
-    display.println(F("Test I2C Expander"));
 
-    display.setTextSize(2);
-    display.setCursor(0, 20);
-    display.print("No: ");
-    display.println(contador);
+  if (digitalRead(RUN_BUTTON) == HIGH) {
+    delay(100);
 
-    display.display();
+    if (digitalRead(RUN_BUTTON) == LOW) {
+      Serial.println("Arranque por botonera");
+      ESP.restart();
+    }
+  } else {
+
+    contador++;
+
+    if (debugOLED) {
+      display.clearDisplay();
+
+      display.setTextSize(1);
+      display.setCursor(0, 0);
+      display.println(F("Test I2C Expander"));
+
+      display.setTextSize(2);
+      display.setCursor(0, 20);
+      display.print("No: ");
+      display.println(contador);
+
+      display.display();
+    }
+
+    delay(100);  // Ajusta velocidad del conteo
+
+
+    sensor.measure(sensor.NORMAL);
+
+    float pressure = sensor.getPressurePa();
+    float temperature = sensor.getTemperatureC();
+
+    Serial.print("Pressure: ");
+    Serial.print(pressure);
+    Serial.println(" Pa");
+
+    Serial.print("Temperature: ");
+    Serial.print(temperature);
+    Serial.println(" °C");
+    Serial.println("");
+
+    delay(100);
   }
 
-  delay(100);  // Ajusta velocidad del conteo
-
-
-  sensor.measure(sensor.NORMAL);
-
-  float pressure = sensor.getPressurePa();
-  float temperature = sensor.getTemperatureC();
-
-  Serial.print("Pressure: ");
-  Serial.print(pressure);
-  Serial.println(" Pa");
-
-  Serial.print("Temperature: ");
-  Serial.print(temperature);
-  Serial.println(" °C");
-  Serial.println("");
-
-  delay(100);
+  // hapticMode3();
 }
