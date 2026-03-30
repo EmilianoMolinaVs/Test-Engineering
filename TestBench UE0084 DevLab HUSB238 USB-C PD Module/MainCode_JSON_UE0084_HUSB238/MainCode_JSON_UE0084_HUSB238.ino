@@ -38,8 +38,7 @@ void setup() {
 void loop() {
 
   // === Manipulación de módulo por SCPI ====
-  /*
-    while (Serial.available()) {
+  while (Serial.available()) {
     char ch = Serial.read();
     if (ch == '\n') {
       handleSCPI(cmd);
@@ -48,7 +47,7 @@ void loop() {
       cmd += ch;
     }
   }
-  */
+
 
 
   if (digitalRead(RUN_BUTTON) == HIGH) {
@@ -77,6 +76,7 @@ void loop() {
       else if (Function == "init_husb") opc = 2;  // {"Function": "init_husb"}
       else if (Function == "sweep") opc = 3;      // {"Function": "sweep"}
       else if (Function == "fixed") opc = 4;      // {"Function": "fixed", "Value": "5"}
+      else if (Function == "restart") opc = 5;    // {"Function": "restart"}
 
 
       switch (opc) {
@@ -100,13 +100,15 @@ void loop() {
               if (husb238.begin(HUSB238_I2CADDR_DEFAULT, &Wire)) {  // Initialize the HUSB238
                 Serial.println("HUSB238 Inicializado...");          // Mensaje debug en Serial
                 sendJSON["ping"] = "OK";                            // Respuesta JSON a PagWeb
+                sendJSON["debug"] = "HSUB238 Inicializado";         // Debug JSON a PagWeb
                 state_husb = true;                                  // Bandera de inicialización
                 break;
               } else {
                 // Serial.println("{\"ping\": \"FAIL\"}");
-                Serial.println("HUSB238 NO inicializado...");  // Mensaje debug en Serial
-                sendJSON["ping"] = "FAIL";                     // Respuesta JSON a PagWeb
-                state_husb = false;                            // Bandera de inicialización
+                Serial.println("HUSB238 NO inicializado...");   // Mensaje debug en Serial
+                sendJSON["debug"] = "HSUB238 No Inicializado";  // Debug JSON a PagWeb
+                sendJSON["ping"] = "FAIL";                      // Respuesta JSON a PagWeb
+                state_husb = false;                             // Bandera de inicialización
               }
 
               delay(100);
@@ -123,10 +125,10 @@ void loop() {
             if (state_husb) {
               Serial.println("Voltage Sweep HSUB...");
 
-              int voltajes[] = { 5, 9, 12, 15, 18, 20 };
+              int voltajes[] = { 5, 9, 12, 15, 20 };
               int delay_ms = 4000;
 
-              for (int i = 0; i <= 5; i++) {
+              for (int i = 0; i < 5; i++) {
                 String cmd = "PD:SET " + String(voltajes[i]);
                 handleSCPI(cmd);
                 Serial.println("Voltaje en: " + String(voltajes[i]) + " V");
@@ -181,6 +183,19 @@ void loop() {
             serializeJson(sendJSON, PagWeb);
             PagWeb.println();
 
+            break;
+          }
+
+        case 5:
+          {
+            ESP.restart();
+            delay(1000);
+
+            sendJSON.clear();
+            Serial.println("Reinicio de dispositivo");
+            sendJSON["debug"] = "Reinicio de dispositivo...";
+            serializeJson(sendJSON, PagWeb);
+            PagWeb.println();
             break;
           }
 
