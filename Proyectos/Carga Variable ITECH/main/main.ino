@@ -28,8 +28,8 @@
 // ============================================================================
 // CONFIGURACIÓN DE PINES UART PARA CARGA ITECH
 // ============================================================================
-#define RX1 4   // GPIO 4: Pin de recepción desde carga ITECH
-#define TX1 5   // GPIO 5: Pin de transmisión hacia carga ITECH
+#define RX1 4  // GPIO 4: Pin de recepción desde carga ITECH
+#define TX1 5  // GPIO 5: Pin de transmisión hacia carga ITECH
 
 // Crear instancia de Serial adicional para comunicación con ITECH (UART1)
 HardwareSerial ITECH(1);
@@ -38,30 +38,30 @@ HardwareSerial ITECH(1);
 // VARIABLES PARA MODO LIST (LISTA DE PASOS)
 // ============================================================================
 // Estructura que almacena cada paso: corriente y duración
-struct Step { 
-  float current;      // Valor de corriente a aplicar
-  float duration;     // Duración en segundos
+struct Step {
+  float current;   // Valor de corriente a aplicar
+  float duration;  // Duración en segundos
 };
 
-Step softwareList[30];   // Array con máximo 30 pasos
-int totalSteps = 0;      // Contador de pasos a ejecutar
-bool isListReady = false; // Bandera: ¿está la lista lista para ejecutar?
+Step softwareList[30];     // Array con máximo 30 pasos
+int totalSteps = 0;        // Contador de pasos a ejecutar
+bool isListReady = false;  // Bandera: ¿está la lista lista para ejecutar?
 
 // ============================================================================
 // VARIABLES PARA MODO DINÁMICO (ALTERNANCIA DE CORRIENTE)
 // ============================================================================
-float dynA, dynB;                    // Valores de corriente A y B
-unsigned long dynTimeA, dynTimeB;    // Duración en ms para cada estado
-unsigned long lastDynMillis = 0;     // Marca de tiempo anterior
-bool dynState = false;                // Estado actual (false=A, true=B)
-bool runDynamic = false;              // Bandera: ¿está el modo dinámico activo?
+float dynA, dynB;                  // Valores de corriente A y B
+unsigned long dynTimeA, dynTimeB;  // Duración en ms para cada estado
+unsigned long lastDynMillis = 0;   // Marca de tiempo anterior
+bool dynState = false;             // Estado actual (false=A, true=B)
+bool runDynamic = false;           // Bandera: ¿está el modo dinámico activo?
 
-int numSamples = 1; // Número de muestras para medición 
+int numSamples = 1;  // Número de muestras para medición
 
 // ============================================================================
 // FUNCIÓN: sendSCPI()
 // ============================================================================
-// PROPÓSITO: 
+// PROPÓSITO:
 // Envía comandos SCPI (Standar Commands for Programmable Instruments) a la
 // carga ITECH por comunicación serial UART1. El delay de 45ms permite que
 // la carga procese el comando antes de enviar el siguiente.
@@ -80,7 +80,7 @@ int numSamples = 1; // Número de muestras para medición
 // ============================================================================
 void sendSCPI(String cmd) {
   ITECH.println(cmd);
-  delay(45); // Esperar que la carga ITECH procese el comando
+  delay(45);  // Esperar que la carga ITECH procese el comando
 }
 
 
@@ -105,7 +105,7 @@ void sendSCPI(String cmd) {
 //               ↓         ↓       ↓
 //            Voltios Amperios Watios
 // }
-// 
+//
 // NOTAS:
 // - Usa sscanf para robustez contra diferentes formatos de la carga
 // - Si falla el parseo, reemplaza tabuladores por punto y coma
@@ -118,14 +118,15 @@ void takeMeasurements() {
   // Solicitar las 3 mediciones a la carga
   ITECH.println("MEAS:VOLT?;CURR?;POW?");
   unsigned long t = millis();
-  
+
   // Esperar respuesta con timeout de 300ms
-  while(!ITECH.available() && (millis() - t < 300)); 
+  while (!ITECH.available() && (millis() - t < 300))
+    ;
 
   if (ITECH.available()) {
     String raw = ITECH.readStringUntil('\n');
-    raw.trim(); // Eliminar espacios al inicio/final
-    
+    raw.trim();  // Eliminar espacios al inicio/final
+
     float v = 0.0, c = 0.0, p = 0.0;
     // sscanf intenta extraer los 3 valores flotantes de la cadena
     int parseados = sscanf(raw.c_str(), "%f %f %f", &v, &c, &p);
@@ -136,7 +137,7 @@ void takeMeasurements() {
     } else {
       // Si sscanf falla (formato diferente): reemplazar tabuladores
       raw.replace("\t", ";");
-      valorMedicion = raw; 
+      valorMedicion = raw;
     }
   }
 
@@ -162,7 +163,7 @@ void takeMeasurements() {
 // - range: JsonVariant con los datos de "Config.Range"
 //
 // COMPORTAMIENTO INTERNO:
-// 
+//
 // --> MODO LIST:
 //     Recibe: totalSteps, stepCurrent, stepDuration
 //     Genera: Array softwareList con pasos escalados (1×current, 2×current, ...)
@@ -177,23 +178,23 @@ void takeMeasurements() {
 // ============================================================================
 void configLoad(String funcion, JsonVariant res, JsonVariant range) {
   // Comandos iniciales comunes a ambos modos
-  sendSCPI("SYST:REM");        // Poner en modo remoto (SCPI)
-  sendSCPI("INP 0");           // Desactivar entrada (carga OFF)
-  sendSCPI("*CLS");            // Limpiar errores previos
+  sendSCPI("SYST:REM");  // Poner en modo remoto (SCPI)
+  sendSCPI("INP 0");     // Desactivar entrada (carga OFF)
+  sendSCPI("*CLS");      // Limpiar errores previos
 
   // Obtener rango de corriente desde Config.Range[1]
   // Si no viene dato o es 0, usar valor por defecto 30A
-  float currentRange = range[1].as<float>(); 
-  if(currentRange <= 0) currentRange = 30.0; 
+  float currentRange = range[1].as<float>();
+  if (currentRange <= 0) currentRange = 30.0;
 
   if (funcion == "LIST") {
     // ====== CONFIGURACIÓN MODO LIST ======
     runDynamic = false;  // Desactivar modo dinámico si estaba activo
-    
+
     // Extraer parámetros de Resolution
-    totalSteps = res[0] | 0;           // Cantidad de pasos
-    float stepCurrent = res[1] | 0.0;  // Corriente por paso
-    float stepDuration = res[2] | 0.0; // Duración de cada paso (segundos)
+    totalSteps = res[0] | 0;            // Cantidad de pasos
+    float stepCurrent = res[1] | 0.0;   // Corriente por paso
+    float stepDuration = res[2] | 0.0;  // Duración de cada paso (segundos)
 
     // Generar lista escalada: paso 1 = 1×stepCurrent, paso 2 = 2×stepCurrent, etc.
     for (int i = 0; i < totalSteps && i < 30; i++) {
@@ -202,26 +203,25 @@ void configLoad(String funcion, JsonVariant res, JsonVariant range) {
     }
 
     // Configurar carga ITECH para modo corriente
-    sendSCPI("FUNC CURRent");                        // Función: modo corriente
-    sendSCPI("CURRent:RANGe " + String(currentRange)); // Rango máximo
-    isListReady = true;  // Marcar que la lista está lista para ejecutar
-  } 
-  else if (funcion == "DYN") {
+    sendSCPI("FUNC CURRent");                           // Función: modo corriente
+    sendSCPI("CURRent:RANGe " + String(currentRange));  // Rango máximo
+    isListReady = true;                                 // Marcar que la lista está lista para ejecutar
+  } else if (funcion == "DYN") {
     // ====== CONFIGURACIÓN MODO DINÁMICO ======
-    isListReady = false; // Desactivar modo lista si estaba activo
-    
+    isListReady = false;  // Desactivar modo lista si estaba activo
+
     // Extraer parámetros de Resolution: [corrA, tiempoA_seg, corrB, tiempoB_seg]
-    dynA = res[0];                           // Corriente estado A
-    dynTimeA = (unsigned long)((float)res[1] * 1000); // Tiempo A en ms
-    dynB = res[2];                           // Corriente estado B
-    dynTimeB = (unsigned long)((float)res[3] * 1000); // Tiempo B en ms
-    
+    dynA = res[0];                                     // Corriente estado A
+    dynTimeA = (unsigned long)((float)res[1] * 1000);  // Tiempo A en ms
+    dynB = res[2];                                     // Corriente estado B
+    dynTimeB = (unsigned long)((float)res[3] * 1000);  // Tiempo B en ms
+
     // Configurar carga ITECH para modo corriente
-    sendSCPI("FUNC CURRent");                        // Función: modo corriente
-    sendSCPI("CURRent:RANGe " + String(currentRange)); // Rango máximo
-    runDynamic = true;   // Activar modo dinámico
-    dynState = false;    // Comenzar en estado A
-    lastDynMillis = millis(); // Capturar marca de tiempo inicial
+    sendSCPI("FUNC CURRent");                           // Función: modo corriente
+    sendSCPI("CURRent:RANGe " + String(currentRange));  // Rango máximo
+    runDynamic = true;                                  // Activar modo dinámico
+    dynState = false;                                   // Comenzar en estado A
+    lastDynMillis = millis();                           // Capturar marca de tiempo inicial
   }
 }
 
@@ -255,17 +255,17 @@ void configLoad(String funcion, JsonVariant res, JsonVariant range) {
 // - Enviar: {"DEBUG":"LIST finalizado"}
 // ============================================================================
 void runSoftwareList() {
-  sendSCPI("INP 1"); // Activar carga (comienza a conducir corriente)
-  
+  sendSCPI("INP 1");  // Activar carga (comienza a conducir corriente)
+
   // Ejecutar cada paso de la lista
   for (int i = 0; i < totalSteps; i++) {
-    sendSCPI("CURRent " + String(softwareList[i].current, 3)); // Establecer corriente
-    delay(softwareList[i].duration * 1000); // Esperar (convertir seg a ms)
+    sendSCPI("CURRent " + String(softwareList[i].current, 3));  // Establecer corriente
+    delay(softwareList[i].duration * 1000);                     // Esperar (convertir seg a ms)
   }
-  
-  isListReady = false;  // Marcamos que la lista ya fue ejecutada
-  sendSCPI("INP 0");    // Desactivar carga (carga OFF)
-  Serial.println("{\"DEBUG\":\"LIST finalizado\"}"); // Confirmación al PC
+
+  isListReady = false;                                // Marcamos que la lista ya fue ejecutada
+  sendSCPI("INP 0");                                  // Desactivar carga (carga OFF)
+  Serial.println("{\"DEBUG\":\"LIST finalizado\"}");  // Confirmación al PC
 }
 
 
@@ -281,9 +281,9 @@ void runSoftwareList() {
 // 3. Envía JSON "System:Ready" para confirmar que está listo
 // ============================================================================
 void setup() {
-  Serial.begin(9600);                    // Inicializar Serial USB para PC
-  ITECH.begin(9600, SERIAL_8N1, RX1, TX1); // Inicializar UART1 para carga
-  Serial.println("{\"System\":\"Ready\"}"); // Confirmación de inicialización
+  Serial.begin(9600);                        // Inicializar Serial USB para PC
+  ITECH.begin(9600, SERIAL_8N1, RX1, TX1);   // Inicializar UART1 para carga
+  Serial.println("{\"System\":\"Ready\"}");  // Confirmación de inicialización
 }
 
 // ============================================================================
@@ -313,52 +313,55 @@ void loop() {
 
     // Si ha pasado el tiempo del intervalo actual: cambiar estado
     if (currentMillis - lastDynMillis >= interval) {
-      lastDynMillis = currentMillis; // Actualizar marca de tiempo
-      dynState = !dynState;           // Alternar estado (A ↔ B)
-      float val = dynState ? dynB : dynA; // Obtener valor de corriente
-      sendSCPI("CURRent " + String(val, 3)); // Enviar a carga
+      lastDynMillis = currentMillis;          // Actualizar marca de tiempo
+      dynState = !dynState;                   // Alternar estado (A ↔ B)
+      float val = dynState ? dynB : dynA;     // Obtener valor de corriente
+      sendSCPI("CURRent " + String(val, 3));  // Enviar a carga
     }
   }
 
   // ========== PROCESAMIENTO DE COMANDOS JSON ==========
   // Si la PC envía datos por Serial USB
   if (Serial.available()) {
-    DynamicJsonDocument doc(1024); // Buffer 1024 bytes para JSON
+    DynamicJsonDocument doc(1024);  // Buffer 1024 bytes para JSON
     DeserializationError error = deserializeJson(doc, Serial);
-    
+
     // Si el JSON se parsea correctamente
     if (!error) {
       String funcion = doc["Funcion"] | "";  // Extraer "Funcion"
-      String start = doc["Start"] | "";       // Extraer "Start"
+      String start = doc["Start"] | "";      // Extraer "Start"
 
       // ===== COMANDOS: Configurar LIST o DYN =====
       if (funcion == "LIST" || funcion == "DYN") {
         configLoad(funcion, doc["Config"]["Resolution"], doc["Config"]["Range"]);
-        Serial.print("{\"CONF\":\""); 
-        Serial.print(funcion); 
+        Serial.print("{\"CONF\":\"");
+        Serial.print(funcion);
         Serial.println("\",\"response\":true}");
-        
+
         // Si Start es "CFG_ON": ejecutar inmediatamente
+        /*
         if (start == "CFG_ON") {
           if (funcion == "LIST") runSoftwareList();
           else if (funcion == "DYN") sendSCPI("INP 1"); // Activar carga
         }
-      } 
+        */
+
+      }
       // ===== COMANDO: Leer mediciones =====
       else if (start == "Read") {
-        takeMeasurements(); // Obtener V, I, P y enviar al PC
+        takeMeasurements();  // Obtener V, I, P y enviar al PC
       }
       // ===== COMANDO: Activar carga =====
       else if (start == "CFG_ON") {
-        if (isListReady) runSoftwareList(); // Si hay lista: ejecutar
-        else sendSCPI("INP 1");             // Si no: solo activar
+        if (isListReady) runSoftwareList();  // Si hay lista: ejecutar
+        else sendSCPI("INP 1");              // Si no: solo activar
         Serial.println("{\"CONF\":\"CFG_ON\",\"response\":true}");
       }
       // ===== COMANDO: Desactivar carga =====
       else if (start == "CFG_OFF") {
-        sendSCPI("INP 0");       // Desactivar carga
-        runDynamic = false;      // Detener modo dinámico si estaba activo
-        isListReady = false;     // Limpiar bandera de lista
+        sendSCPI("INP 0");    // Desactivar carga
+        runDynamic = false;   // Detener modo dinámico si estaba activo
+        isListReady = false;  // Limpiar bandera de lista
         Serial.println("{\"CONF\":\"CFG_OFF\",\"response\":true}");
       }
     }

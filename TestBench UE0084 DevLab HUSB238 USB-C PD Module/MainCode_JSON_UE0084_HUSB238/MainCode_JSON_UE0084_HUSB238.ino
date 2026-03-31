@@ -84,7 +84,7 @@ void loop() {
           {
             sendJSON.clear();
             Serial.println("Comunicación PagWeb -> PULSAR OK");
-            sendJSON["status"] = "UART OK";
+            sendJSON["ping"] = "pong";
             serializeJson(sendJSON, PagWeb);
             PagWeb.println();
             break;
@@ -99,7 +99,7 @@ void loop() {
 
               if (husb238.begin(HUSB238_I2CADDR_DEFAULT, &Wire)) {  // Initialize the HUSB238
                 Serial.println("HUSB238 Inicializado...");          // Mensaje debug en Serial
-                sendJSON["ping"] = "OK";                            // Respuesta JSON a PagWeb
+                sendJSON["Result"] = "OK";                          // Respuesta JSON a PagWeb
                 sendJSON["debug"] = "HSUB238 Inicializado";         // Debug JSON a PagWeb
                 state_husb = true;                                  // Bandera de inicialización
                 break;
@@ -107,7 +107,7 @@ void loop() {
                 // Serial.println("{\"ping\": \"FAIL\"}");
                 Serial.println("HUSB238 NO inicializado...");   // Mensaje debug en Serial
                 sendJSON["debug"] = "HSUB238 No Inicializado";  // Debug JSON a PagWeb
-                sendJSON["ping"] = "FAIL";                      // Respuesta JSON a PagWeb
+                sendJSON["Result"] = "FAIL";                    // Respuesta JSON a PagWeb
                 state_husb = false;                             // Bandera de inicialización
               }
 
