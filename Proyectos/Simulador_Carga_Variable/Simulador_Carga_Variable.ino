@@ -50,3 +50,16 @@ void loop() {
 }
 
 // 
+
+2223242526272829303132333435363738394041424344454647484950515253
+
+    DeserializationError error = deserializeJson(docIn, jsonEntrada);
+    if (error) {
+      Serial.println("JSON inválido");
+      return;
+    }
+
+    String funcion = docIn["Funcion"] | "";
+    String start   = docIn["Start"]   | "";
+
+
