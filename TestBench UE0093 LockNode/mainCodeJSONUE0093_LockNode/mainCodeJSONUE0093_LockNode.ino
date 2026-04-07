@@ -96,8 +96,8 @@ void loop() {
   */
 
   if (digitalRead(RUN_BUTTON) == HIGH) {
-    delay(100);
-
+    sendJSON.clear();
+    delay(200);
     if (digitalRead(RUN_BUTTON) == LOW) {
       sendJSON["Run"] = "OK";           // Envio de corriente JSON para corto
       serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
@@ -134,13 +134,10 @@ void loop() {
 
       int opc = 0;
 
-      if (Function == "scan") opc = 1;  // {"Function":"scan"}
-
-
-
-      else if (Function == "TestBuz") opc = 2;    // {"Function":"TestBuz", "Address": "0X42"}
-      else if (Function == "TestRelay") opc = 3;  // {"Function":"TestRelay", "Address": "0X42"}
-      else if (Function == "TestNeo") opc = 4;    // {"Function":"TestNeo", "Address": "0X42"}
+      if (Function == "scan") opc = 1;            // {"Function":"scan"}
+      else if (Function == "TestBuz") opc = 2;    // {"Function":"testBuz", "Address": "0X42"}
+      else if (Function == "TestRelay") opc = 3;  // {"Function":"testRelay", "Address": "0X42"}
+      else if (Function == "TestNeo") opc = 4;    // {"Function":"testNeo", "Address": "0X42"}
       else if (Function == "TestAll") opc = 5;
 
       switch (opc) {
@@ -158,7 +155,7 @@ void loop() {
             }
 
             sendJSON["Ad"] = addrStr;         // Dirección I2C
-            sendJSON["Result"] = status;   // estado del dispositivo
+            sendJSON["Result"] = status;      // estado del dispositivo
             serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
             PagWeb.println();
             break;
@@ -166,20 +163,21 @@ void loop() {
 
         case 2:  // Ejecución de prueba única de buzzer
           {
+            int delay_ms = 200;
             deviceManager.cmdPWM25(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM50(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM75(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM100(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM75(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM50(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM25(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWMOff(address, 1);
             break;
           }
@@ -187,68 +185,68 @@ void loop() {
         case 3:  // Ejecución de prueba única de Relay
           {
             int iteraciones = 10;
-            int DELAY_ms = 200;
-
+            int delay_ms = 500;
             for (int i = 0; i < iteraciones; i++) {
               deviceManager.cmdRelay(address, true, 1);  // Accionamiento
-              delay(DELAY_ms);
+              delay(delay_ms);
               deviceManager.cmdRelay(address, false, 1);
-              delay(DELAY_ms);
+              delay(delay_ms);
             }
+            deviceManager.cmdRelay(address, false, 1);
             break;
           }
 
 
         case 4:  // Ejecución de prueba única de Neopixel
           {
+            int delay_ms = 1200;
             deviceManager.cmdNeoRed(address, 1);
-            delay(1000);
+            delay(delay_ms);
             deviceManager.cmdNeoBlue(address, 1);
-            delay(1000);
+            delay(delay_ms);
             deviceManager.cmdNeoGreen(address, 1);
-            delay(1000);
+            delay(delay_ms);
             deviceManager.cmdNeoWhite(address, 1);
-            delay(1000);
+            delay(delay_ms);
             deviceManager.cmdNeoOff(address, 1);
-            Serial.end();
-            delay(1000);
-            Serial.begin(115200);
+            delay(delay_ms);
+            ESP.restart();
             break;
           }
 
         case 5:  // Ejecución de Test Completo
           {
             // Bloque de Buzzer
+            int delay_ms = 200;
             deviceManager.cmdPWM25(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM50(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM75(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM100(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM75(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM50(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWM25(address, 1);
-            delay(300);
+            delay(delay_ms);
             deviceManager.cmdPWMOff(address, 1);
 
             // Bloque de Neopixel
+            delay_ms = 800;
             deviceManager.cmdNeoRed(address, 1);
-            delay(1000);
+            delay(delay_ms);
             deviceManager.cmdNeoBlue(address, 1);
-            delay(1000);
+            delay(delay_ms);
             deviceManager.cmdNeoGreen(address, 1);
-            delay(1000);
+            delay(delay_ms);
             deviceManager.cmdNeoWhite(address, 1);
-            delay(1000);
+            delay(delay_ms);
             deviceManager.cmdNeoOff(address, 1);
-
-            Serial.end();
-            delay(1000);
-            Serial.begin(115200);
+            delay(delay_ms);
+            ESP.restart();
 
             // Bloque de Relay
             delay(300);
