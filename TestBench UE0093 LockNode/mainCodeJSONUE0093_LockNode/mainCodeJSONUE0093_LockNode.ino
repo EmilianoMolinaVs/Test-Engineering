@@ -20,7 +20,6 @@
 #define RelayNC 5
 
 #define RUN_BUTTON 2  // Botón de Arranque
-
 #define switchGPIO 3
 
 // ==== Inicialización de objetos
@@ -135,7 +134,10 @@ void loop() {
 
       int opc = 0;
 
-      if (Function == "scan") opc = 1;            // {"Function":"scan"}
+      if (Function == "scan") opc = 1;  // {"Function":"scan"}
+
+
+
       else if (Function == "TestBuz") opc = 2;    // {"Function":"TestBuz", "Address": "0X42"}
       else if (Function == "TestRelay") opc = 3;  // {"Function":"TestRelay", "Address": "0X42"}
       else if (Function == "TestNeo") opc = 4;    // {"Function":"TestNeo", "Address": "0X42"}
@@ -145,13 +147,18 @@ void loop() {
 
         case 1:  // Escaneo de dirección I2C
           {
-            sendJSON.clear();                                              // Limpia cualquier dato previo
-            String resultado = deviceManager.scanDevices(1);               // Todo el String en crudo
-            String addrStr = scanDirection(resultado);                     // Dirección 0x
-            uint8_t address = (uint8_t)strtol(addrStr.c_str(), NULL, 16);  // Dirección uint
+            sendJSON.clear();                                 // Limpia cualquier dato previo
+            String resultado = deviceManager.scanDevices(1);  // Todo el String en crudo
+            String addrStr = scanDirection(resultado);        // Dirección 0x
+            String status = "FAIL";
 
-            sendJSON["Ad"] = addrStr;
-            sendJSON["status"] = "OK";
+            if (addrStr != "FAIL") {                                         // se encontró dirección de I2C
+              uint8_t address = (uint8_t)strtol(addrStr.c_str(), NULL, 16);  // Dirección uint
+              status = "OK";
+            }
+
+            sendJSON["Ad"] = addrStr;         // Dirección I2C
+            sendJSON["Result"] = status;   // estado del dispositivo
             serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
             PagWeb.println();
             break;
@@ -306,15 +313,8 @@ void loop() {
       }
     }
   }
-  delay(10);
+  delay(500);
 }
-
-
-/*
-int normalizeAnalog(float value) {
-  return (value > 200) ? 1 : 0;
-}
-*/
 
 
 String scanDirection(String resultado) {
@@ -327,13 +327,13 @@ String scanDirection(String resultado) {
     if (dirPos != -1) {
       int fin = resultado.indexOf(' ', dirPos);
       address = resultado.substring(dirPos, fin);
+      Serial.println("Direccion encontrada: " + address);
+      return address;
     }
+  } else {
+    return "FAIL";
   }
-  Serial.println("Direccion encontrada: " + address);
-
-  return address;
 }
-
 
 
 void showBanner() {

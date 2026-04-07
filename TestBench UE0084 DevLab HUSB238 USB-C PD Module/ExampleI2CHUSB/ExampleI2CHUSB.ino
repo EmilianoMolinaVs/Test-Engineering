@@ -1,15 +1,15 @@
 #include <Wire.h>
 #include "Adafruit_HUSB238.h"
 
-#define I2C_SDA 22
-#define I2C_SCL 23
+#define I2C_SDA 6
+#define I2C_SCL 7
  
 Adafruit_HUSB238 husb238;
 String cmd = "";
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial) delay(10);
+  while (!Serial) delay(100);
     Wire.begin(I2C_SDA, I2C_SCL);
 
   Serial.println("Adafruit HUSB238 Test Sketch");

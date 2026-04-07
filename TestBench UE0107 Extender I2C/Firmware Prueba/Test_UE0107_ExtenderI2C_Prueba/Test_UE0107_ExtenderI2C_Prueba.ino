@@ -1,4 +1,3 @@
-
 /*
 
 
@@ -22,8 +21,8 @@ Adafruit_DRV2605 drv;
 // ===== DEFINES =====
 // Configuración de OLED I2C
 #define RUN_BUTTON 2                                                       // Botón de Arranque
-#define SCL_OLED 23                                                        // SCL pin
-#define SDA_OLED 22                                                        // SDA pin
+#define SCL_OLED 7                                                         // SCL pin
+#define SDA_OLED 6                                                         // SDA pin
 #define OLED_RESET -1                                                      // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_WIDTH 128                                                   // OLED display width, in pixels
 #define SCREEN_HEIGHT 64                                                   // OLED display height, in pixels
