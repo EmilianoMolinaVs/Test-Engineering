@@ -9,7 +9,7 @@
 #define SCL_PIN 7
 #define A0_PIN 15     // GPIO15 - PIN A0 Selección Addr
 #define A1_PIN 19     // GPIO19 - PIN A1 Selección Addr
-#define A0_PIN 20     // GPIO20 - PIN A2 Selección Addr
+#define A2_PIN 20     // GPIO20 - PIN A2 Selección Addr
 #define WP_PIN 21     // GPIO21 - PIN SW Enable Escritura
 #define RUN_BUTTON 4  // GPIO4  - Botón de arranque del TestBench
 
@@ -65,62 +65,29 @@ bool eepromReadSeq(uint16_t mem, uint8_t* buf, size_t len) {
   return true;
 }
 
-void dumpHex(const uint8_t* buf, size_t n) {
-  for (size_t i = 0; i < n; i++) {
-    if (i && i % 16 == 0) Serial.println();
-    Serial.printf("%02X ", buf[i]);
-  }
-  Serial.println();
-}
-
 // ---------- Comandos ----------
-void cmdScan() {
-  Serial.println("\n[I2C] Escaneando...");
-  bool any = false;
-  bool picked = false;
-  for (uint8_t addr = 1; addr < 127; addr++) {
-    Wire.beginTransmission(addr);
-    if (Wire.endTransmission() == 0) {
-      any = true;
-      Serial.printf("  - Dispositivo en 0x%02X", addr);
-      if (addr >= 0x50 && addr <= 0x57) {
-        Serial.print("  (EEPROM candidata)");
-        if (!picked) {
-          eepromAddr = addr;
-          picked = true;
-        }
-      }
-      Serial.println();
-    }
-    delay(2);
-  }
-  if (!any) Serial.println("  (Nada encontrado)");
-  if (picked) Serial.printf("Usando EEPROM en 0x%02X\n", eepromAddr);
-  else Serial.println("No se detectó EEPROM (0x50–0x57).");
-}
-
 // Verifica protección de escritura intentando cambiar y restaurar un byte
-void cmdWPCheck(uint16_t memAddr) {
+bool cmdWPCheck(uint16_t memAddr) {
   uint8_t orig = 0xFF, test;
   if (!eepromReadSeq(memAddr, &orig, 1)) {
     Serial.println("Lectura inicial falló.");
-    return;
+    return false;
   }
 
   test = (orig == 0xFF) ? 0x00 : 0xFF;         // valor diferente seguro
   if (!eepromWritePaged(memAddr, &test, 1)) {  // algunos chips con WP alto NACKean la escritura
     Serial.println("Escritura NACK → posible WP ACTIVA o bus error.");
-    return;
+    return false;
   }
   uint8_t after = 0xFF;
   if (!eepromReadSeq(memAddr, &after, 1)) {
     Serial.println("Lectura posterior falló.");
-    return;
+    return false;
   }
 
   if (after != test) {
     Serial.printf("WP ACTIVA: Byte no cambió (0x%02X -> 0x%02X leído 0x%02X)\n", orig, test, after);
-    return;
+    return true;
   }
 
   // Si sí cambió, WP está desactivada; restauramos el valor original.
@@ -132,40 +99,66 @@ void cmdWPCheck(uint16_t memAddr) {
   Serial.printf("WP DESACTIVADA: se pudo escribir y restaurar (final=0x%02X)\n", after);
 }
 
-void cmdRead(uint16_t addr, int len) {
+bool cmdRead(uint16_t addr, int len, String& out) {
   if (len <= 0 || len > 256) {
-    Serial.println("len max 256");
-    return;
+    printDebug("len max 256");
+    return false;
   }
+
   uint8_t buf[256];
-  if (eepromReadSeq(addr, buf, len)) {
-    Serial.println("HEX:");
-    dumpHex(buf, len);
-    Serial.print("ASCII: ");
-    for (int i = 0; i < len; i++) Serial.print((buf[i] >= 32 && buf[i] < 127) ? (char)buf[i] : '.');
-    Serial.println();
-  } else Serial.println("Error de lectura");
+
+  if (!eepromReadSeq(addr, buf, len)) {
+    printDebug("Error de lectura");
+    return false;
+  }
+
+  out = "";
+  for (int i = 0; i < len; i++) {
+    char c = (buf[i] >= 32 && buf[i] < 127) ? (char)buf[i] : '.';
+    out += c;
+  }
+
+  return true;
 }
 
-void cmdWrite(uint16_t addr, const String& text) {
-  if (eepromWritePaged(addr, (const uint8_t*)text.c_str(), text.length()))
-    Serial.printf("Escrito en 0x%04X\n", addr);
-  else
-    Serial.println("Error de escritura (WP alto, dirección o bus).");
+bool cmdWrite(uint16_t addr, const String& text) {
+  const uint8_t* data = (const uint8_t*)text.c_str();
+  size_t len = text.length();
+
+  if (!eepromWritePaged(addr, data, len)) {
+    printDebug("Write FAIL (I2C)");
+    return false;
+  }
+
+  uint8_t verify[256];
+  if (!eepromReadSeq(addr, verify, len)) {
+    printDebug("Write FAIL (readback)");
+    return false;
+  }
+
+  for (size_t i = 0; i < len; i++) {
+    if (verify[i] != data[i]) {
+      printDebug("Write FAIL (verify mismatch)");
+      return false;
+    }
+  }
+
+  printDebug("Write OK (verified)");
+  return true;
 }
 
 void cmdErase() {
-  Serial.println("Borrando toda la EEPROM (0xFF)...");
+  printDebug("Borrando toda la EEPROM (0xFF)...");
   const int total = 4096;  // 32 Kbit = 4 KB
   uint8_t ff[32];
   memset(ff, 0xFF, sizeof(ff));
   for (int a = 0; a < total; a += 32) {
     if (!eepromWritePaged(a, ff, 32)) {
-      Serial.printf("Fallo en 0x%04X\n", a);
+      printDebug("Fallo en 0x" + String(a));
       break;
     }
   }
-  Serial.println("Borrado completo.");
+  printDebug("Borrado completo.");
 }
 
 // Permite fijar manualmente la dirección encontrada
@@ -174,76 +167,6 @@ void cmdAddrSet(uint8_t addr) {
   Serial.printf("Dirección EEPROM seleccionada: 0x%02X\n", eepromAddr);
 }
 
-// ---------- Parser ----------
-String input;
-void handleCommand(String line) {
-  line.trim();
-  if (line.length() == 0) return;
-
-  if (line == "scan") {
-    cmdScan();
-    return;
-  }
-
-  if (line.startsWith("addr ")) {
-    String s = line.substring(5);
-    uint8_t v = s.startsWith("0x") ? strtoul(s.c_str(), nullptr, 16) : (uint8_t)s.toInt();
-    cmdAddrSet(v);
-    return;
-  }
-
-  if (line.startsWith("read ")) {
-    int sp1 = line.indexOf(' ');
-    int sp2 = line.indexOf(' ', sp1 + 1);
-    if (sp1 < 0 || sp2 < 0) {
-      Serial.println("Uso: read <addr> <len>");
-      return;
-    }
-    String a = line.substring(sp1 + 1, sp2), b = line.substring(sp2 + 1);
-    uint16_t addr = a.startsWith("0x") ? strtoul(a.c_str(), nullptr, 16) : (uint16_t)a.toInt();
-    int len = b.toInt();
-    cmdRead(addr, len);
-    return;
-  }
-
-  if (line.startsWith("write ")) {
-    int sp1 = line.indexOf(' ');
-    int sp2 = line.indexOf(' ', sp1 + 1);
-    if (sp1 < 0 || sp2 < 0) {
-      Serial.println("Uso: write <addr> <texto>");
-      return;
-    }
-    String a = line.substring(sp1 + 1, sp2), text = line.substring(sp2 + 1);
-    uint16_t addr = a.startsWith("0x") ? strtoul(a.c_str(), nullptr, 16) : (uint16_t)a.toInt();
-    cmdWrite(addr, text);
-    return;
-  }
-
-  if (line == "erase") {
-    cmdErase();
-    return;
-  }
-
-  if (line.startsWith("wpcheck")) {
-    // wpcheck [addr]
-    uint16_t m = 0x0000;
-    int sp = line.indexOf(' ');
-    if (sp > 0) {
-      String a = line.substring(sp + 1);
-      if (a.length()) m = a.startsWith("0x") ? strtoul(a.c_str(), nullptr, 16) : (uint16_t)a.toInt();
-    }
-    cmdWPCheck(m);
-    return;
-  }
-
-  Serial.println("Comandos:");
-  Serial.println("  scan");
-  Serial.println("  addr <0x50..0x57>");
-  Serial.println("  read <addr> <len>     (addr admite 0x..)");
-  Serial.println("  write <addr> <texto>");
-  Serial.println("  erase");
-  Serial.println("  wpcheck [addr]        (prueba WP; por defecto 0x0000)");
-}
 
 void printDebug(String str) {
   str.replace("\"", "\\\"");  // Escapa comillas
@@ -260,6 +183,14 @@ void setup() {
 
   // Configuración de GPIOs para control de entrada/salida
   pinMode(RUN_BUTTON, INPUT);  ///< Entrada: Botón de arranque
+  pinMode(A0_PIN, OUTPUT);
+  pinMode(A1_PIN, OUTPUT);
+  pinMode(A2_PIN, OUTPUT);
+  pinMode(WP_PIN, OUTPUT);
+  digitalWrite(A0_PIN, LOW);
+  digitalWrite(A1_PIN, LOW);
+  digitalWrite(A2_PIN, LOW);
+  digitalWrite(WP_PIN, LOW);
 }
 
 void loop() {
@@ -284,10 +215,16 @@ void loop() {
     if (!error) {
 
       String Function = receiveJSON["Function"];
+      String Value = receiveJSON["Value"];
 
       int opc = 0;
-      if (Function == "ping") opc = 1;           // {"Function": "ping"}
-      else if (Function == "testAddr") opc = 2;  // {"Function": "testAddr"}
+      if (Function == "ping") opc = 1;          // {"Function": "ping"}
+      else if (Function == "address") opc = 2;  // {"Function": "address"}
+      else if (Function == "write") opc = 3;    // {"Function": "write", "Value": "Hola Mundo :D"}
+      else if (Function == "read") opc = 4;     // {"Function": "read"}
+      else if (Function == "erase") opc = 5;    // {"Function": "erase"}
+      else if (Function == "writep") opc = 6;   // {"Function": "writep"}
+      else if (Function == "testAll") opc = 7;  // {"Function": "testAll"}
 
       switch (opc) {
 
@@ -307,27 +244,116 @@ void loop() {
 
             JsonArray arr = sendJSON.createNestedArray("addr");
 
-for 
+            for (int i = 0; i < 8; i++) {
 
+              int a0 = (i >> 0) & 1;
+              int a1 = (i >> 1) & 1;
+              int a2 = (i >> 2) & 1;
 
-            for (uint8_t addr = 1; addr < 127; addr++) {
+              digitalWrite(A0_PIN, a0);
+              digitalWrite(A1_PIN, a1);
+              digitalWrite(A2_PIN, a2);
+              delay(5);
+
+              uint8_t addr = 0x50 | (a2 << 2) | (a1 << 1) | a0;
+
               Wire.beginTransmission(addr);
               if (Wire.endTransmission() == 0) {
-                if (addr >= 0x50 && addr <= 0x57) {
-                  String hexAddr = "0x" + String(addr, HEX);
-                  hexAddr.toUpperCase();
-                  printDebug(hexAddr + " (EEPROM candidata)");
-                  arr.add(hexAddr);
-                }
+
+                String hexAddr = "0x" + String(addr, HEX);
+                hexAddr.toUpperCase();
+
+                printDebug(hexAddr + " (EEPROM encontrada)");
+                arr.add(hexAddr);
               }
-              delay(20);
+            }
+
+            if (arr.size() > 0) {
+              eepromAddr = strtol(arr[0], NULL, 16);
+              digitalWrite(A0_PIN, LOW);
+              digitalWrite(A1_PIN, LOW);
+              digitalWrite(A2_PIN, LOW);
             }
 
             serializeJson(sendJSON, Serial);
             Serial.println();
-
             break;
           }
+
+        case 3:
+          {
+            if (Value != "") {
+              sendJSON.clear();
+              bool state = cmdWrite(0, Value);
+              sendJSON["ok"] = state;
+              serializeJson(sendJSON, Serial);
+              Serial.println();
+            } else {
+              printDebug("Valor de escritura vacío");
+            }
+            break;
+          }
+
+        case 4:
+          {
+            String data = "";
+            sendJSON.clear();
+            if (cmdRead(0, 13, data)) {
+              sendJSON["ok"] = "true";
+              sendJSON["data"] = data;
+            } else {
+              sendJSON["read"] = "false";
+            }
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+            break;
+          }
+
+        case 5:
+          {
+            cmdErase();
+          }
+
+        case 6:
+          {
+            digitalWrite(WP_PIN, HIGH);  // Activar protección
+            cmdWPCheck(0x0000);
+            delay(1000);
+            digitalWrite(WP_PIN, LOW);  // Des protección
+            break;
+          }
+
+        case 7:
+          {
+            sendJSON.clear();
+            digitalWrite(WP_PIN, LOW);
+            String data = "";
+
+            cmdErase(); // Test de Borrado
+            delay(10);
+            bool write = cmdWrite(0, "Hola Mundo :D");  // Test de Escritura
+            bool read = cmdRead(0, 13, data); // Test de Lectura
+            digitalWrite(WP_PIN, HIGH);  // Activar protección
+            bool wp = cmdWPCheck(0x0000); // Test de Protección 
+            delay(1000);
+            digitalWrite(WP_PIN, LOW);  // Des protección
+            if (read && write && wp) {
+              sendJSON["state"] = "OK";
+            } else {
+              sendJSON["state"] = "FAIL";
+            }
+            sendJSON["write"] = write;
+            sendJSON["read"] = read;
+            sendJSON["wp"] = wp; 
+            sendJSON["data"] = data;
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+            break;
+          }
+
+        default:
+          printDebug("Comando desconocido");
+          break;
       }
     }
   }
