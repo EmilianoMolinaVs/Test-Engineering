@@ -10,17 +10,15 @@
 #include <MapController.h>
 
 // ==== Declaración de pines
-#define RX2 D4  // GPIO15 como RX
-#define TX2 D5  // GPIO19 como TX
-
-#define I2C_SDA 22  // Lectura del módulo por I2C
-#define I2C_SCL 23
-
-#define RelayNO 4  // Lectura de conmutación en relevador
-#define RelayNC 5
-
-#define RUN_BUTTON 2  // Botón de Arranque
-#define switchGPIO 3
+#define RUN_BUTTON 2    // Botón de Arranque
+#define RX2 D4          // GPIO15 como RX para PagWeb
+#define TX2 D5          // GPIO19 como TX para PagWeb
+#define I2C_SDA 22      // Comunicación con tarjeta LockNode por I2C
+#define I2C_SCL 23      // Comunicación con tarjeta LockNode por I2C
+#define RELAYNO 4       // Lectura de valores analógicos por conmutación de relé
+#define RELAYNC 5       // Lectura de valores analógicos por conmutación de relé
+#define SWITCHPA4 D1    // Pin de accionamiento de Relé en TB para lectura de PA4
+#define RELAYPA4_ON D0  // Pin de suministro de 3.3V al relé de PA4
 
 // ==== Inicialización de objetos
 HardwareSerial PagWeb(1);  // Objeto para UART2 en PULSAR como PagWeb
@@ -50,22 +48,20 @@ void printDeviceStatus();
 
 void setup() {
 
-  // Iniciar UART0 (USB) para depuración
   Serial.begin(115200);
   Serial.println("UART0 listo (USB)");
-  delay(1000);
-
-  // Iniciar UART2 en los pines seleccionados
-  PagWeb.begin(115200, SERIAL_8N1, RX2, TX2);
+  PagWeb.begin(115200, SERIAL_8N1, RX2, TX2);  // Iniciar UART2 en los pines seleccionados
   Serial.println("UART2 iniciado en RX=9, TX=8");
 
   // Declaración de pines de entrada de relevador
-  pinMode(RelayNO, INPUT);
-  pinMode(RelayNC, INPUT);
+  pinMode(RELAYNO, INPUT);
+  pinMode(RELAYNC, INPUT);
   pinMode(RUN_BUTTON, INPUT);
 
-  pinMode(switchGPIO, OUTPUT);
-  digitalWrite(switchGPIO, HIGH);
+  pinMode(SWITCHPA4, OUTPUT);
+  pinMode(RELAYPA4_ON, OUTPUT);
+  digitalWrite(SWITCHPA4, LOW);
+  digitalWrite(RELAYPA4_ON, HIGH);
 
   //showBanner();
 
@@ -135,10 +131,10 @@ void loop() {
       int opc = 0;
 
       if (Function == "scan") opc = 1;            // {"Function":"scan"}
-      else if (Function == "TestBuz") opc = 2;    // {"Function":"testBuz", "Address": "0X42"}
-      else if (Function == "TestRelay") opc = 3;  // {"Function":"testRelay", "Address": "0X42"}
-      else if (Function == "TestNeo") opc = 4;    // {"Function":"testNeo", "Address": "0X42"}
-      else if (Function == "TestAll") opc = 5;
+      else if (Function == "TestBuz") opc = 2;    // {"Function":"TestBuz", "Address": "0X42"}
+      else if (Function == "TestRelay") opc = 3;  // {"Function":"TestRelay", "Address": "0X42"}
+      else if (Function == "TestNeo") opc = 4;    // {"Function":"TestNeo", "Address": "0X42"}
+      else if (Function == "TestAll") opc = 5;    // {"Function":"TestAll", "Address": "0X42"}
 
       switch (opc) {
 
@@ -216,7 +212,7 @@ void loop() {
 
         case 5:  // Ejecución de Test Completo
           {
-            // Bloque de Buzzer
+            // ==== Bloque de Buzzer ====
             int delay_ms = 200;
             deviceManager.cmdPWM25(address, 1);
             delay(delay_ms);
@@ -234,45 +230,24 @@ void loop() {
             delay(delay_ms);
             deviceManager.cmdPWMOff(address, 1);
 
-            // Bloque de Neopixel
-            delay_ms = 800;
-            deviceManager.cmdNeoRed(address, 1);
-            delay(delay_ms);
-            deviceManager.cmdNeoBlue(address, 1);
-            delay(delay_ms);
-            deviceManager.cmdNeoGreen(address, 1);
-            delay(delay_ms);
-            deviceManager.cmdNeoWhite(address, 1);
-            delay(delay_ms);
-            deviceManager.cmdNeoOff(address, 1);
-            delay(delay_ms);
-            ESP.restart();
-
-            // Bloque de Relay
+            // ==== Bloque de Relay ====
             delay(300);
             String status1 = "Fail";
             deviceManager.cmdRelay(address, false, 1);  // Accionamiento
-            delay(200);
-            float relayNC_init = analogRead(RelayNC);
-            float relayNO_init = analogRead(RelayNO);
-
-            // Normalizar
-            //int relayNC_init = normalizeAnalog(relayNC_init_raw);
-            //int relayNO_init = normalizeAnalog(relayNO_init_raw);
+            delay(1000);
+            float relayNC_init = analogRead(RELAYNC);
+            float relayNO_init = analogRead(RELAYNO);
 
             Serial.println("Valor init NC: " + String(relayNC_init));
             Serial.println("Valor init NO: " + String(relayNO_init));
             Serial.println("");
 
+            delay(500);
             deviceManager.cmdRelay(address, true, 1);  // Accionamiento
-            delay(200);
 
-            float relayNC_fin = analogRead(RelayNC);
-            float relayNO_fin = analogRead(RelayNO);
-
-            // Normalizar
-            //int relayNC_fin = normalizeAnalog(relayNC_fin_raw);
-            //int relayNO_fin = normalizeAnalog(relayNO_fin_raw);
+            delay(1000);
+            float relayNC_fin = analogRead(RELAYNC);
+            float relayNO_fin = analogRead(RELAYNO);
 
             Serial.println("Valor fin NC: " + String(relayNC_fin));
             Serial.println("Valor fin NO: " + String(relayNO_fin));
@@ -285,23 +260,37 @@ void loop() {
 
             // Bloque de GPIO ADC
             String status2 = "Fail";
-            digitalWrite(switchGPIO, HIGH);
+            digitalWrite(SWITCHPA4, HIGH);
 
             String resultado1 = deviceManager.cmdReadPA4(address, 1);  // Lectura inicial HIGH
             int pos1 = resultado1.lastIndexOf('(');
             int valor1 = resultado1.substring(pos1 + 1, pos1 + 2).toInt();  // valor = 1
 
-            digitalWrite(switchGPIO, LOW);
+            digitalWrite(SWITCHPA4, LOW);
             delay(500);
 
             String resultado2 = deviceManager.cmdReadPA4(address, 1);  // Lectura final LOW
             int pos2 = resultado2.lastIndexOf('(');
             int valor2 = resultado2.substring(pos2 + 1, pos2 + 2).toInt();  // valor = 1
-            digitalWrite(switchGPIO, HIGH);
+            digitalWrite(SWITCHPA4, HIGH);
 
             if (valor1 != valor2) {
               status2 = "OK";
             }
+
+            // Bloque de Neopixel
+            delay_ms = 800;
+            deviceManager.cmdNeoRed(address, 1);
+            delay(delay_ms);
+            deviceManager.cmdNeoBlue(address, 1);
+            delay(delay_ms);
+            deviceManager.cmdNeoGreen(address, 1);
+            delay(delay_ms);
+            deviceManager.cmdNeoWhite(address, 1);
+            delay(delay_ms);
+            deviceManager.cmdNeoOff(address, 1);
+            delay(delay_ms);
+            // ESP.restart();
 
             sendJSON["status_gpio"] = status2;
             serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
