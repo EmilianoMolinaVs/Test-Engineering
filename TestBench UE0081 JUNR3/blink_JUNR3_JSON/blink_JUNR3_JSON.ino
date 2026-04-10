@@ -1,6 +1,6 @@
-
-
+// =========================================================
 // Blink Firmware Demo y Test JUNR3
+// =========================================================
 
 #include <Adafruit_NeoPixel.h>
 #include <Wire.h>
@@ -11,29 +11,29 @@
 #include <HardwareSerial.h>
 #include "DHT.h"
 
-// ==== DECLARACIÓN DE PINES ====
-// ==== GPIO D0 -> RX UART con CH340
-// ==== GPIO D1 -> RX UART con CH340
-// ==== GPIO D2 -> Libre
-// ==== GPIO D3 -> Libre
-#define DHT_PIN 4     // GPIO D4 -> Sensor de Temperatura DHT11
-#define BUZZER_PIN 5  // GPIO D5 -> Buzzer en Shield
-#define IR_PIN 6      // GPIO D6 -> LED Infrarrojo en Shield
-#define RELAY_PIN 7   // GPIO D7 -> Control de Relay de Conmutación para Potencia
-#define NEOP_PIN 8    // GPIO D8 -> Matriz de Neopixel
-#define RGB_RD09 9    // GPIO D09 -> Rojo RGB Shield
-#define RGB_GD10 10   // GPIO D10 -> Verde RGB Shield
-#define RGB_BD11 11   // GPIO D11 -> Azul RGB Shield
-#define LED_D12 12    // GPIO D12 -> LED Rojo en Shield D12
-#define LED_BUILTIN 13
+// ==== DECLARACIÓN DE PINES DIGITALES ====
+// GPIO D0 -> RX UART con CH340
+// GPIO D1 -> TX UART con CH340
+// GPIO D2 -> Libre
+// GPIO D3 -> Libre
+#define DHT_PIN 4       // GPIO D4 -> Sensor de Temperatura DHT11
+#define BUZZER_PIN 5    // GPIO D5 -> Buzzer en Shield
+#define IR_PIN 6        // GPIO D6 -> LED Infrarrojo en Shield
+#define NEOP_RETURN 7   // GPIO D7 -> Retorno de Neopixel
+#define NEOP_PIN 8      // GPIO D8 -> Matriz de Neopixel
+#define RGB_RD09 9      // GPIO D09 -> Rojo RGB Shield
+#define RGB_GD10 10     // GPIO D10 -> Verde RGB Shield
+#define RGB_BD11 11     // GPIO D11 -> Azul RGB Shield
+#define LED_D12 12      // GPIO D12 -> LED Rojo en Shield D12
+#define LED_BUILTIN 13  // LED interno de la placa
 
 // ==== PINES ANALÓGICOS ====
-#define A0_PIN A0  // A0 Salida de datos para A1
-#define A1_PIN A1  // A1 Entrada de datos desde A0
-#define A2_PIN A2  // A2 para lectura de LM35 en Shield
-#define A3_PIN A3  // A3 para lectura de sensor de luz TEMT6000
-#define A4_PIN A4  // A0 Salida de datos para A1
-#define A5_PIN A5  // A1 Entrada de datos desde A0
+#define A0_PIN A0        // A0 Salida de datos para A1
+#define A1_PIN A1        // A1 Entrada de datos desde A0
+#define A2_PIN A2        // A2 para lectura de LM35 en Shield
+#define A3_PIN A3        // A3 para lectura de sensor de luz TEMT6000
+#define RELAY_PIN A4     // A4 Salida de activación relay
+#define RELAY_RETURN A5  // A5 Entrada de datos desde A4
 
 // ==== DECLARACIÓN DE VARIABLES Y OBJETOS ====
 #define NUMPIXELS 25
@@ -49,15 +49,15 @@ StaticJsonDocument<256> receiveJSON;  ///< Documento JSON para parsear datos rec
 String JSON_lectura;               ///< Buffer para transmitir JSON de respuesta
 StaticJsonDocument<256> sendJSON;  ///< Documento JSON para armar respuestas
 
-
-
+// =========================================================
+// CONFIGURACIÓN INICIAL (SETUP)
+// =========================================================
 void setup() {
-
   Serial.begin(115200);
   delay(100);
   printDebug("Serial inicializado");
 
-  // ==== DECLARACIÓN DE PINES DE SALIDA
+  // Configuración de pines de salida
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(RELAY_PIN, OUTPUT);
   pinMode(RGB_RD09, OUTPUT);
@@ -66,20 +66,29 @@ void setup() {
   pinMode(LED_D12, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
+  // Configuración de pines de entrada
   pinMode(IR_PIN, INPUT);
+  pinMode(NEOP_RETURN, INPUT);
+  pinMode(RELAY_RETURN, INPUT);
 
+  // Estado inicial del relay de demanda de corriente
+  //digitalWrite(RELAY_PIN, HIGH);
+
+  // Inicialización de Neopixels
   pixels.begin();
   pixels.setBrightness(4);
   pixels.clear();
   pixels.show();
 
-  dht.begin();  // Inicialización del DHT
+  // Inicialización del DHT
+  dht.begin();
 }
 
+// =========================================================
+// BUCLE PRINCIPAL (LOOP)
+// =========================================================
 void loop() {
-
   if (Serial.available()) {
-
     JSON_entrada = Serial.readStringUntil('\n');
     DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
 
@@ -88,7 +97,12 @@ void loop() {
 
       int opc = 0;
       if (Function == "ping") opc = 1;          // {"Function": "ping"}
-      else if (Function == "testAll") opc = 7;  // {"Function": "testAll"}
+      else if (Function == "buzzer") opc = 2;   // {"Function": "buzzer"}
+      else if (Function == "leds") opc = 3;     // {"Function": "leds"}
+      else if (Function == "testAll") opc = 4;  // {"Function": "testAll"}
+
+      else if (Function == "relayOn") opc = 5;   // {"Function": "relayOn"}
+      else if (Function == "relayOff") opc = 6;  // {"Function": "relayOff"}
 
       switch (opc) {
         case 1:
@@ -100,16 +114,59 @@ void loop() {
             break;
           }
 
-        case 7:
+        case 2:
+          {
+            for (int i = 0; i < 5; i++) {
+              melodyBuzzer();
+              delay(50);
+            }
+            break;
+          }
+
+        case 3:
+          {
+            int delay_ms = 100;
+
+            for (int i = 0; i < 10; i++) {
+              digitalWrite(LED_BUILTIN, HIGH);
+              digitalWrite(LED_D12, LOW);
+              digitalWrite(RGB_RD09, HIGH);
+              digitalWrite(RGB_GD10, LOW);
+              digitalWrite(RGB_BD11, LOW);
+              delay(delay_ms);
+
+              digitalWrite(LED_BUILTIN, LOW);
+              digitalWrite(LED_D12, HIGH);
+              digitalWrite(RGB_RD09, LOW);
+              digitalWrite(RGB_GD10, HIGH);
+              digitalWrite(RGB_BD11, LOW);
+              delay(delay_ms);
+
+              digitalWrite(LED_BUILTIN, HIGH);
+              digitalWrite(LED_D12, LOW);
+              digitalWrite(RGB_RD09, LOW);
+              digitalWrite(RGB_GD10, LOW);
+              digitalWrite(RGB_BD11, HIGH);
+              delay(delay_ms);
+
+              digitalWrite(LED_BUILTIN, HIGH);
+              digitalWrite(LED_D12, HIGH);
+              digitalWrite(RGB_RD09, HIGH);
+              digitalWrite(RGB_GD10, LOW);
+              digitalWrite(RGB_BD11, HIGH);
+              delay(delay_ms);
+            }
+            break;
+          }
+
+        case 4:
           {
             sendJSON.clear();
 
-            melodyBuzzer();
-
-            String statusD4 = DHTmeas();
+            bool statusD4 = DHTmeas();
             sendJSON["D4"] = statusD4;
 
-            String statusD6 = IRLEDreceptor();
+            bool statusD6 = IRLEDreceptor();
             sendJSON["D6"] = statusD6;
 
             // Validación A0 y A1 con envio de secuencia de datos
@@ -117,26 +174,38 @@ void loop() {
             sendJSON["A0"] = statusA01;
             sendJSON["A1"] = statusA01;
 
-            // Validación A2 LM35 en Shield
-            String statusA2 = analogA2();
+            // Validación A2 LM35 en Shield (Umbral > 10)
+            bool statusA2 = testAnalogPin(A2_PIN, "A2", 10.0);
             sendJSON["A2"] = statusA2;
 
-            // Validación A3 Sensor de Luz TEMT6000
-            String statusA3 = analogA3();
+            // Validación A3 Sensor de Luz TEMT6000 (Umbral > 100)
+            bool statusA3 = testAnalogPin(A3_PIN, "A3", 100.0);
             sendJSON["A3"] = statusA3;
 
-            // Validación A4 y A5 con envio de secuencia de datos
-            bool statusA45 = testGpios(A4_PIN, A5_PIN);
-            sendJSON["A4"] = statusA45;
-            sendJSON["A5"] = statusA45;
+            if (statusD4 && statusD6 && statusA01 && statusA2 && statusA3) {
+              sendJSON["testAll"] = "OK";
+            } else {
+              sendJSON["testAll"] = "FAIL";
+            }
 
+            // Envío del JSON final con todos los resultados del test
             serializeJson(sendJSON, Serial);
             Serial.println();
 
+            melodyBuzzer();
             break;
           }
 
+        case 5:
+          digitalWrite(RELAY_PIN, LOW);
+          break;
+
+        case 6:
+          digitalWrite(RELAY_PIN, HIGH);
+          break;
+
         default:
+          printDebug("Opción no disponible");
           break;
       }
     }
@@ -145,8 +214,11 @@ void loop() {
   }
 }
 
-// Esta función reemplaza al delay() normal.
-// Retorna 'true' si llegó algo por Serial, o 'false' si terminó el tiempo normal.
+// =========================================================
+// FUNCIONES DE UTILIDAD Y CORE
+// =========================================================
+
+// Interrupción por software para no bloquear el puerto serial
 bool smartDelay(unsigned long wait) {
   unsigned long startMillis = millis();
   while (millis() - startMillis < wait) {
@@ -158,36 +230,36 @@ bool smartDelay(unsigned long wait) {
   return false;
 }
 
+// Función centralizada para enviar mensajes de debug en formato JSON
 void printDebug(String str) {
-  str.replace("\"", "\\\"");  // Escapa comillas
+  str.replace("\"", "\\\"");  // Escapa comillas para no romper el JSON
   Serial.println("{\"debug\": \"" + str + "\"}");
 }
 
+// =========================================================
+// FUNCIONES DE SENSORES Y ACTUADORES
+// =========================================================
+
 // Función de reconocimiento y lectura de sensor DHT Temp y Hum D4
-String DHTmeas() {
-  Serial.println("==== Lectura Sensor en D4 GPIO09 ====");
+bool DHTmeas() {
+  printDebug("Lectura Sensor de Temperatura en D4");
   float h = dht.readHumidity();
   float t = dht.readTemperature();  // °C
 
   if (isnan(h) || isnan(t)) {
-    Serial.println("Error leyendo el DHT11");
-    return "FAIL";
+    printDebug("Error leyendo el DHT11");
+    return false;
   }
 
-  Serial.print("Temperatura: ");
-  Serial.print(t);
-  Serial.print(" °C\t");
+  // Se concatena todo en un solo String para enviarlo limpio en el JSON
+  printDebug("Temperatura: " + String(t) + " °C | Humedad: " + String(h) + " %");
 
-  Serial.print("Humedad: ");
-  Serial.print(h);
-  Serial.println(" %");
-
-  return "OK";
+  return true;
 }
 
 // Función de lectura digital en GPIO8 D6
-String IRLEDreceptor() {
-  Serial.println("==== Lectura de sensor IR en D6 GPIO08 ====");
+bool IRLEDreceptor() {
+  printDebug("Lectura de sensor IR en D6");
   int n = 0;
   int lect = 0;
   for (int i = 0; i < 10; i++) {
@@ -196,18 +268,17 @@ String IRLEDreceptor() {
   }
 
   if (lect == 10) {
-    Serial.println("Lectura HIGH estable en D6: " + String(lect) + "/10");
-    return "OK";
+    printDebug("Lectura HIGH estable en D6: " + String(lect) + "/10");
+    return true;
   } else {
-    Serial.println("Lectura inestable en D6: " + String(lect) + "/10");
-    return "FAIL";
+    printDebug("Lectura inestable en D6: " + String(lect) + "/10");
+    return false;
   }
 }
 
 // Función de melodía en Buzzer D5
 void melodyBuzzer() {
-
-  Serial.println("==== Ejecución de rutina en Buzzer D5 ====");
+  printDebug("Ejecución de rutina en Buzzer D5");
 
 #define NOTE_B0 31
 #define NOTE_C1 33
@@ -325,26 +396,20 @@ void melodyBuzzer() {
   delay(1000);  // Pausa antes de repetir
 }
 
+// =========================================================
+// FUNCIONES DE PRUEBA DE PINES (TESTBENCH)
+// =========================================================
+
 /*
  * testGpios(uint8_t gpioA, uint8_t gpioB): Prueba integridad bidireccional
  * Realiza pruebas en ambas direcciones: A->B y B->A
- * 
- * Parámetros:
- *   - gpioA: Primer pin GPIO a probar
- *   - gpioB: Segundo pin GPIO a probar
- * Retorna:
- *   - true si ambas pruebas son exitosas
- *   - false si hay fallos en cualquier dirección
  */
 bool testGpios(uint8_t gpioA, uint8_t gpioB) {
-
-  // Prueba A -> B
   bool resultAB = testSequence(gpioA, gpioB);
   if (!resultAB) return false;
 
   delay(10);  // Pausa entre pruebas
 
-  // Prueba B -> A (bidireccional)
   bool resultBA = testSequence(gpioB, gpioA);
   if (!resultBA) return false;
 
@@ -353,139 +418,154 @@ bool testGpios(uint8_t gpioA, uint8_t gpioB) {
 
 /*
  * testSequence(uint8_t gpioOut, uint8_t gpioIn): Prueba secuencia de bit
- * Envía un patrón de bits a través de gpioOut y verifica lectura en gpioIn
- * 
- * Parámetros:
- *   - gpioOut: Pin configurado como salida
- *   - gpioIn: Pin configurado como entrada
- * Retorna:
- *   - true si todos los bits coinciden
- *   - false si hay algún error de correspondencia
  */
 bool testSequence(uint8_t gpioOut, uint8_t gpioIn) {
-
-  // Configuración de pines
   pinMode(gpioOut, OUTPUT);
   pinMode(gpioIn, INPUT);  // Configuración con resistencia
 
-  // Patrón de prueba: secuencia de bits con patrones de repetición
   uint8_t testPattern[] = { 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1 };
 
-  // Envío y verificación de cada bit del patrón
   for (int i = 0; i < sizeof(testPattern); i++) {
-
     digitalWrite(gpioOut, testPattern[i]);  // Envía bit
     delay(10);                              // Espera de estabilización
 
     int readValue = digitalRead(gpioIn);  // Lee bit
 
-    // Si la lectura no coincide con lo enviado, fallido
     if (readValue != testPattern[i]) {
       return false;
     }
   }
-
   return true;  // Todos los bits coincidieron correctamente
 }
 
-
-String analogA2() {
-  float n = 0;
+/*
+ * testAnalogPin: Lee un pin analógico 10 veces, promedia y evalúa contra un umbral.
+ * * Parámetros:
+ * - pin: El pin físico o constante a leer (ej. A2_PIN)
+ * - pinName: El nombre en texto para el debug (ej. "A2")
+ * - threshold: El valor mínimo que debe superar el promedio para ser true
+ */
+bool testAnalogPin(uint8_t pin, String pinName, float threshold) {
   float lect = 0;
+
   for (int i = 0; i < 10; i++) {
-    n = analogRead(A2_PIN);
-    lect += n;
+    lect += analogRead(pin);
   }
-  float avg = lect / 10;
-  Serial.println("El promedio de lecturas en A2: " + String(avg));
-  if (avg > 10) {
-    return "OK";
-  } else {
-    return "FAIL";
-  }
+
+  float avg = lect / 10.0;
+  printDebug("El promedio de lecturas en " + pinName + ": " + String(avg));
+
+  // Como la evaluación (avg > threshold) ya da como resultado true o false,
+  // podemos retornarlo directamente y nos ahorramos el if/else
+  return (avg > threshold);
 }
 
-String analogA3() {
-  float n = 0;
-  float lect = 0;
-  for (int i = 0; i < 10; i++) {
-    n = analogRead(A3_PIN);
-    lect += n;
-  }
-  float avg = lect / 10;
-  Serial.println("El promedio de lecturas en A3: " + String(avg));
-  if (avg > 100) {
-    return "OK";
-  } else {
-    return "FAIL";
-  }
-}
-
-
-
-// ==== Funciones Demo ====
+// =========================================================
+// RUTINAS DE LUCES NEOPIXEL (DEMO)
+// =========================================================
 
 void demoNeop() {
   digitalWrite(LED_BUILTIN, HIGH);
-  
-  rainbowCycle(10);
-  if (Serial.available()) return; // Revisa si el ciclo se abortó
+  digitalWrite(LED_D12, LOW);
+  digitalWrite(RGB_RD09, HIGH);
+  digitalWrite(RGB_GD10, LOW);
+  digitalWrite(RGB_BD11, LOW);
 
-  if (smartDelay(500)) return;    // Pausa inteligente de 500ms
-  
+  rainbowCycle(10);
+  if (Serial.available()) return;  // Revisa si el ciclo se abortó
+
+  if (smartDelay(500)) return;  // Pausa inteligente de 500ms
+
   digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_D12, HIGH);
+  digitalWrite(RGB_RD09, LOW);
+  digitalWrite(RGB_GD10, HIGH);
+  digitalWrite(RGB_BD11, LOW);
 
   colorWipe(pixels.Color(255, 0, 0), DELAYVAL);
   if (Serial.available()) return;
-  
+
+  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(LED_D12, LOW);
+  digitalWrite(RGB_RD09, LOW);
+  digitalWrite(RGB_GD10, LOW);
+  digitalWrite(RGB_BD11, HIGH);
+
   colorWipe(pixels.Color(0, 255, 0), DELAYVAL);
   if (Serial.available()) return;
-  
+
+  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_D12, HIGH);
+  digitalWrite(RGB_RD09, HIGH);
+  digitalWrite(RGB_GD10, LOW);
+  digitalWrite(RGB_BD11, LOW);
+
   colorWipe(pixels.Color(0, 0, 255), DELAYVAL);
   if (Serial.available()) return;
-  
-  if (smartDelay(500)) return;
-  
+
   digitalWrite(LED_BUILTIN, HIGH);
-  
+  digitalWrite(LED_D12, LOW);
+  digitalWrite(RGB_RD09, LOW);
+  digitalWrite(RGB_GD10, HIGH);
+  digitalWrite(RGB_BD11, LOW);
+
+  if (smartDelay(500)) return;
+
+  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(LED_D12, LOW);
+  digitalWrite(RGB_RD09, LOW);
+  digitalWrite(RGB_GD10, HIGH);
+  digitalWrite(RGB_BD11, LOW);
+
   theaterChase(pixels.Color(127, 127, 127), DELAYVAL);
   if (Serial.available()) return;
-  
+
   if (smartDelay(500)) return;
-  
+
   digitalWrite(LED_BUILTIN, LOW);
-  
+  digitalWrite(LED_D12, HIGH);
+  digitalWrite(RGB_RD09, LOW);
+  digitalWrite(RGB_GD10, LOW);
+  digitalWrite(RGB_BD11, HIGH);
+
   quetzalcoatlEffect(60);
   if (Serial.available()) return;
-  
+
   if (smartDelay(500)) return;
-  
+
   digitalWrite(LED_BUILTIN, HIGH);
-  
+  digitalWrite(LED_D12, LOW);
+  digitalWrite(RGB_RD09, HIGH);
+  digitalWrite(RGB_GD10, LOW);
+  digitalWrite(RGB_BD11, LOW);
+
   unsigned long start = millis();
   while (millis() - start < 3000) {
     confetti(30);
-    // ¡Súper importante! Esto evita quedarse atrapado 3 segundos
-    if (Serial.available()) return; 
+    if (Serial.available()) return;
   }
-  
+
   if (smartDelay(500)) return;
-  
+
   digitalWrite(LED_BUILTIN, LOW);
-  
+  digitalWrite(LED_D12, HIGH);
+  digitalWrite(RGB_RD09, LOW);
+  digitalWrite(RGB_GD10, HIGH);
+  digitalWrite(RGB_BD11, LOW);
+
   scanner(pixels.Color(255, 0, 255), 50);
   if (Serial.available()) return;
-  
+
   if (smartDelay(500)) return;
-  
+
   imageGalleryDemo();
   if (Serial.available()) return;
-  
+
   if (smartDelay(500)) return;
-  
+
   pixels.clear();
   pixels.show();
-  
+
   if (smartDelay(500)) return;
 }
 
@@ -569,12 +649,12 @@ void fadeInOut(uint32_t color) {
   for (int bri = 0; bri <= 64; bri++) {
     pixels.setBrightness(bri);
     colorWipe(pixels.Color(r, g, b), 5);
-    if (Serial.available()) return; // <--- Cambio aquí
+    if (Serial.available()) return;
   }
   for (int bri = 64; bri >= 0; bri--) {
     pixels.setBrightness(bri);
     colorWipe(pixels.Color(r, g, b), 5);
-    if (Serial.available()) return; // <--- Cambio aquí
+    if (Serial.available()) return;
   }
 }
 
@@ -596,10 +676,9 @@ void quetzalcoatlEffect(int wait) {
       int idx = (head - i + NUMPIXELS) % NUMPIXELS;
       uint32_t color = aztecPalette[i % paletteSize];
       pixels.setPixelColor(idx, color);
-      // Borrar el smartDelay que estaba aquí
     }
     pixels.show();
-    if (smartDelay(wait)) return; // <--- Ponerlo aquí reemplazando a delay(wait);
+    if (smartDelay(wait)) return;
     head = (head + 1) % NUMPIXELS;
   }
 }
@@ -614,10 +693,9 @@ void drawImage(byte image[5], uint32_t color, int wait = 0) {
         pixels.setPixelColor(idx, color);
       }
     }
-    // Borrar el smartDelay que estaba aquí
   }
   pixels.show();
-  if (smartDelay(wait)) return; // <--- Ponerlo aquí reemplazando a delay(wait);
+  if (smartDelay(wait)) return;
 }
 
 byte smiley[5] = {
