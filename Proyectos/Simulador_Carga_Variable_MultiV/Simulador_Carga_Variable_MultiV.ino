@@ -5,6 +5,10 @@ String jsonEntrada;
 StaticJsonDocument<256> docIn;
 StaticJsonDocument<128> docOut;
 
+// ===== Lista de voltajes =====
+float voltajes[6] = {2.9, 3.8, 7.8, 11.1, 13.9, 18.7};
+int indiceVoltaje = 0;
+
 float randomFloat(float min, float max) {
   return min + (random(0, 10000) / 10000.0) * (max - min);
 }
@@ -30,8 +34,15 @@ void loop() {
 
     if (funcion == "Other" && start == "Read") {
 
-      // ===== Lecturas simuladas =====
-      float voltaje   = randomFloat(2.9, 3.3);
+      // ===== Voltaje secuencial =====
+      float voltaje = voltajes[indiceVoltaje];
+
+      // Avanzar índice (cíclico)
+      indiceVoltaje++;
+      if (indiceVoltaje >= 6) {
+        indiceVoltaje = 0;
+      }
+
       float corriente = 0.2;
       float potencia  = voltaje * corriente;
 
@@ -48,14 +59,3 @@ void loop() {
     }
   }
 }
-
-    DeserializationError error = deserializeJson(docIn, jsonEntrada);
-    if (error) {
-      Serial.println("JSON inválido");
-      return;
-    }
-
-    String funcion = docIn["Funcion"] | "";
-    String start   = docIn["Start"]   | "";
-
-

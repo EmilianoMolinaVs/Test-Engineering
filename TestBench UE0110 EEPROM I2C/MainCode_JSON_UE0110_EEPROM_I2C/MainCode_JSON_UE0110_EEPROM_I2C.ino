@@ -227,7 +227,6 @@ void loop() {
       else if (Function == "testAll") opc = 7;  // {"Function": "testAll"}
 
       switch (opc) {
-
         case 1:
           {
             sendJSON.clear();
@@ -273,6 +272,10 @@ void loop() {
               digitalWrite(A0_PIN, LOW);
               digitalWrite(A1_PIN, LOW);
               digitalWrite(A2_PIN, LOW);
+            }
+
+            if (arr.size() == 8){
+              sendJSON["Result"] = "OK"; 
             }
 
             serializeJson(sendJSON, Serial);

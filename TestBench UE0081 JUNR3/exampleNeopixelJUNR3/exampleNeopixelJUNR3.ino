@@ -1,34 +1,15 @@
-// ==== CÓDIGO DE INTEGRACIÓN JUN R3 ====
-
 #include <Adafruit_NeoPixel.h>
-#include <HardwareSerial.h>
-#include <ArduinoJson.h>
-#include <Wire.h>
 
-// Declaración de Pines
 #define PIN 8
 #define LED_BUILTIN 13
 
-// Declaración de variables
 #define NUMPIXELS 25
 #define DELAYVAL 50
 
-// Creación de Objetos
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-
-// JSON para recibir datos
-String JSON;                        // Variable que recibe al JSON en crudo de PagWeb
-StaticJsonDocument<200> datosJSON;  // Usa StaticJsonDocument para fijar tamaño
-
-// JSON para enviar datos
-String JSONCorriente;
-StaticJsonDocument<200> enviarJSON;
 
 
 void setup() {
-
-  Serial.begin(115200);
-  Serial.println("Serial inicializado...");
 
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -40,44 +21,6 @@ void setup() {
 
 void loop() {
 
-  if (Serial.available()) {
-
-    JSON = Serial.readStringUntil('\n');  // Leer hasta newline (JSON en crudo)
-
-    // Deserializa el JSON y guarda la información en datosJSON
-    DeserializationError error = deserializeJson(datosJSON, JSON);
-
-    if (!error) {
-
-      String Function = datosJSON["Function"];  // Function es la variable de interés del JSON
-
-      int opc = 0;  // Variable de switcheo
-
-      // Llaves JSON de Ejecución de pruebas
-
-      // {"Function":"Run"}
-
-      if (Function == "Run") opc = 1;
-
-      switch (opc) {
-        case 1:
-          Serial.println("RUN");
-          break;
-      }
-    }
-  }
-
-  else{
-    demo(); 
-  }
-}
-
-
-
-// ==== Funciones Demo ====
-
-void demo() {
-  Serial.println("Inicio Demo"); 
   digitalWrite(LED_BUILTIN, HIGH);
   rainbowCycle(10);
   delay(500);
@@ -107,9 +50,11 @@ void demo() {
   pixels.clear();
   pixels.show();
   delay(500);
-
-  Serial.println("Fin Demo");
 }
+
+
+
+// ==== Funciones Demo ====
 
 void colorWipe(uint32_t color, int wait) {
   for (int i = 0; i < NUMPIXELS; i++) {
