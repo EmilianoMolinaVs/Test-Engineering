@@ -184,6 +184,7 @@ void loop() {
 
             if (statusD4 && statusD6 && statusA01 && statusA2 && statusA3) {
               sendJSON["testAll"] = "OK";
+              sendJSON["Result"] = "OK";
             } else {
               sendJSON["testAll"] = "FAIL";
             }
