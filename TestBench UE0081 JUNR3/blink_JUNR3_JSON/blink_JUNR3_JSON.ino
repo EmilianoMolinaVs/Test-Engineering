@@ -145,6 +145,19 @@ void loop() {
   }
 }
 
+// Esta función reemplaza al delay() normal.
+// Retorna 'true' si llegó algo por Serial, o 'false' si terminó el tiempo normal.
+bool smartDelay(unsigned long wait) {
+  unsigned long startMillis = millis();
+  while (millis() - startMillis < wait) {
+    if (Serial.available() > 0) {
+      return true;  // ¡Llegó un JSON! Abortar la espera.
+    }
+    yield();  // Buena práctica para evitar bloqueos internos
+  }
+  return false;
+}
+
 void printDebug(String str) {
   str.replace("\"", "\\\"");  // Escapa comillas
   Serial.println("{\"debug\": \"" + str + "\"}");
@@ -413,60 +426,74 @@ String analogA3() {
 // ==== Funciones Demo ====
 
 void demoNeop() {
-  int delay_ms = 100;
-
-  digitalWrite(LED_D12, LOW);
   digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(RGB_RD09, HIGH);
-  digitalWrite(RGB_GD10, LOW);
-  digitalWrite(RGB_BD11, LOW);
-
+  
   rainbowCycle(10);
-  delay(delay_ms);
-  digitalWrite(LED_D12, HIGH);
+  if (Serial.available()) return; // Revisa si el ciclo se abortó
+
+  if (smartDelay(500)) return;    // Pausa inteligente de 500ms
+  
   digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(RGB_RD09, LOW);
-  digitalWrite(RGB_GD10, HIGH);
-  digitalWrite(RGB_BD11, LOW);
 
   colorWipe(pixels.Color(255, 0, 0), DELAYVAL);
+  if (Serial.available()) return;
+  
   colorWipe(pixels.Color(0, 255, 0), DELAYVAL);
+  if (Serial.available()) return;
+  
   colorWipe(pixels.Color(0, 0, 255), DELAYVAL);
-
-  digitalWrite(RGB_RD09, LOW);
-  digitalWrite(RGB_GD10, LOW);
-  digitalWrite(RGB_BD11, HIGH);
-  delay(delay_ms);
-  delay(1000);
-  /*
+  if (Serial.available()) return;
+  
+  if (smartDelay(500)) return;
+  
   digitalWrite(LED_BUILTIN, HIGH);
+  
   theaterChase(pixels.Color(127, 127, 127), DELAYVAL);
-  delay(delay_ms);
+  if (Serial.available()) return;
+  
+  if (smartDelay(500)) return;
+  
   digitalWrite(LED_BUILTIN, LOW);
+  
   quetzalcoatlEffect(60);
-  delay(delay_ms);
+  if (Serial.available()) return;
+  
+  if (smartDelay(500)) return;
+  
   digitalWrite(LED_BUILTIN, HIGH);
+  
   unsigned long start = millis();
   while (millis() - start < 3000) {
     confetti(30);
+    // ¡Súper importante! Esto evita quedarse atrapado 3 segundos
+    if (Serial.available()) return; 
   }
-  delay(delay_ms);
+  
+  if (smartDelay(500)) return;
+  
   digitalWrite(LED_BUILTIN, LOW);
+  
   scanner(pixels.Color(255, 0, 255), 50);
-  delay(delay_ms);
+  if (Serial.available()) return;
+  
+  if (smartDelay(500)) return;
+  
   imageGalleryDemo();
-  delay(delay_ms);
+  if (Serial.available()) return;
+  
+  if (smartDelay(500)) return;
+  
   pixels.clear();
   pixels.show();
-  delay(delay_ms);
-  */
+  
+  if (smartDelay(500)) return;
 }
 
 void colorWipe(uint32_t color, int wait) {
   for (int i = 0; i < NUMPIXELS; i++) {
     pixels.setPixelColor(i, color);
     pixels.show();
-    delay(wait);
+    if (smartDelay(wait)) return;
   }
 }
 
@@ -478,7 +505,7 @@ void theaterChase(uint32_t color, int wait) {
         pixels.setPixelColor(i, color);
       }
       pixels.show();
-      delay(wait);
+      if (smartDelay(wait)) return;
     }
   }
 }
@@ -502,7 +529,7 @@ void rainbowCycle(int wait) {
       pixels.setPixelColor(i, Wheel((i * 256 / NUMPIXELS + j) & 255));
     }
     pixels.show();
-    delay(wait);
+    if (smartDelay(wait)) return;
   }
 }
 
@@ -511,13 +538,13 @@ void scanner(uint32_t color, int wait) {
     pixels.clear();
     pixels.setPixelColor(i, color);
     pixels.show();
-    delay(wait);
+    if (smartDelay(wait)) return;
   }
   for (int i = NUMPIXELS - 2; i > 0; i--) {
     pixels.clear();
     pixels.setPixelColor(i, color);
     pixels.show();
-    delay(wait);
+    if (smartDelay(wait)) return;
   }
 }
 
@@ -532,7 +559,7 @@ void confetti(int wait) {
   int pos = random(NUMPIXELS);
   pixels.setPixelColor(pos, Wheel(random(0, 255)));
   pixels.show();
-  delay(wait);
+  if (smartDelay(wait)) return;
 }
 
 void fadeInOut(uint32_t color) {
@@ -542,10 +569,12 @@ void fadeInOut(uint32_t color) {
   for (int bri = 0; bri <= 64; bri++) {
     pixels.setBrightness(bri);
     colorWipe(pixels.Color(r, g, b), 5);
+    if (Serial.available()) return; // <--- Cambio aquí
   }
   for (int bri = 64; bri >= 0; bri--) {
     pixels.setBrightness(bri);
     colorWipe(pixels.Color(r, g, b), 5);
+    if (Serial.available()) return; // <--- Cambio aquí
   }
 }
 
@@ -567,9 +596,10 @@ void quetzalcoatlEffect(int wait) {
       int idx = (head - i + NUMPIXELS) % NUMPIXELS;
       uint32_t color = aztecPalette[i % paletteSize];
       pixels.setPixelColor(idx, color);
+      // Borrar el smartDelay que estaba aquí
     }
     pixels.show();
-    delay(wait);
+    if (smartDelay(wait)) return; // <--- Ponerlo aquí reemplazando a delay(wait);
     head = (head + 1) % NUMPIXELS;
   }
 }
@@ -584,9 +614,10 @@ void drawImage(byte image[5], uint32_t color, int wait = 0) {
         pixels.setPixelColor(idx, color);
       }
     }
+    // Borrar el smartDelay que estaba aquí
   }
   pixels.show();
-  delay(wait);
+  if (smartDelay(wait)) return; // <--- Ponerlo aquí reemplazando a delay(wait);
 }
 
 byte smiley[5] = {
