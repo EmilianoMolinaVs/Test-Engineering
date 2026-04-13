@@ -6,8 +6,12 @@ StaticJsonDocument<256> docIn;
 StaticJsonDocument<128> docOut;
 
 // ===== Lista de voltajes =====
-float voltajes[6] = {2.9, 3.8, 7.8, 11.1, 13.9, 18.7};
+float voltajes[2] = { 2.9, 4.2 };
 int indiceVoltaje = 0;
+
+// ===== Lista de corrientes =====
+float corrientes[2] = { 0.4, 1.5 };
+int indiceCorriente = 0;
 
 float randomFloat(float min, float max) {
   return min + (random(0, 10000) / 10000.0) * (max - min);
@@ -30,7 +34,7 @@ void loop() {
     }
 
     String funcion = docIn["Funcion"] | "";
-    String start   = docIn["Start"]   | "";
+    String start = docIn["Start"] | "";
 
     if (funcion == "Other" && start == "Read") {
 
@@ -43,13 +47,19 @@ void loop() {
         indiceVoltaje = 0;
       }
 
-      float corriente = 0.2;
-      float potencia  = voltaje * corriente;
+      // ===== Corriente secuencial =====
+      float corriente = corrientes[indiceCorriente];
+
+      // Avanzar índice (cíclico)
+      indiceCorriente++;
+      if (indiceCorriente >= 6) {
+        indiceVoltaje = 0;
+      }
+
+      float potencia = voltaje * corriente;
 
       // ===== Formato solicitado =====
-      String medicion = String(voltaje, 2) + ";" +
-                        String(corriente, 2) + ";" +
-                        String(potencia, 2);
+      String medicion = String(voltaje, 2) + ";" + String(corriente, 2) + ";" + String(potencia, 2);
 
       docOut.clear();
       docOut["medicion"] = medicion;

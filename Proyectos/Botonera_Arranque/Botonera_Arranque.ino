@@ -2,7 +2,7 @@
 #include <ArduinoJson.h>
 #include <Arduino.h>
 
-#define RUN_BUTTON 6  // Botón de Arranque
+#define RUN_BUTTON 12 // 6  // Botón de Arranque
 
 // ==== Variables de inicialización
 String JSON_entrada;  // Variable que recibe al JSON en crudo de PagWeb
