@@ -53,6 +53,8 @@ void setup() {
   PagWeb.begin(115200, SERIAL_8N1, RX2, TX2);  // Iniciar UART2 en los pines seleccionados
   Serial.println("UART2 iniciado en RX=9, TX=8");
 
+  Wire.setTimeOut(50);
+
   // Declaración de pines de entrada de relevador
   pinMode(RELAYNO, INPUT);
   pinMode(RELAYNC, INPUT);
@@ -95,13 +97,12 @@ void loop() {
     sendJSON.clear();
     delay(200);
     if (digitalRead(RUN_BUTTON) == LOW) {
+      Serial.println("Accionamiento por botonera");
       sendJSON["Run"] = "OK";           // Envio de corriente JSON para corto
       serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
       PagWeb.println();
     }
   }
-
-
 
   // Process user commands
   if (Serial.available()) {
@@ -131,35 +132,82 @@ void loop() {
       int opc = 0;
 
       if (Function == "scan") opc = 1;            // {"Function":"scan"}
-      else if (Function == "TestBuz") opc = 2;    // {"Function":"TestBuz", "Address": "0X42"}
-      else if (Function == "TestRelay") opc = 3;  // {"Function":"TestRelay", "Address": "0X42"}
-      else if (Function == "TestNeo") opc = 4;    // {"Function":"TestNeo", "Address": "0X42"}
-      else if (Function == "TestAll") opc = 5;    // {"Function":"TestAll", "Address": "0X42"}
+      else if (Function == "uid") opc = 2;        // {"Function":"uid", "Address": "0X42"}
+      else if (Function == "TestBuz") opc = 3;    // {"Function":"TestBuz", "Address": "0X42"}
+      else if (Function == "TestRelay") opc = 4;  // {"Function":"TestRelay", "Address": "0X42"}
+      else if (Function == "TestNeo") opc = 5;    // {"Function":"TestNeo", "Address": "0X42"}
+      else if (Function == "TestAll") opc = 6;    // {"Function":"TestAll", "Address": "0X42"}
+
 
       switch (opc) {
 
-        case 1:  // Escaneo de dirección I2C
+        case 1:  // Escaneo de dirección I2C con Timeout
           {
-            sendJSON.clear();                                 // Limpia cualquier dato previo
-            String resultado = deviceManager.scanDevices(1);  // Todo el String en crudo
-            String addrStr = scanDirection(resultado);        // Dirección 0x
+            sendJSON.clear();  // Limpia cualquier dato previo
+            String addrStr = "null";
             String status = "FAIL";
 
-            if (addrStr != "FAIL") {                                         // se encontró dirección de I2C
-              uint8_t address = (uint8_t)strtol(addrStr.c_str(), NULL, 16);  // Dirección uint
-              status = "OK";
+            unsigned long timeout_ms = 3000;  // Tiempo máximo de espera (3 segundos)
+            unsigned long startTime = millis();
+
+            // Bucle de reintentos basado en tiempo
+            while ((millis() - startTime) < timeout_ms) {
+              // Hacemos el escaneo (le paso 0 si tu función permite silenciar los prints
+              // para no saturar el serial durante el loop, o déjalo en 1 si lo necesitas)
+              String resultado = deviceManager.scanDevices(0);
+              addrStr = scanDirection(resultado);
+
+              if (addrStr != "null") {
+                // ¡El Puya respondió dentro del tiempo límite!
+                status = "OK";
+                break;  // Rompemos el bucle while
+              }
+
+              // Pequeña pausa antes de volver a preguntar por I2C
+              delay(100);
             }
 
-            sendJSON["Ad"] = addrStr;         // Dirección I2C
-            sendJSON["Result"] = status;      // estado del dispositivo
+            // Guardamos el resultado final (ya sea la dirección o el FAIL por timeout)
+            sendJSON["Ad"] = addrStr;         // Dirección I2C o "FAIL"
+            sendJSON["Result"] = status;      // "OK" o "FAIL"
             serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
             PagWeb.println();
             break;
           }
 
-        case 2:  // Ejecución de prueba única de buzzer
+        case 2:
           {
-            int delay_ms = 200;
+            sendJSON.clear();
+            if (address > 0) {
+              // 1. Guardamos lo que devuelve la función en un String
+              String resultadoUID = deviceManager.showDeviceUID(address, 1);
+
+              // 2. Usamos una función nueva para parsear/extraer el valor
+              String uid_extraido = extraerUID(resultadoUID);
+
+              if (uid_extraido != "FAIL") {
+                sendJSON["uid"] = uid_extraido;  // Guardará "0xF1F0F5F5"
+                sendJSON["status"] = "OK";
+                sendJSON["ping"] = "pong";
+              } else {
+                sendJSON["uid"] = "NOT_FOUND";
+                sendJSON["status"] = "FAIL";
+              }
+            } else {
+              Serial.println("UID no identificada");  // O tu printDebug
+              sendJSON["uid"] = "INVALID_ADDR";
+              sendJSON["status"] = "FAIL";
+            }
+
+            serializeJson(sendJSON, PagWeb);
+            PagWeb.println();
+            break;
+          }
+
+
+        case 3:  // Ejecución de prueba única de buzzer
+          {
+            int delay_ms = 150;
             deviceManager.cmdPWM25(address, 1);
             delay(delay_ms);
             deviceManager.cmdPWM50(address, 1);
@@ -178,7 +226,7 @@ void loop() {
             break;
           }
 
-        case 3:  // Ejecución de prueba única de Relay
+        case 4:  // Ejecución de prueba única de Relay
           {
             int iteraciones = 10;
             int delay_ms = 500;
@@ -193,7 +241,7 @@ void loop() {
           }
 
 
-        case 4:  // Ejecución de prueba única de Neopixel
+        case 5:  // Ejecución de prueba única de Neopixel
           {
             int delay_ms = 1200;
             deviceManager.cmdNeoRed(address, 1);
@@ -210,8 +258,67 @@ void loop() {
             break;
           }
 
-        case 5:  // Ejecución de Test Completo
+        case 6:  // Ejecución de Test Completo
           {
+            // ==== Bloque de Relay ====
+            bool statusRele = false;
+            deviceManager.cmdRelay(address, false, 1);  // Accionamiento
+            delay(500);
+            float relayNC_init = analogRead(RELAYNC);
+            float relayNO_init = analogRead(RELAYNO);
+            Serial.println("Valor init NC: " + String(relayNC_init));
+            Serial.println("Valor init NO: " + String(relayNO_init));
+            Serial.println("");
+            delay(500);
+            deviceManager.cmdRelay(address, true, 1);  // Accionamiento
+            delay(500);
+            float relayNC_fin = analogRead(RELAYNC);
+            float relayNO_fin = analogRead(RELAYNO);
+            Serial.println("Valor fin NC: " + String(relayNC_fin));
+            Serial.println("Valor fin NO: " + String(relayNO_fin));
+            deviceManager.cmdRelay(address, false, 1);  // Accionamiento
+
+            if (fabs(relayNC_init - relayNC_fin) > 2200 && fabs(relayNO_init - relayNO_fin) > 2200) {
+              statusRele = true;
+            }
+            sendJSON["relay"] = statusRele;
+
+            JsonObject relayObj = sendJSON.createNestedObject("Relay");
+            relayObj["status"] = statusRele;
+            relayObj["nc_init"] = relayNC_init;
+            relayObj["nc_fin"] = relayNC_fin;
+            relayObj["no_init"] = relayNO_init;
+            relayObj["no_fin"] = relayNO_fin;
+
+            // ==== Bloque de GPIO ADC ====
+            bool statusADC = false;
+            digitalWrite(SWITCHPA4, HIGH);
+
+            String resultado1 = deviceManager.cmdReadPA4(address, 1);  // Lectura inicial HIGH
+            int pos1 = resultado1.lastIndexOf('(');
+            int valor1 = resultado1.substring(pos1 + 1, pos1 + 2).toInt();  // valor = 1
+
+            digitalWrite(SWITCHPA4, LOW);
+            delay(500);
+
+            String resultado2 = deviceManager.cmdReadPA4(address, 1);  // Lectura final LOW
+            int pos2 = resultado2.lastIndexOf('(');
+            int valor2 = resultado2.substring(pos2 + 1, pos2 + 2).toInt();  // valor = 1
+            digitalWrite(SWITCHPA4, HIGH);
+
+            if (valor1 != valor2) {
+              statusADC = true;
+            }
+
+            // --- CREACIÓN DEL OBJETO ANIDADO EN EL JSON ---
+            JsonObject adcObj = sendJSON.createNestedObject("ADC");
+            adcObj["status"] = statusADC;
+            adcObj["value1"] = valor1;
+            adcObj["value2"] = valor2;
+
+            serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+            PagWeb.println();
+
             // ==== Bloque de Buzzer ====
             int delay_ms = 200;
             deviceManager.cmdPWM25(address, 1);
@@ -229,57 +336,10 @@ void loop() {
             deviceManager.cmdPWM25(address, 1);
             delay(delay_ms);
             deviceManager.cmdPWMOff(address, 1);
+            delay(delay_ms);
 
-            // ==== Bloque de Relay ====
-            delay(300);
-            String status1 = "Fail";
-            deviceManager.cmdRelay(address, false, 1);  // Accionamiento
-            delay(1000);
-            float relayNC_init = analogRead(RELAYNC);
-            float relayNO_init = analogRead(RELAYNO);
-
-            Serial.println("Valor init NC: " + String(relayNC_init));
-            Serial.println("Valor init NO: " + String(relayNO_init));
-            Serial.println("");
-
-            delay(500);
-            deviceManager.cmdRelay(address, true, 1);  // Accionamiento
-
-            delay(1000);
-            float relayNC_fin = analogRead(RELAYNC);
-            float relayNO_fin = analogRead(RELAYNO);
-
-            Serial.println("Valor fin NC: " + String(relayNC_fin));
-            Serial.println("Valor fin NO: " + String(relayNO_fin));
-            deviceManager.cmdRelay(address, false, 1);  // Accionamiento
-
-            if (fabs(relayNC_init - relayNC_fin) > 300 && fabs(relayNO_init - relayNO_fin) > 300) {
-              status1 = "OK";
-            }
-            sendJSON["status_relay"] = status1;
-
-            // Bloque de GPIO ADC
-            String status2 = "Fail";
-            digitalWrite(SWITCHPA4, HIGH);
-
-            String resultado1 = deviceManager.cmdReadPA4(address, 1);  // Lectura inicial HIGH
-            int pos1 = resultado1.lastIndexOf('(');
-            int valor1 = resultado1.substring(pos1 + 1, pos1 + 2).toInt();  // valor = 1
-
-            digitalWrite(SWITCHPA4, LOW);
-            delay(500);
-
-            String resultado2 = deviceManager.cmdReadPA4(address, 1);  // Lectura final LOW
-            int pos2 = resultado2.lastIndexOf('(');
-            int valor2 = resultado2.substring(pos2 + 1, pos2 + 2).toInt();  // valor = 1
-            digitalWrite(SWITCHPA4, HIGH);
-
-            if (valor1 != valor2) {
-              status2 = "OK";
-            }
-
-            // Bloque de Neopixel
-            delay_ms = 800;
+            // ==== Bloque de Neopixel ====
+            delay_ms = 1500;
             deviceManager.cmdNeoRed(address, 1);
             delay(delay_ms);
             deviceManager.cmdNeoBlue(address, 1);
@@ -290,11 +350,8 @@ void loop() {
             delay(delay_ms);
             deviceManager.cmdNeoOff(address, 1);
             delay(delay_ms);
-            // ESP.restart();
+            ESP.restart();
 
-            sendJSON["status_gpio"] = status2;
-            serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
-            PagWeb.println();
             break;
           }
       }
@@ -320,6 +377,35 @@ String scanDirection(String resultado) {
   } else {
     return "FAIL";
   }
+}
+
+String extraerUID(String resultado) {
+  // Buscamos la etiqueta exacta que imprime el monitor serie
+  String etiqueta = "UID (32-bit): ";
+  int posInicial = resultado.indexOf(etiqueta);
+
+  if (posInicial != -1) {
+    // Calculamos dónde empieza el valor hexadecimal
+    int inicioValor = posInicial + etiqueta.length();
+
+    // Buscamos el salto de línea que marca el final de esa fila
+    int finValor = resultado.indexOf('\n', inicioValor);
+    if (finValor == -1) finValor = resultado.length();  // Por si es la última línea
+
+    // Recortamos el valor y lo limpiamos de espacios o retornos de carro (\r)
+    String uidStr = resultado.substring(inicioValor, finValor);
+    uidStr.trim();
+
+    return uidStr;
+  }
+
+  return "FAIL";
+}
+
+
+void printDebug(String str) {
+  str.replace("\"", "\\\"");  // Escapa comillas
+  Serial.println("{\"debug\": \"" + str + "\"}");
 }
 
 
