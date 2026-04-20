@@ -3,6 +3,8 @@
 #include <Arduino.h>
 
 #define RUN_BUTTON 4  // Botón de Arranque
+#define RELAYA 8      // Relé A - Control de fuente de alimentación
+#define RELAYB 9      // Relé B - Control de fuente de alimentación
 
 // ==== Variables de inicialización
 String JSON_entrada;  // Variable que recibe al JSON en crudo de PagWeb
@@ -14,6 +16,13 @@ StaticJsonDocument<200> sendJSON;
 void setup() {
   Serial.begin(115200);
   pinMode(RUN_BUTTON, INPUT);
+  // Configurar pines como salida (relés)
+  pinMode(RELAYA, OUTPUT);
+  pinMode(RELAYB, OUTPUT);
+
+  // Estado inicial: todos los relés apagados (LOW = relés desactivados)
+  digitalWrite(RELAYA, LOW);
+  digitalWrite(RELAYB, LOW);
 }
 
 void loop() {

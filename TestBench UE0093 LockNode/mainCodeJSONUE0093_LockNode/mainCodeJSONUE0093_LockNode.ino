@@ -10,13 +10,13 @@
 #include <MapController.h>
 
 // ==== Declaración de pines
-#define RUN_BUTTON 2    // Botón de Arranque
+#define RUN_BUTTON 4    // Botón de Arranque
 #define RX2 D4          // GPIO15 como RX para PagWeb
 #define TX2 D5          // GPIO19 como TX para PagWeb
 #define I2C_SDA 22      // Comunicación con tarjeta LockNode por I2C
 #define I2C_SCL 23      // Comunicación con tarjeta LockNode por I2C
-#define RELAYNO 4       // Lectura de valores analógicos por conmutación de relé
-#define RELAYNC 5       // Lectura de valores analógicos por conmutación de relé
+#define RELAYNO 2       // Lectura de valores analógicos por conmutación de relé
+#define RELAYNC 3       // Lectura de valores analógicos por conmutación de relé
 #define SWITCHPA4 D1    // Pin de accionamiento de Relé en TB para lectura de PA4
 #define RELAYPA4_ON D0  // Pin de suministro de 3.3V al relé de PA4
 
@@ -67,8 +67,8 @@ void setup() {
 
   //showBanner();
 
-  deviceManager.begin(Wire, I2C_SDA, I2C_SCL, 20000);  // ESP32: SDA=21, SCL=22, 100kHz
-  deviceManager.initializeI2C(1);                      // print=1 to show initialization
+  deviceManager.begin(Wire, I2C_SDA, I2C_SCL, 200000);  // ESP32: SDA=21, SCL=22, 100kHz
+  deviceManager.initializeI2C(1);                       // print=1 to show initialization
 
   // Initialize device mapping system
   deviceManager.initializeMapping(1);
@@ -80,6 +80,7 @@ void setup() {
 
 
 void loop() {
+
   /*
   // Handle continuous testing if active
   if (deviceManager.isContinuousTestActive()) {
@@ -95,10 +96,10 @@ void loop() {
 
   if (digitalRead(RUN_BUTTON) == HIGH) {
     sendJSON.clear();
-    delay(200);
+    delay(100);
     if (digitalRead(RUN_BUTTON) == LOW) {
-      Serial.println("Accionamiento por botonera");
-      sendJSON["Run"] = "OK";           // Envio de corriente JSON para corto
+      Serial.println(">> Accionamiento por botonera");
+      sendJSON["Run"] = "OK";
       serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
       PagWeb.println();
     }
@@ -138,7 +139,6 @@ void loop() {
       else if (Function == "TestNeo") opc = 5;    // {"Function":"TestNeo", "Address": "0X42"}
       else if (Function == "TestAll") opc = 6;    // {"Function":"TestAll", "Address": "0X42"}
 
-
       switch (opc) {
 
         case 1:  // Escaneo de dirección I2C con Timeout
@@ -154,7 +154,7 @@ void loop() {
             while ((millis() - startTime) < timeout_ms) {
               // Hacemos el escaneo (le paso 0 si tu función permite silenciar los prints
               // para no saturar el serial durante el loop, o déjalo en 1 si lo necesitas)
-              String resultado = deviceManager.scanDevices(0);
+              String resultado = deviceManager.scanDevices(1);
               addrStr = scanDirection(resultado);
 
               if (addrStr != "null") {
@@ -264,16 +264,18 @@ void loop() {
             bool statusRele = false;
             deviceManager.cmdRelay(address, false, 1);  // Accionamiento
             delay(500);
-            float relayNC_init = analogRead(RELAYNC);
-            float relayNO_init = analogRead(RELAYNO);
+            float relayNC_init = avgAnalog(RELAYNC, 10);
+            delay(100);
+            float relayNO_init = avgAnalog(RELAYNO, 10);
             Serial.println("Valor init NC: " + String(relayNC_init));
             Serial.println("Valor init NO: " + String(relayNO_init));
             Serial.println("");
-            delay(500);
+
             deviceManager.cmdRelay(address, true, 1);  // Accionamiento
-            delay(500);
-            float relayNC_fin = analogRead(RELAYNC);
-            float relayNO_fin = analogRead(RELAYNO);
+            delay(2000);
+            float relayNC_fin = avgAnalog(RELAYNC, 10);
+            delay(100);
+            float relayNO_fin = avgAnalog(RELAYNO, 10);
             Serial.println("Valor fin NC: " + String(relayNC_fin));
             Serial.println("Valor fin NO: " + String(relayNO_fin));
             deviceManager.cmdRelay(address, false, 1);  // Accionamiento
@@ -406,6 +408,21 @@ String extraerUID(String resultado) {
 void printDebug(String str) {
   str.replace("\"", "\\\"");  // Escapa comillas
   Serial.println("{\"debug\": \"" + str + "\"}");
+}
+
+float avgAnalog(uint8_t PIN, int iter) {
+
+  float avg = 0;
+  float value = 0;
+
+  for (int i = 0; i < iter; i++) {
+    value = analogRead(PIN);
+    Serial.println("Lectura: " + String(value));
+    avg += value;
+    delay(50);
+  }
+
+  return avg / iter;
 }
 
 

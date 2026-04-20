@@ -91,9 +91,9 @@
 #define NOTE_D8  4699
 #define NOTE_DS8 4978
 
-#define REST 0
+#define REST 6
 
-int buzzer = D1;
+int buzzer = D0;
 
 int melody[] = {
   NOTE_E7, NOTE_E7, REST, NOTE_E7,
@@ -139,9 +139,9 @@ void loop() {
     if (melody[thisNote] != REST) {
       tone(buzzer, melody[thisNote], noteDuration);
     }
-    delay(noteDuration * 1.30);
+    delay(noteDuration * 1.10);
     noTone(buzzer);
   }
 
-  delay(1000);  // Pausa antes de repetir
+  delay(100);  // Pausa antes de repetir
 }

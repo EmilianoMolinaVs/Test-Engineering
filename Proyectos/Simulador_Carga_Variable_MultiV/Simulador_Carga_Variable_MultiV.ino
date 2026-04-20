@@ -6,11 +6,11 @@ StaticJsonDocument<256> docIn;
 StaticJsonDocument<128> docOut;
 
 // ===== Lista de voltajes =====
-float voltajes[2] = { 2.9, 4.2 };
+float voltajes[5] = { 2.9, 4.8, 5.0, 3.6, 10};
 int indiceVoltaje = 0;
 
 // ===== Lista de corrientes =====
-float corrientes[2] = { 0.4, 1.5 };
+float corrientes[5] = { 0.4, 1.5, 1, 1, 3};
 int indiceCorriente = 0;
 
 float randomFloat(float min, float max) {

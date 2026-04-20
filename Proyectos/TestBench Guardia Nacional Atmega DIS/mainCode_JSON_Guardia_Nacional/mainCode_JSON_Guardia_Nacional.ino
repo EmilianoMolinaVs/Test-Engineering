@@ -1,4 +1,4 @@
-// ==== CÓDIGO DE INTEGRACIÓN JUN R3 ====
+
 
 #include <Adafruit_NeoPixel.h>
 #include <HardwareSerial.h>
@@ -18,12 +18,11 @@
 Adafruit_NeoPixel np = Adafruit_NeoPixel(1, LED_NEOP, NEO_GRB + NEO_KHZ800);  // Objeto NeoPixel
 
 // JSON para recibir datos
-String JSON;                        // Variable que recibe al JSON en crudo de PagWeb
-StaticJsonDocument<200> datosJSON;  // Usa StaticJsonDocument para fijar tamaño
+String JSON_entrada;                  ///< Buffer para recibir JSON desde PagWeb
+StaticJsonDocument<256> receiveJSON;  ///< Documento JSON para parsear datos recibidos
 
-// JSON para enviar datos
-String JSONCorriente;
-StaticJsonDocument<200> enviarJSON;
+String JSON_salida;                ///< Buffer para transmitir JSON de respuesta
+StaticJsonDocument<256> sendJSON;  ///< Documento JSON para armar respuestas
 
 
 void setup() {
@@ -40,14 +39,14 @@ void loop() {
 
   if (Serial.available()) {
 
-    JSON = Serial.readStringUntil('\n');  // Leer hasta newline (JSON en crudo)
+    JSON_entrada = Serial.readStringUntil('\n');  // Leer hasta newline (JSON en crudo)
 
     // Deserializa el JSON y guarda la información en datosJSON
-    DeserializationError error = deserializeJson(datosJSON, JSON);
+    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
 
     if (!error) {
 
-      String Function = datosJSON["Function"];  // Function es la variable de interés del JSON
+      String Function = receiveJSON["Function"];  // Function es la variable de interés del JSON
 
       int opc = 0;  // Variable de switcheo
 
