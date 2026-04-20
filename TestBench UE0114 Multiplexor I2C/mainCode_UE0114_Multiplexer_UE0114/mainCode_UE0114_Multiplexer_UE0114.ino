@@ -12,6 +12,9 @@ MainCode UE0114 TestBench DevLab: I2C TCA9548A Multiplexer Module
 // ==== CONFIGURACIÓN DE PINES ====
 #define SDA_PIN 6
 #define SCL_PIN 7
+#define A0_PIN 15  // --> GPIO15 para control de pin A0 Selector de Dirección I2C
+#define A1_PIN 19  // --> GPIO19 para control de pin A1 Selector de Dirección I2C
+#define A2_PIN 20  // --> GPIO20 para control de pin A2 Selector de Dirección I2C
 
 
 // ==== VARIABLES DE CONFIGURACIÓN ====
@@ -23,7 +26,6 @@ StaticJsonDocument<256> receiveJSON;  ///< Documento JSON para parsear datos rec
 
 String JSON_lectura;               ///< Buffer para transmitir JSON de respuesta
 StaticJsonDocument<256> sendJSON;  ///< Documento JSON para armar respuestas
-
 
 
 void printDebug(String str) {
@@ -49,6 +51,12 @@ void setup() {
   // ==== Inicialización de comunicación I2C ====
   Wire.begin(SDA_PIN, SCL_PIN);
   printDebug("I2C Multiplexer...");
+
+  // ==== Declaración de GPIOS ====
+  // ---- Salidas ----
+  pinMode(A0_PIN, OUTPUT);
+  pinMode(A1_PIN, OUTPUT);
+  pinMode(A2_PIN, OUTPUT);
 }
 
 void loop() {
@@ -79,32 +87,47 @@ void loop() {
         case 2:
           {
             sendJSON.clear();
+            JsonArray foundMuxes = sendJSON.createNestedArray("mux_addr");
 
-            // Creamos un arreglo JSON para almacenar las direcciones encontradas
-            JsonArray foundMuxes = sendJSON.createNestedArray("tca_found");
+            printDebug("Scanning dynamic TCA addresses...");
 
-            // Hacemos el barrido únicamente sobre las direcciones configuradas del Mux
-            for (uint8_t i = 0; i < 8; i++) {
-              Wire.beginTransmission(ADD[i]);
+            // Iteramos sobre las 8 combinaciones posibles de hardware
+            for (int step = 0; step < 8; step++) {
+
+              // 1. Configuramos los pines lógicos
+              digitalWrite(A0_PIN, (step >> 0) & 1);
+              digitalWrite(A1_PIN, (step >> 1) & 1);
+              digitalWrite(A2_PIN, (step >> 2) & 1);
+
+              // 10ms de delay para que los niveles lógicos de 3.3V y el TCA se asienten
+              delay(10);
+
+              // 2. Verificamos SI responde a la dirección ESPERADA para esta combinación
+              Wire.beginTransmission(ADD[step]);
               byte error = Wire.endTransmission();
 
               if (error == 0) {
-                // Si el dispositivo responde (ACK), formateamos la dirección a string HEX (ej. "0x70")
-                char hexAddr[5];
-                sprintf(hexAddr, "0x%02X", ADD[i]);
-                foundMuxes.add(hexAddr);
+                // Formateo usando String para que ArduinoJson reserve la memoria de forma segura
+                String hexStr = "0x" + String(ADD[step], HEX);
+                foundMuxes.add(hexStr);
               }
             }
 
-            // Agregamos un flag de estado para facilitar el parseo en tu frontend/script de control
-            if (foundMuxes.size() > 0) {
-              sendJSON["status"] = "success";
+            // Validamos que hayamos encontrado al menos una respuesta
+            if (foundMuxes.size() == 8) {
+              sendJSON["Result"] = "OK";
             } else {
-              sendJSON["status"] = "not_found";
+              sendJSON["Result"] = "FAIL";
             }
 
             serializeJson(sendJSON, Serial);
             Serial.println();
+            break;
+          }
+
+        case 3:
+          {
+            sendJSON.clear();
             break;
           }
 
