@@ -21,11 +21,11 @@ MainCode UE0114 TestBench DevLab: I2C TCA9548A Multiplexer Module
 uint8_t ADD[8] = { 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77 };  // Direcciones del Multiplexor
 
 
-String JSON_entrada;                  ///< Buffer para recibir JSON desde PagWeb
-StaticJsonDocument<256> receiveJSON;  ///< Documento JSON para parsear datos recibidos
+String JSON_entrada;                   ///< Buffer para recibir JSON desde PagWeb
+StaticJsonDocument<1024> receiveJSON;  ///< Documento JSON para parsear datos recibidos
 
-String JSON_lectura;               ///< Buffer para transmitir JSON de respuesta
-StaticJsonDocument<256> sendJSON;  ///< Documento JSON para armar respuestas
+String JSON_lectura;                ///< Buffer para transmitir JSON de respuesta
+StaticJsonDocument<1024> sendJSON;  ///< Documento JSON para armar respuestas
 
 
 void printDebug(String str) {
@@ -33,12 +33,45 @@ void printDebug(String str) {
   Serial.println("{\"debug\": \"" + str + "\"}");
 }
 
-void tcaselect(uint8_t i) {
-  if (i > 7) return;
+// ==== FUNCIONES DE CONTROL DEL MUX ====
 
-  Wire.beginTransmission(ADD[i]);
-  Wire.write(1 << i);
+bool tcaselect(uint8_t port) {
+  if (port > 7) return false;
+
+  Wire.beginTransmission(ADD[0]);
+  Wire.write(1 << port);
+  delay(10);
+  return (Wire.endTransmission() == 0);
+}
+
+// Nueva función: Cierra todos los canales para evitar arrastrar cortos
+void tcaDisable() {
+  Wire.beginTransmission(ADD[0]);
+  Wire.write(0);
   Wire.endTransmission();
+}
+
+// ==== TRUCO DE INGENIERÍA: Recuperación de I2C ====
+// Genera pulsos de reloj manuales para forzar a cualquier esclavo colgado a soltar la línea SDA
+void recoverI2CBus() {
+  pinMode(SDA_PIN, INPUT);
+  pinMode(SCL_PIN, INPUT);
+  delay(50);
+
+  if (digitalRead(SDA_PIN) == LOW) {
+    printDebug("¡BUS I2C COLGADO! Intentando recuperacion por bit-bang...");
+    pinMode(SCL_PIN, OUTPUT);
+    for (int i = 0; i < 16; i++) {
+      digitalWrite(SCL_PIN, LOW);
+      delay(20);
+      digitalWrite(SCL_PIN, HIGH);
+      delay(20);
+    }
+  }
+
+  pinMode(SDA_PIN, INPUT);
+  pinMode(SCL_PIN, INPUT);
+  Wire.begin(SDA_PIN, SCL_PIN);  // Reiniciamos el periférico de la ESP32
 }
 
 void setup() {
@@ -51,12 +84,17 @@ void setup() {
   // ==== Inicialización de comunicación I2C ====
   Wire.begin(SDA_PIN, SCL_PIN);
   printDebug("I2C Multiplexer...");
+  Wire.setTimeOut(50);  // Si en 50ms no hay respuesta, libera el bus (ESP32)
 
   // ==== Declaración de GPIOS ====
   // ---- Salidas ----
   pinMode(A0_PIN, OUTPUT);
   pinMode(A1_PIN, OUTPUT);
   pinMode(A2_PIN, OUTPUT);
+
+  digitalWrite(A0_PIN, LOW);
+  digitalWrite(A1_PIN, LOW);
+  digitalWrite(A2_PIN, LOW);
 }
 
 void loop() {
@@ -71,8 +109,9 @@ void loop() {
       String Function = receiveJSON["Function"];
 
       int opc = 0;
-      if (Function == "ping") opc = 1;          // {"Function":"ping"}
-      else if (Function == "scanAdd") opc = 2;  // {"Function":"scanAdd"}
+      if (Function == "ping") opc = 1;           // {"Function":"ping"}
+      else if (Function == "scanAdd") opc = 2;   // {"Function":"scanAdd"}
+      else if (Function == "scanPort") opc = 3;  // {"Function":"scanPort"}
 
       switch (opc) {
         case 1:
@@ -89,7 +128,7 @@ void loop() {
             sendJSON.clear();
             JsonArray foundMuxes = sendJSON.createNestedArray("mux_addr");
 
-            printDebug("Scanning dynamic TCA addresses...");
+            printDebug("Scanning dynamic MUX addresses...");
 
             // Iteramos sobre las 8 combinaciones posibles de hardware
             for (int step = 0; step < 8; step++) {
@@ -108,7 +147,7 @@ void loop() {
 
               if (error == 0) {
                 // Formateo usando String para que ArduinoJson reserve la memoria de forma segura
-                String hexStr = "0x" + String(ADD[step], HEX);
+                String hexStr = "0x" + String(ADD[step], HEX);  // Esto es válido pq la tabla de verdad de Addr está ordenada 000 0x70 -> 111 0x77
                 foundMuxes.add(hexStr);
               }
             }
@@ -128,9 +167,75 @@ void loop() {
         case 3:
           {
             sendJSON.clear();
+            int totalTargets = 0;
+            printDebug("Starting scan ports...");
+
+            // 1. Inicialización de dirección 0x70 para MUX
+            digitalWrite(A0_PIN, LOW);
+            digitalWrite(A1_PIN, LOW);
+            digitalWrite(A2_PIN, LOW);
+            delay(50);
+
+            // recoverI2CBus();  // Limpiamos cualquier estado colgado del bus
+            // tcaDisable();     // Aseguramos que todas las compuertas del MUX estén cerradas
+            // delay(10);
+
+            printDebug("Inicio de bucle de lectura de puertos...");
+
+            for (byte p = 0; p < 8; p++) {
+              printDebug("-> Intentando abrir MUX Port: " + String(p));
+
+              bool dir = false;
+              String portName = "port_" + String(p);
+              JsonArray portDevices = sendJSON.createNestedArray(portName);
+
+              if (!tcaselect(p)) {
+                printDebug("ERROR: MUX no respondio al abrir Port " + String(p));
+                recoverI2CBus();
+              } else {
+                printDebug("Port " + String(p) + " abierto. Escaneando direcciones...");
+                delay(10);  // Pequeño respiro para que el FET del multiplexor se asiente físicamente
+
+                for (byte address = 1; address < 127; ++address) {
+                  if (address == ADD[0]) continue;
+
+                  Wire.beginTransmission(address);
+                  byte error = Wire.endTransmission();
+
+                  if (error == 0) {
+                    dir = true;
+                    Serial.println("I2C device found at address 0x" + String(address, HEX));
+                    String hexStr = "0x" + String(address, HEX);
+                    portDevices.add(hexStr);
+                    totalTargets++;
+                    break;
+                  }
+
+                  // Cambia esto para imprimir TODOS los errores, no solo el 2,
+                  // por si el ESP32 arroja un error de timeout (5) o error desconocido (4).
+                  if (error != 0) {
+                    //printDebug("error: " + String(error) + " iter: " + String(address, HEX));
+                  }
+
+                  // CRÍTICO: Pequeño respiro para estabilizar la capacitancia del bus y vaciar el buffer UART
+                  delay(1);
+                }
+              }
+
+              // CRÍTICO: Aislar el puerto inmediatamente después del barrido
+              tcaDisable();
+              printDebug("Port " + String(p) + " escaneo finalizado y cerrado.");
+              delay(5);
+            }
+
+            sendJSON["Total_Targets"] = totalTargets;
+            sendJSON["status"] = "scan_completed";
+
+            printDebug("Armando JSON final...");
+            serializeJson(sendJSON, Serial);
+            Serial.println();
             break;
           }
-
 
         default: break;
       }
