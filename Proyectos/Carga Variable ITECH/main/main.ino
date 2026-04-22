@@ -113,7 +113,8 @@ void sendSCPI(String cmd) {
 // ============================================================================
 void takeMeasurements() {
   DynamicJsonDocument res(512);
-  String valorMedicion = "0.000;0.000;0.000";
+  res.clear();                                 // Limpieza de objeto JSON
+  String valorMedicion = "0.000;0.000;0.000";  // Limpieza de variable de medición
 
   // Solicitar las 3 mediciones a la carga
   ITECH.println("MEAS:VOLT?;CURR?;POW?");
@@ -281,9 +282,9 @@ void runSoftwareList() {
 // 3. Envía JSON "System:Ready" para confirmar que está listo
 // ============================================================================
 void setup() {
-  Serial.begin(9600);                        // Inicializar Serial USB para PC
-  ITECH.begin(9600, SERIAL_8N1, RX1, TX1);   // Inicializar UART1 para carga
-  Serial.println("{\"System\":\"Ready\"}");  // Confirmación de inicialización
+  Serial.begin(9600);                                 // Inicializar Serial USB para PC
+  ITECH.begin(9600, SERIAL_8N1, RX1, TX1);            // Inicializar UART1 para carga
+  Serial.println("{\"System\":\"CV ITECH Ready\"}");  // Confirmación de inicialización
 }
 
 // ============================================================================
@@ -345,7 +346,6 @@ void loop() {
           else if (funcion == "DYN") sendSCPI("INP 1"); // Activar carga
         }
         */
-
       }
       // ===== COMANDO: Leer mediciones =====
       else if (start == "Read") {
