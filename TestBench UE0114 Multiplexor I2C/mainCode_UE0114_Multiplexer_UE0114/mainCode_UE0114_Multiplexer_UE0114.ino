@@ -176,10 +176,6 @@ void loop() {
             digitalWrite(A2_PIN, LOW);
             delay(50);
 
-            // recoverI2CBus();  // Limpiamos cualquier estado colgado del bus
-            // tcaDisable();     // Aseguramos que todas las compuertas del MUX estén cerradas
-            // delay(10);
-
             printDebug("Inicio de bucle de lectura de puertos...");
 
             for (byte p = 0; p < 8; p++) {
