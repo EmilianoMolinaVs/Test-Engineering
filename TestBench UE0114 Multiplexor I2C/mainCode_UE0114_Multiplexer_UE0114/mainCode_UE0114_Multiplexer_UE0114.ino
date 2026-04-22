@@ -176,12 +176,10 @@ void loop() {
             digitalWrite(A2_PIN, LOW);
             delay(50);
 
-            printDebug("Inicio de bucle de lectura de puertos...");
+            // printDebug("Inicio de bucle de lectura de puertos...");
 
             for (byte p = 0; p < 8; p++) {
-              printDebug("-> Intentando abrir MUX Port: " + String(p));
-
-              bool dir = false;
+              // printDebug("-> Intentando abrir MUX Port: " + String(p));
               String portName = "port_" + String(p);
               JsonArray portDevices = sendJSON.createNestedArray(portName);
 
@@ -189,7 +187,7 @@ void loop() {
                 printDebug("ERROR: MUX no respondio al abrir Port " + String(p));
                 recoverI2CBus();
               } else {
-                printDebug("Port " + String(p) + " abierto. Escaneando direcciones...");
+                //printDebug("Port " + String(p) + " abierto. Escaneando direcciones...");
                 delay(10);  // Pequeño respiro para que el FET del multiplexor se asiente físicamente
 
                 for (byte address = 1; address < 127; ++address) {
@@ -199,8 +197,7 @@ void loop() {
                   byte error = Wire.endTransmission();
 
                   if (error == 0) {
-                    dir = true;
-                    Serial.println("I2C device found at address 0x" + String(address, HEX));
+                    printDebug("I2C device found at address 0x" + String(address, HEX));
                     String hexStr = "0x" + String(address, HEX);
                     portDevices.add(hexStr);
                     totalTargets++;
@@ -219,15 +216,19 @@ void loop() {
               }
 
               // CRÍTICO: Aislar el puerto inmediatamente después del barrido
-              tcaDisable();
-              printDebug("Port " + String(p) + " escaneo finalizado y cerrado.");
+              // tcaDisable();
+              // printDebug("Port " + String(p) + " escaneo finalizado y cerrado.");
               delay(5);
             }
 
             sendJSON["Total_Targets"] = totalTargets;
-            sendJSON["status"] = "scan_completed";
+            if (totalTargets == 8) {
+              sendJSON["Result"] = "OK";
+            } else {
+              sendJSON["Result"] = "FAIL";
+            }
 
-            printDebug("Armando JSON final...");
+            // printDebug("Armando JSON final...");
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
