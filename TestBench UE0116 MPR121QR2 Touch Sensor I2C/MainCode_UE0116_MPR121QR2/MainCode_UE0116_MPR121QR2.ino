@@ -94,7 +94,16 @@ void pagwebDebug(String str) {
 }
 
 bool gpioStatus(uint8_t port) {
-  return digitalRead(port) == HIGH;
+  delay(50);
+  int sum = 0;
+
+  for (int i = 0; i < 5; i++) {
+    if (digitalRead(port) == HIGH) sum++;
+    //Serial.println(sum);
+  }
+
+  if (sum == 5) return true;
+  else return false;
 }
 
 void setup() {
@@ -132,15 +141,13 @@ void loop() {
     if (!error) {
 
       String Function = receiveJSON["Function"];  // Function es la variable de interés del JSON
-      String GPIO = receiveJSON["GPIO"];          // "1"
-      uint8_t address = (uint8_t)strtol(GPIO.c_str(), NULL, 16);
 
       int opc = 0;
-      if (Function == "ping") opc = 1;          // {"Function":"ping"}
-      else if (Function == "init") opc = 2;     // {"Function":"init"}
-      else if (Function == "A") opc = 3;        // {"Function":"init"}
-      else if (Function == "B") opc = 4;        // {"Function":"init"}
-      else if (Function == "restart") opc = 5;  // {"Function":"restart"}
+      if (Function == "ping") opc = 1;              // {"Function":"ping"}
+      else if (Function == "init") opc = 2;         // {"Function":"init"}
+      else if (Function == "digitalScan") opc = 3;  // {"Function":"digitalScan"}
+      else if (Function == "B") opc = 4;            // {"Function":"init"}
+      else if (Function == "restart") opc = 5;      // {"Function":"restart"}
 
       switch (opc) {
         case 1:
@@ -163,16 +170,18 @@ void loop() {
         case 3:
           {
             sendJSON.clear();
+            int total_values = 0;
             for (uint8_t i = 0; i < 8; ++i) {
               uint8_t electrode = SWEEP_ORDER[i];
               uint8_t mask = (uint8_t)(1u << (electrode - 4));
 
-              setOutputsRaw(mask);
-
+              setOutputsRaw(mask);  // Se fija la salida digital en el MPR121QR2
+              delay(100);
               if (gpioStatus(electrPorts[i])) {
-                sendJSON["port_" + String(i)] = "OK";
+                sendJSON["port" + String(i)] = "OK";
+                total_values++;
               } else {
-                sendJSON["port_" + String(i)] = "FAIL";
+                sendJSON["port" + String(i)] = "FAIL";
               }
 
               uint8_t data = readReg(REG_GPIO_DATA);
@@ -180,10 +189,10 @@ void loop() {
               Serial.print((int)electrode);
               Serial.print(" | GPIO_DATA=0x");
               Serial.println(data, HEX);
-              delay(500);
+              delay(100);
             }
 
-
+            if (total_values == 8) sendJSON["Result"] = "OK";
             serializeJson(sendJSON, PagWeb);
             PagWeb.println();
             break;
