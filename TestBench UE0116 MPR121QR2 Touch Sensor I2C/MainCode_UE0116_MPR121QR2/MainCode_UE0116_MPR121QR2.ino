@@ -44,17 +44,15 @@ static const uint8_t REG_GPIO_DATA = 0x75;
 static const uint8_t REG_TOUCH_STATUS_L = 0x00;
 static const uint8_t TOUCH_THRESHOLD = 0x20;
 static const uint8_t RELEASE_THRESHOLD = 0x10;
+static const uint8_t NUM_ELECTRODES = 4;
 
 static const uint8_t GPIO_MASK_ALL = 0xFF;  // ELE4..ELE11
+static const uint8_t GPIO_ALL_MASK = 0xFF;  // ELE4..ELE11
 static const uint8_t SWEEP_ORDER[8] = { 4, 5, 6, 7, 8, 9, 10, 11 };
+static const uint8_t DIAG_SWEEP_ORDER[8] = { 4, 5, 6, 7, 8, 9, 10, 11 };
 
-// Diagnostic mode: force outputs even if touch is not used.
-// true  -> sweeps a single HIGH across ELE4..ELE11
-// false -> normal behavior (touch mirror + chaser)
-static const bool DIAG_FORCE_OUTPUT = true;
 uint8_t lastTouchBits = 0;
-uint8_t chaseIndex = 0;
-unsigned long lastStepMs = 0;
+
 
 // ==== Funciones de Propósito General TOUCH SENSOR INPUT ====
 uint16_t readTouchStatus() {
@@ -70,6 +68,61 @@ uint16_t readTouchStatus() {
   uint8_t lsb = Wire.read();
   uint8_t msb = Wire.read();
   return (uint16_t)lsb | ((uint16_t)msb << 8);
+}
+
+void printTouchEdges(uint16_t touchBits) {
+  for (uint8_t i = 0; i < NUM_ELECTRODES; ++i) {
+    uint16_t bit = (uint16_t)(1u << i);
+    bool prev = (lastTouchBits & bit) != 0;
+    bool curr = (touchBits & bit) != 0;
+
+    if (!prev && curr) {
+      Serial.print("TOUCH E");
+      Serial.println(i);
+    }
+
+    if (prev && !curr) {
+      Serial.print("RELEASE E");
+      Serial.println(i);
+    }
+  }
+
+  lastTouchBits = touchBits;
+}
+
+void mpr121InitTouchAndGpio() {
+  // 1) STOP mode
+  writeReg(REG_ELECTRODE_CONFIG, 0x00);
+  delay(10);
+
+  // 2) Baseline filter registers (datasheet defaults used in examples)
+  writeReg(0x2B, 0x01);
+  writeReg(0x2C, 0x01);
+  writeReg(0x2D, 0x00);
+  writeReg(0x2E, 0x00);
+  writeReg(0x2F, 0x01);
+  writeReg(0x30, 0x01);
+  writeReg(0x31, 0xFF);
+  writeReg(0x32, 0x02);
+
+  // 3) Thresholds only for E0..E3
+  for (uint8_t i = 0; i < 4; ++i) {
+    writeReg(0x41 + (i * 2), TOUCH_THRESHOLD);
+    writeReg(0x42 + (i * 2), RELEASE_THRESHOLD);
+  }
+
+  // 4) ELE8..ELE11 as GPIO outputs
+  writeReg(REG_GPIO_CONTROL_0, 0x00);           // GPIO mode for bits [3:0]
+  writeReg(REG_GPIO_CONTROL_1, 0x00);           // no pull-up / no alternate function
+  writeReg(REG_GPIO_DIRECTION, GPIO_ALL_MASK);  // output direction (1 = output)
+  writeReg(REG_GPIO_ENABLE, GPIO_ALL_MASK);     // enable ELE4..ELE11
+
+  // 5) Initial output state LOW
+  writeReg(REG_GPIO_CLEAR, GPIO_ALL_MASK);
+
+  // 6) RUN mode with only E0..E3 enabled (avoid GPIO conflict on E4..E11)
+  writeReg(REG_ELECTRODE_CONFIG, 0x84);
+  delay(20);
 }
 
 
@@ -147,7 +200,8 @@ void setup() {
 
   // ==== Inicialización I2C y Registros MPR121QR2 ====
   Wire.begin(SDA_PIN, SCL_PIN);
-  initGpioOnly();
+  // initGpioOnly();
+  mpr121InitTouchAndGpio();
 
   // ==== Declaración de GPIOS ====
   pinMode(ELECT4_PIN, INPUT);
@@ -175,7 +229,7 @@ void loop() {
       if (Function == "ping") opc = 1;              // {"Function":"ping"}
       else if (Function == "init") opc = 2;         // {"Function":"init"}
       else if (Function == "digitalScan") opc = 3;  // {"Function":"digitalScan"}
-      else if (Function == "B") opc = 4;            // {"Function":"init"}
+      else if (Function == "b") opc = 4;            // {"Function":"touch"}
       else if (Function == "restart") opc = 5;      // {"Function":"restart"}
 
       switch (opc) {
@@ -191,7 +245,7 @@ void loop() {
         case 2:
           {
             Wire.begin(SDA_PIN, SCL_PIN);
-            initGpioOnly();
+            mpr121InitTouchAndGpio();
             pagwebDebug("GPIOS initilized...");
             break;
           }
@@ -227,6 +281,13 @@ void loop() {
             break;
           }
 
+        case 4:
+          {
+
+
+            break;
+          }
+
         case 5:
           ESP.restart();
           break;
@@ -234,5 +295,12 @@ void loop() {
         default: break;
       }
     }
+  } else {
+
+    uint16_t touchStatus = readTouchStatus();
+    uint16_t touchBits = (uint16_t)(touchStatus & 0x0FFF);
+
+    printTouchEdges(touchBits);
+    delay(50);
   }
 }
