@@ -41,10 +41,39 @@ static const uint8_t REG_GPIO_SET = 0x78;
 static const uint8_t REG_GPIO_CLEAR = 0x79;
 static const uint8_t REG_GPIO_DATA = 0x75;
 
+static const uint8_t REG_TOUCH_STATUS_L = 0x00;
+static const uint8_t TOUCH_THRESHOLD = 0x20;
+static const uint8_t RELEASE_THRESHOLD = 0x10;
+
 static const uint8_t GPIO_MASK_ALL = 0xFF;  // ELE4..ELE11
 static const uint8_t SWEEP_ORDER[8] = { 4, 5, 6, 7, 8, 9, 10, 11 };
 
-// ==== Funciones de Propósito General ====
+// Diagnostic mode: force outputs even if touch is not used.
+// true  -> sweeps a single HIGH across ELE4..ELE11
+// false -> normal behavior (touch mirror + chaser)
+static const bool DIAG_FORCE_OUTPUT = true;
+uint8_t lastTouchBits = 0;
+uint8_t chaseIndex = 0;
+unsigned long lastStepMs = 0;
+
+// ==== Funciones de Propósito General TOUCH SENSOR INPUT ====
+uint16_t readTouchStatus() {
+  Wire.beginTransmission(MPR_ADDR);
+  Wire.write(REG_TOUCH_STATUS_L);
+  Wire.endTransmission(false);
+
+  Wire.requestFrom(MPR_ADDR, (uint8_t)2);
+  if (Wire.available() < 2) {
+    return 0;
+  }
+
+  uint8_t lsb = Wire.read();
+  uint8_t msb = Wire.read();
+  return (uint16_t)lsb | ((uint16_t)msb << 8);
+}
+
+
+// ==== Funciones de Propósito General GPIOS OUTPUT ====
 void writeReg(uint8_t reg, uint8_t value) {
   Wire.beginTransmission(MPR_ADDR);
   Wire.write(reg);

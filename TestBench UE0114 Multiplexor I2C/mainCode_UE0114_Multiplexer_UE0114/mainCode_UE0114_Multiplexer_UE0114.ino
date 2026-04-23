@@ -12,9 +12,9 @@ MainCode UE0114 TestBench DevLab: I2C TCA9548A Multiplexer Module
 // ==== CONFIGURACIÓN DE PINES ====
 #define SDA_PIN 6
 #define SCL_PIN 7
-#define A0_PIN 15  // --> GPIO15 para control de pin A0 Selector de Dirección I2C
-#define A1_PIN 19  // --> GPIO19 para control de pin A1 Selector de Dirección I2C
-#define A2_PIN 20  // --> GPIO20 para control de pin A2 Selector de Dirección I2C
+#define A0_PIN 2  // --> GPIO15 para control de pin A0 Selector de Dirección I2C
+#define A1_PIN 3  // --> GPIO19 para control de pin A1 Selector de Dirección I2C
+#define A2_PIN 5  // --> GPIO20 para control de pin A2 Selector de Dirección I2C
 
 
 // ==== VARIABLES DE CONFIGURACIÓN ====
