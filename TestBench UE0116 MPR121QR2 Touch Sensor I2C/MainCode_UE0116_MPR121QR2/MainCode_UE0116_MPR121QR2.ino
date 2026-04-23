@@ -71,20 +71,28 @@ uint16_t readTouchStatus() {
 }
 
 void printTouchEdges(uint16_t touchBits) {
+  sendJSON.clear();
   for (uint8_t i = 0; i < NUM_ELECTRODES; ++i) {
     uint16_t bit = (uint16_t)(1u << i);
     bool prev = (lastTouchBits & bit) != 0;
     bool curr = (touchBits & bit) != 0;
 
     if (!prev && curr) {
+      sendJSON["touch"] = "E" + String(i);
       Serial.print("TOUCH E");
       Serial.println(i);
     }
 
     if (prev && !curr) {
+      sendJSON["release"] = "E" + String(i);
       Serial.print("RELEASE E");
       Serial.println(i);
     }
+  }
+
+  if (sendJSON.size() > 0) {
+    serializeJson(sendJSON, PagWeb);
+    PagWeb.println();
   }
 
   lastTouchBits = touchBits;
@@ -229,8 +237,7 @@ void loop() {
       if (Function == "ping") opc = 1;              // {"Function":"ping"}
       else if (Function == "init") opc = 2;         // {"Function":"init"}
       else if (Function == "digitalScan") opc = 3;  // {"Function":"digitalScan"}
-      else if (Function == "b") opc = 4;            // {"Function":"touch"}
-      else if (Function == "restart") opc = 5;      // {"Function":"restart"}
+      else if (Function == "restart") opc = 4;      // {"Function":"restart"}
 
       switch (opc) {
         case 1:
@@ -282,13 +289,6 @@ void loop() {
           }
 
         case 4:
-          {
-
-
-            break;
-          }
-
-        case 5:
           ESP.restart();
           break;
 
@@ -296,10 +296,9 @@ void loop() {
       }
     }
   } else {
-
+    // ==== Función TOUCH SENSOR ====
     uint16_t touchStatus = readTouchStatus();
     uint16_t touchBits = (uint16_t)(touchStatus & 0x0FFF);
-
     printTouchEdges(touchBits);
     delay(50);
   }
