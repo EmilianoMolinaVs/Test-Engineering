@@ -1,11 +1,11 @@
 /*
   Firmware para el TestBench UE0116: DevLab I2C MPR121QR2 Capacitive Touch Sensor
 
-  Este firmware inicializa el sensor de toque MPR121QR2 en modo híbrido:
-  - Electrodos E0..E3 se usan como entradas táctiles.
+  Este firmware inicializa el sensor de toque MPR121QR2 en modo hibrido:
+  - Electrodos E0..E3 se usan como entradas tactiles.
   - Electrodos E4..E11 se usan como salidas GPIO digitales para pruebas.
 
-  La comunicación con la interfaz de pruebas PagWeb se realiza por UART2
+  La comunicacion con la interfaz de pruebas PagWeb se realiza por UART2
   usando mensajes JSON de entrada/salida.
 */
 
