@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include <Adafruit_TSL2591.h>
 
+#define RUN_BUTTON 4  // Botón de Arranque
 #define SDA_PIN 6
 #define SCL_PIN 7
 #define RELAYUSB 20  // GPIO020 RELAY USBC
@@ -50,17 +51,14 @@ const char* etiquetasTiming[] = {
 
 Adafruit_TSL2591 tsl = Adafruit_TSL2591(1);
 
-void initDevice() {
-  Serial.println("╔══════════════════════════════════════╗");
-  Serial.println("║  Iniciando ID del TSL2591            ║");
-  Serial.println("╚══════════════════════════════════════╝");
-
-  //Inicializamos el dispositivo para verificar si hay transmision
+bool initDevice() {
   bool found = tsl.begin();
   if (found) {
-    Serial.println("Dispositivo encontrado en la dirección 0x29");
+    serialDebug("Dispositivo encontrado en la dirección 0x29");
+    return true;
   } else {
-    Serial.println("Dispositivo no encontrado");
+    serialDebug("Dispositivo no encontrado");
+    return false;
   }
 }
 
@@ -152,11 +150,25 @@ void setup() {
   Wire.begin(SDA_PIN, SCL_PIN);
   Wire.setClock(400000);
 
+  pinMode(RUN_BUTTON, INPUT);
   pinMode(RELAYUSB, OUTPUT);
   digitalWrite(RELAYUSB, LOW);
 }
 
 void loop() {
+
+  if (digitalRead(RUN_BUTTON) == HIGH) {
+    delay(200);
+    sendJSON.clear();  // Limpia cualquier dato previo
+
+    if (digitalRead(RUN_BUTTON) == LOW) {
+      serialDebug("Arranque por botonera");
+      sendJSON["Run"] = "OK";           // Envio de corriente JSON para corto
+      serializeJson(sendJSON, Serial);  // Envío de datos por JSON a la PagWeb
+      Serial.println();
+    }
+  }
+
 
   if (Serial.available()) {
     JSON_entrada = Serial.readStringUntil('\n');
@@ -185,12 +197,21 @@ void loop() {
 
       case 2:
         {
-          initDevice();
+          sendJSON.clear();
+          bool init = tsl.begin();
+          delay(200);
+          if (init) sendJSON["Result"] = "OK";
+          else sendJSON["Result"] = "FAIL";
+          delay(200);
+          serializeJson(sendJSON, Serial);
+          Serial.println();
           break;
         }
 
       case 3:
         {
+          sendJSON.clear();
+          bool debug = false;
           int i = Gain;  // Ganancia
           int j = Time;  // Tiempos de Integración
 
@@ -199,19 +220,29 @@ void loop() {
             tsl.setTiming(timings[j]);
 
             uint32_t lum = tsl.getFullLuminosity();
-            uint16_t ir, full;
+            uint16_t ir, full, vis;
             ir = lum >> 16;
             full = lum & 0xFFFF;
+            vis = full - vis;
 
-            // ==== Encabezado ====
-            Serial.println("---- GAIN: " + String(etiquetasGanancia[i]) + " ---- " + "TIME: " + String(etiquetasTiming[j]) + " ---- ");
-            // ==== Datos ====
-            Serial.print("IR: " + String(ir) + " ");
-            Serial.print("FULL: " + String(full) + " ");
-            Serial.print("VIS: " + String(full - ir) + " ");
-            Serial.println("LUX: " + String(tsl.calculateLux(full, ir)));
-            Serial.println(" ");
-            delay(500);
+            if (debug) {
+              // ==== Encabezado ====
+              Serial.println("---- GAIN: " + String(etiquetasGanancia[i]) + " ---- " + "TIME: " + String(etiquetasTiming[j]) + " ---- ");
+              // ==== Datos ====
+              Serial.print("IR: " + String(ir) + " ");
+              Serial.print("FULL: " + String(full) + " ");
+              Serial.print("VIS: " + String(vis) + " ");
+              Serial.println("LUX: " + String(tsl.calculateLux(full, ir)));
+              Serial.println(" ");
+              delay(500);
+            }
+
+            sendJSON["IR"] = ir;
+            sendJSON["VIS"] = vis;
+            sendJSON["FULL"] = full;
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+
           } else serialDebug("Valores de ganancia y tiempo fuera de rango");
 
           break;
