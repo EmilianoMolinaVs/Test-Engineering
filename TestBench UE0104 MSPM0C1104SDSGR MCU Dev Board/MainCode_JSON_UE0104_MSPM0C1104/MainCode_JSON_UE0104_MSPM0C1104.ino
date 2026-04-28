@@ -118,8 +118,17 @@ void loop() {
             sendJSON.clear();
             bool last_state = (digitalRead(PIN_PA0) == HIGH);
             int flank = 0;
+            bool debugBlink = true;
+            String stateBlink = "";
             delay(100);
             for (int i = 0; i < 12; i++) {
+
+              if (debugBlink) {
+                if (digitalRead(PIN_PA0) == HIGH) stateBlink = "HIGH";
+                else stateBlink = "LOW";
+                serialDebug("Blink " + stateBlink);
+              }
+
               bool current_state = (digitalRead(PIN_PA0) == HIGH);  // Leemos el estado actual en esta iteración
               if (current_state != last_state) {                    // Estados diferentes = cambio de flanco
                 flank++;
