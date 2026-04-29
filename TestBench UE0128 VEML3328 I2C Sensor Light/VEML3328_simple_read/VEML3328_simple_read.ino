@@ -36,7 +36,7 @@ void setup() {
   Veml3328.rbWakeup();  // Asegura que canales Rojo y Azul estén encendidos
 
   // Aumentamos la ganancia y el tiempo para que no de 0 en interiores
-  Veml3328.setGain(gain_x2);
+  Veml3328.setGain(gain_x1);
   Veml3328.setIntTime(time_400);  // 400ms de integración (más sensibilidad)
 
   Serial.println("Sistema listo.\n");

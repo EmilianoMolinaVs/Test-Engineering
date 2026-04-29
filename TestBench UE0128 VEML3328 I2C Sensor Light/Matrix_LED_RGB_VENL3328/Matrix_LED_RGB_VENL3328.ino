@@ -15,6 +15,7 @@ Adafruit_NeoPixel matrix(NUMPIXELS, PIN2, NEO_GRB + NEO_KHZ800);
 
 #define DELAYVAL 5  // Time (in milliseconds) to pause between pixels
 int delay_ms = 5000;
+int intensity = 20; 
 
 void setup() {
 
@@ -39,13 +40,13 @@ void loop() {
 
   // ==== SET COLOR RED ====
   for (int i = 0; i < NUMPIXELS; i++) {
-    pixels.setPixelColor(i, pixels.Color(30, 0, 0));
+    pixels.setPixelColor(i, pixels.Color(intensity, 0, 0));
     pixels.show();    // Send the updated pixel colors to the hardware.
     delay(DELAYVAL);  // Pause before next pass through loop
   }
 
   for (int i = 0; i < NUMPIXELS; i++) {
-    matrix.setPixelColor(i, matrix.Color(30, 0, 0));
+    matrix.setPixelColor(i, matrix.Color(intensity, 0, 0));
     matrix.show();  // Send the updated pixel colors to the hardware.
     delay(DELAYVAL);
   }
@@ -54,13 +55,13 @@ void loop() {
 
   // ==== SET COLOR BLUE ====
   for (int i = 0; i < NUMPIXELS; i++) {
-    pixels.setPixelColor(i, pixels.Color(0, 30, 0));
+    pixels.setPixelColor(i, pixels.Color(0, intensity, 0));
     pixels.show();    // Send the updated pixel colors to the hardware.
     delay(DELAYVAL);  // Pause before next pass through loop
   }
 
   for (int i = 0; i < NUMPIXELS; i++) {
-    matrix.setPixelColor(i, matrix.Color(0, 30, 0));
+    matrix.setPixelColor(i, matrix.Color(0, intensity, 0));
     matrix.show();  // Send the updated pixel colors to the hardware.
     delay(DELAYVAL);
   }
@@ -68,13 +69,13 @@ void loop() {
 
   // ==== SET COLOR GREEN ====
   for (int i = 0; i < NUMPIXELS; i++) {
-    pixels.setPixelColor(i, pixels.Color(0, 0, 30));
+    pixels.setPixelColor(i, pixels.Color(0, 0, intensity));
     pixels.show();    // Send the updated pixel colors to the hardware.
     delay(DELAYVAL);  // Pause before next pass through loop
   }
 
   for (int i = 0; i < NUMPIXELS; i++) {
-    matrix.setPixelColor(i, matrix.Color(0, 0, 30));
+    matrix.setPixelColor(i, matrix.Color(0, 0, intensity));
     matrix.show();  // Send the updated pixel colors to the hardware.
     delay(DELAYVAL);
   }
