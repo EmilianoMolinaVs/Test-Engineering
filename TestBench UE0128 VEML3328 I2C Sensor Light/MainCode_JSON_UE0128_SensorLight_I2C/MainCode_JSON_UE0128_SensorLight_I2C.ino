@@ -56,7 +56,6 @@ void loop() {
       serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
       PagWeb.println();
     }
-    s
   }
 
   if (PagWeb.available()) {
@@ -69,6 +68,7 @@ void loop() {
 
     if (Function == "ping") opc = 1;             // {"Function":"ping"}
     else if (Function == "initSensor") opc = 2;  // {"Function":"initSensor"}
+    else if (Function == "readSensor") opc = 3;  // {"Function":"readSensor"}
 
     switch (opc) {
       case 1:
@@ -108,14 +108,32 @@ void loop() {
 
       case 3:
         {
+          sendJSON.clear();
           uint8_t checkID = Veml3328.deviceID();
 
           if (checkID != 0x28) {
-            Serial.println("¡ERROR! Conexión I2C perdida. Reintentando bus...");
-            Wire.begin(I2C_SDA, I2C_SCL);
+            serialDebug("Lost i2c bus communication...");
+            pagwebDebug("Lost i2c bus communication...");
+            Wire.begin(SDA_PIN, SCL_PIN);
             delay(500);
           } else {
+            sendJSON["Result"] = "OK";
+            uint16_t r = Veml3328.getRed();
+            uint16_t g = Veml3328.getGreen();
+            uint16_t b = Veml3328.getBlue();
+            uint16_t ir = Veml3328.getIR();
+
+            JsonArray spectre = sendJSON.createNestedArray("spectre");
+            JsonObject RGB = spectre.createNestedObject();
+            RGB["R"] = r;
+            RGB["G"] = g;
+            RGB["B"] = b;
+            RGB["IR"] = ir;
           }
+
+          serializeJson(sendJSON, PagWeb);
+          PagWeb.println();
+          break;
         }
 
       default: break;
