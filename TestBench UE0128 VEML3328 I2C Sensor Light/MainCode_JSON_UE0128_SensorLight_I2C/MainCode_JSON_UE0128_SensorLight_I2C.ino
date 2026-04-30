@@ -76,8 +76,8 @@ void loop() {
     int opc = 0;
     if (Function == "ping") opc = 1;             // {"Function":"ping"}
     else if (Function == "initSensor") opc = 2;  // {"Function":"initSensor"}
-    else if (Function == "readSensor") opc = 3;  // {"Function":"readSensor", "Color":"blue", "Int":30}
-    else if (Function == "setColor") opc = 4;    // {"Function":"setColor"}
+    else if (Function == "readSensor") opc = 3;  // {"Function":"readSensor", "Color":"blue", "Int":30} || Case Fijo
+    else if (Function == "sweep") opc = 4;       // {"Function":"sweep"}
     else if (Function == "cleanColor") opc = 5;  // {"Function":"cleanColor"}
 
     switch (opc) {
@@ -107,8 +107,8 @@ void loop() {
             serialDebug("Configurando canales...");
             Veml3328.wake();                // Despierta el chip completo
             Veml3328.rbWakeup();            // Asegura que canales Rojo y Azul estén encendidos
-            Veml3328.setGain(gain_x1);      // Aumentamos la ganancia y el tiempo para que no de 0 en interiores
-            Veml3328.setIntTime(time_400);  // 400ms de integración (más sensibilidad)
+            Veml3328.setGain(gain_x1_2);    // Aumentamos la ganancia y el tiempo para que no de 0 en interiores
+            Veml3328.setIntTime(time_200);  // 400ms de integración (más sensibilidad)
           }
           sendJSON["id"] = "0x" + String(idDevice, HEX);
           serializeJson(sendJSON, PagWeb);
@@ -141,7 +141,7 @@ void loop() {
               matrix.show();  // Send the updated pixel colors to the hardware.
             }
 
-            delay(2000);
+            delay(500);
             uint16_t red_sensor = Veml3328.getRed();
             uint16_t green_sensor = Veml3328.getGreen();
             uint16_t blue_sensor = Veml3328.getBlue();
@@ -159,6 +159,115 @@ void loop() {
           PagWeb.println();
           break;
         }
+
+      case 4:
+        {
+          sendJSON.clear();
+          matrix.clear();
+          int delay_ms = 50;
+
+          uint8_t checkID = Veml3328.deviceID();
+          if (checkID != 0x28) {
+            serialDebug("Lost i2c bus communication...");
+            pagwebDebug("Lost i2c bus communication...");
+            Wire.begin(SDA_PIN, SCL_PIN);
+            delay(500);
+          } else {
+            sendJSON["Result"] = "OK";
+            serializeJson(sendJSON, PagWeb);
+            PagWeb.println();
+
+            // ==== SWEEP COLOR ====
+            int step = 5;
+            int lim = 60;
+            // ---- RED ----
+            for (int j = 0; j < lim + 40; j += step) {
+              for (int i = 0; i < NUMPIXELS; i++) {
+                matrix.setPixelColor(i, matrix.Color(j, 0, 0));
+              }
+              matrix.show();  // Send the updated pixel colors to the hardware.
+
+              delay(delay_ms);
+              sendJSON.clear();
+              serialDebug("Intensidad: " + String(j));
+              uint16_t red_sensor = Veml3328.getRed();
+              uint16_t green_sensor = Veml3328.getGreen();
+              uint16_t blue_sensor = Veml3328.getBlue();
+              uint16_t ir_sensor = Veml3328.getIR();
+
+              JsonArray spectre = sendJSON.createNestedArray("spectre");
+              JsonObject RGB = spectre.createNestedObject();
+              RGB["R"] = red_sensor;
+              RGB["G"] = green_sensor;
+              RGB["B"] = blue_sensor;
+              RGB["IR"] = ir_sensor;
+              serializeJson(sendJSON, PagWeb);
+              PagWeb.println();
+            }
+            for (int i = 0; i < NUMPIXELS; i++) {
+              matrix.setPixelColor(i, matrix.Color(0, 0, 0));
+            }
+            matrix.show();
+            // ---- GREEN ----
+            for (int j = 0; j < lim; j += step) {
+              for (int i = 0; i < NUMPIXELS; i++) {
+                matrix.setPixelColor(i, matrix.Color(0, j, 0));
+              }
+              matrix.show();  // Send the updated pixel colors to the hardware.
+
+              delay(delay_ms);
+              sendJSON.clear();
+              serialDebug("Intensidad: " + String(j));
+              uint16_t red_sensor = Veml3328.getRed();
+              uint16_t green_sensor = Veml3328.getGreen();
+              uint16_t blue_sensor = Veml3328.getBlue();
+              uint16_t ir_sensor = Veml3328.getIR();
+
+              JsonArray spectre = sendJSON.createNestedArray("spectre");
+              JsonObject RGB = spectre.createNestedObject();
+              RGB["R"] = red_sensor;
+              RGB["G"] = green_sensor;
+              RGB["B"] = blue_sensor;
+              RGB["IR"] = ir_sensor;
+              serializeJson(sendJSON, PagWeb);
+              PagWeb.println();
+            }
+            for (int i = 0; i < NUMPIXELS; i++) {
+              matrix.setPixelColor(i, matrix.Color(0, 0, 0));
+            }
+            matrix.show();
+            // ---- BLUE ----
+            for (int j = 0; j < lim; j += step) {
+              for (int i = 0; i < NUMPIXELS; i++) {
+                matrix.setPixelColor(i, matrix.Color(0, 0, j));
+              }
+              matrix.show();  // Send the updated pixel colors to the hardware.
+
+              delay(delay_ms);
+              sendJSON.clear();
+              serialDebug("Intensidad: " + String(j));
+              uint16_t red_sensor = Veml3328.getRed();
+              uint16_t green_sensor = Veml3328.getGreen();
+              uint16_t blue_sensor = Veml3328.getBlue();
+              uint16_t ir_sensor = Veml3328.getIR();
+
+              JsonArray spectre = sendJSON.createNestedArray("spectre");
+              JsonObject RGB = spectre.createNestedObject();
+              RGB["R"] = red_sensor;
+              RGB["G"] = green_sensor;
+              RGB["B"] = blue_sensor;
+              RGB["IR"] = ir_sensor;
+              serializeJson(sendJSON, PagWeb);
+              PagWeb.println();
+            }
+            for (int i = 0; i < NUMPIXELS; i++) {
+              matrix.setPixelColor(i, matrix.Color(0, 0, 0));
+            }
+            matrix.show();
+          }
+          break;
+        }
+
 
       case 5:
         for (int i = 0; i < NUMPIXELS; i++) {
