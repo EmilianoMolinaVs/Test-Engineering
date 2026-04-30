@@ -2,19 +2,23 @@
 #include <HardwareSerial.h>
 #include <Arduino.h>
 #include <ArduinoJson.h>
-#include "veml3328.h"  // Se modificó la libreria original
+#include "veml3328.h"  // Se modificó la libreria original de MicroChip
+#include <Adafruit_NeoPixel.h>
 
 #define ADDR_VEML3328 0x10  // >> Dirección de I2C del Sensor de Luz
+#define NUMPIXELS 128       // Popular NeoPixel ring size
 
 // ==== CONFIGURACIÓN DE PINES ====
-#define RUN_BUTTON 4  // >> Arranque por Botonera
-#define SDA_PIN 6     // >> GPIO06 SDA de I2C
-#define SCL_PIN 7     // >> GPIO07 SCL de I2C
-#define RX2 15        // >> GPIO15 como RX de UART2
-#define TX2 19        // >> GPIO19 como TX de UART2
+#define NEOPIXEL_PIN 2  // >> GPIO02 Control de Neopixel
+#define RUN_BUTTON 4    // >> GPIO04 Arranque por Botonera
+#define SDA_PIN 6       // >> GPIO06 SDA de I2C
+#define SCL_PIN 7       // >> GPIO07 SCL de I2C
+#define RX2 15          // >> GPIO15 como RX de UART2
+#define TX2 19          // >> GPIO19 como TX de UART2
 
 // ==== CREACIÓN DE OBJETOS ====
 HardwareSerial PagWeb(1);
+Adafruit_NeoPixel matrix(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 String JSON_entrada;                   ///< Buffer para recibir JSON desde PagWeb
 StaticJsonDocument<1024> receiveJSON;  ///< Documento JSON para parsear datos recibidos
@@ -40,8 +44,9 @@ void setup() {
   serialDebug("Serial Initilized...");
   pagwebDebug("Test initialized...");
 
-  // ==== Inicialización de Bus I2C ====
+  // ==== Inicializaciones de I2C y Neopixel ====
   Wire.begin(SDA_PIN, SCL_PIN);
+  matrix.begin();
 }
 
 void loop() {
@@ -63,12 +68,16 @@ void loop() {
     JSON_entrada = PagWeb.readStringUntil('\n');
     DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
 
+    // ==== Valores recibios por el JSON ====
     String Function = receiveJSON["Function"];
-    int opc = 0;
+    String Color = receiveJSON["Color"] | "red";
+    int Intensity = receiveJSON["Int"] | 30;
 
+    int opc = 0;
     if (Function == "ping") opc = 1;             // {"Function":"ping"}
     else if (Function == "initSensor") opc = 2;  // {"Function":"initSensor"}
-    else if (Function == "readSensor") opc = 3;  // {"Function":"readSensor"}
+    else if (Function == "readSensor") opc = 3;  // {"Function":"readSensor", "Color":"blue", "Int":30}
+    else if (Function == "setColor") opc = 4;    // {"Function":"seColor"}
 
     switch (opc) {
       case 1:
@@ -109,8 +118,13 @@ void loop() {
       case 3:
         {
           sendJSON.clear();
-          uint8_t checkID = Veml3328.deviceID();
+          matrix.clear();
+          for (int i = 0; i < NUMPIXELS; i++) {
+            matrix.setPixelColor(i, matrix.Color(0, 0, 0));
+            matrix.show();  // Send the updated pixel colors to the hardware.
+          }
 
+          uint8_t checkID = Veml3328.deviceID();
           if (checkID != 0x28) {
             serialDebug("Lost i2c bus communication...");
             pagwebDebug("Lost i2c bus communication...");
@@ -118,17 +132,30 @@ void loop() {
             delay(500);
           } else {
             sendJSON["Result"] = "OK";
-            uint16_t r = Veml3328.getRed();
-            uint16_t g = Veml3328.getGreen();
-            uint16_t b = Veml3328.getBlue();
-            uint16_t ir = Veml3328.getIR();
+            if (Color == "red" || Color == "blue" || Color == "green") {
+              int r = 0, g = 0, b = 0;
+              // ==== Color designado en matrix Neopixel ====
+              if (Color == "red") r = Intensity;
+              else if (Color == "green") g = Intensity;
+              else if (Color == "blue") b = Intensity;
+              for (int i = 0; i < NUMPIXELS; i++) {
+                matrix.setPixelColor(i, matrix.Color(r, g, b));
+              }
+              matrix.show();  // Send the updated pixel colors to the hardware.
+            }
+
+            delay(2000);
+            uint16_t red_sensor = Veml3328.getRed();
+            uint16_t green_sensor = Veml3328.getGreen();
+            uint16_t blue_sensor = Veml3328.getBlue();
+            uint16_t ir_sensor = Veml3328.getIR();
 
             JsonArray spectre = sendJSON.createNestedArray("spectre");
             JsonObject RGB = spectre.createNestedObject();
-            RGB["R"] = r;
-            RGB["G"] = g;
-            RGB["B"] = b;
-            RGB["IR"] = ir;
+            RGB["R"] = red_sensor;
+            RGB["G"] = green_sensor;
+            RGB["B"] = blue_sensor;
+            RGB["IR"] = ir_sensor;
           }
 
           serializeJson(sendJSON, PagWeb);

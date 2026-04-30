@@ -48,7 +48,7 @@ void loop() {
   }
 
 
-    for (int i = 0; i < NUMPIXELS; i++) {
+  for (int i = 0; i < NUMPIXELS; i++) {
     pixels.setPixelColor(i, pixels.Color(3, 0, 0));
     pixels.show();    // Send the updated pixel colors to the hardware.
     delay(DELAYVAL);  // Pause before next pass through loop
@@ -61,7 +61,7 @@ void loop() {
   }
 
 
-    for (int i = 0; i < NUMPIXELS; i++) {
+  for (int i = 0; i < NUMPIXELS; i++) {
     pixels.setPixelColor(i, pixels.Color(0, 0, 3));
     pixels.show();    // Send the updated pixel colors to the hardware.
     delay(DELAYVAL);  // Pause before next pass through loop
