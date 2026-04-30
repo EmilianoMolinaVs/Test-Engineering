@@ -77,7 +77,8 @@ void loop() {
     if (Function == "ping") opc = 1;             // {"Function":"ping"}
     else if (Function == "initSensor") opc = 2;  // {"Function":"initSensor"}
     else if (Function == "readSensor") opc = 3;  // {"Function":"readSensor", "Color":"blue", "Int":30}
-    else if (Function == "setColor") opc = 4;    // {"Function":"seColor"}
+    else if (Function == "setColor") opc = 4;    // {"Function":"setColor"}
+    else if (Function == "cleanColor") opc = 5;  // {"Function":"cleanColor"}
 
     switch (opc) {
       case 1:
@@ -119,10 +120,6 @@ void loop() {
         {
           sendJSON.clear();
           matrix.clear();
-          for (int i = 0; i < NUMPIXELS; i++) {
-            matrix.setPixelColor(i, matrix.Color(0, 0, 0));
-            matrix.show();  // Send the updated pixel colors to the hardware.
-          }
 
           uint8_t checkID = Veml3328.deviceID();
           if (checkID != 0x28) {
@@ -162,6 +159,13 @@ void loop() {
           PagWeb.println();
           break;
         }
+
+      case 5:
+        for (int i = 0; i < NUMPIXELS; i++) {
+          matrix.setPixelColor(i, matrix.Color(0, 0, 0));
+        }
+        matrix.show();
+        break;
 
       default: break;
     }
