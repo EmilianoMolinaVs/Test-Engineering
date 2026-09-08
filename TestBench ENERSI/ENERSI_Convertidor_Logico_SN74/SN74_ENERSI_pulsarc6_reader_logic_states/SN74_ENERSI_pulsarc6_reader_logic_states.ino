@@ -22,6 +22,7 @@ void getStatusJSON(String pinName, String status, int pulses) {
   doc["pin"] = pinName;
   doc["pulses"] = pulses;
   doc["status"] = status;
+  if (status == "OK") doc["Result"] = "OK";
   serializeJson(doc, Serial);
   Serial.println();
 }
@@ -73,8 +74,8 @@ void loop() {
         case 2:
           {
             sendJSON.clear();
-            int delay_ms = 500;
-            for (int i = 0; i < 5; i++) {
+            int delay_ms = 200;
+            for (int i = 0; i < 10; i++) {
               digitalWrite(A2_PIN, HIGH);
               digitalWrite(A4_PIN, HIGH);
               delay(delay_ms);
@@ -97,8 +98,8 @@ void loop() {
 
             unsigned long startTime = millis();
 
-            // Muestreo continuo por 6 segundos
-            while (millis() - startTime < 6000) {
+            // Muestreo continuo por 4 segundos
+            while (millis() - startTime < 4000) {
               float v_a1 = analogReadMilliVolts(A1_PIN) / 1000.0;
               float v_a3 = analogReadMilliVolts(A3_PIN) / 1000.0;
 

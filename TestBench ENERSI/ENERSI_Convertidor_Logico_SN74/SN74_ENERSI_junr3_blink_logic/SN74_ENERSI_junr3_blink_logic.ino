@@ -26,6 +26,7 @@ void getStatusJSON(String pinName, String status, int pulses) {
   doc["pin"] = pinName;
   doc["pulses"] = pulses;
   doc["status"] = status;
+  if (status == "OK") doc["Result"] = "OK";
   serializeJson(doc, Serial);
   Serial.println();
 }
@@ -66,17 +67,19 @@ void loop() {
       else if (Function == "analogRead") opc = 3;
 
       switch (opc) {
-        case 1: {
+        case 1:
+          {
             sendJSON.clear();
             sendJSON["ping"] = "pong_JUNR3";
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
-        }
-        case 2: {
+          }
+        case 2:
+          {
             sendJSON.clear();
-            int delay_ms = 500;
-            for (int i = 0; i < 5; i++) {
+            int delay_ms = 200;
+            for (int i = 0; i < 10; i++) {
               digitalWrite(B1_PIN, HIGH);
               digitalWrite(B3_PIN, HIGH);
               delay(delay_ms);
@@ -88,30 +91,37 @@ void loop() {
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
-        }
-        case 3: {
+          }
+        case 3:
+          {
             sendJSON.clear();
             int pulses_b2 = 0;
-            int pulses_b4 = 0;
-            bool state_b2 = false; // false = LOW, true = HIGH
+            int pulses_b4 = 0;Ñ
+            bool state_b2 = false;  // false = LOW, true = HIGH
             bool state_b4 = false;
 
             unsigned long startTime = millis();
-            
-            // Muestreo continuo por 6 segundos
-            while (millis() - startTime < 6000) {
+
+            // Muestreo continuo por 4 segundos
+            while (millis() - startTime < 4000) {
               float v_b2 = (analogRead(B2_PIN) / ADC_RESOLUTION) * V_REF;
               float v_b4 = (analogRead(B4_PIN) / ADC_RESOLUTION) * V_REF;
 
               // Detección de flanco B2 (Umbral alto > 2.5V, Umbral bajo < 1.0V)
               if (!state_b2 && v_b2 > 2.5) state_b2 = true;
-              else if (state_b2 && v_b2 < 1.0) { state_b2 = false; pulses_b2++; }
+              else if (state_b2 && v_b2 < 1.0) {
+                state_b2 = false;
+                pulses_b2++;
+              }
 
               // Detección de flanco B4
               if (!state_b4 && v_b4 > 2.5) state_b4 = true;
-              else if (state_b4 && v_b4 < 1.0) { state_b4 = false; pulses_b4++; }
+              else if (state_b4 && v_b4 < 1.0) {
+                state_b4 = false;
+                pulses_b4++;
+              }
 
-              delay(10); // Muestreo cada 10ms
+              delay(10);  // Muestreo cada 10ms
             }
 
             // Exigimos al menos 3 pulsos completos detectados para considerarlo OK
@@ -126,7 +136,7 @@ void loop() {
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
-        }
+          }
       }
     }
   }
