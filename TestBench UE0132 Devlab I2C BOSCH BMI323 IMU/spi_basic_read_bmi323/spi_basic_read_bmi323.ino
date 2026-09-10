@@ -2,10 +2,10 @@
 #include "DevLab_BMI323.h"
 
 // *************Setup SPI Config
-#define CS_PIN 18   // Chip Select CS
-#define SCK_PIN 6   // SPI SCK  / I2C SCL
+#define CS_PIN 10   // Chip Select CS
+#define SCK_PIN 27   // SPI SCK  / I2C SCL
 #define MOSI_PIN 7  // SPI MOSI / I2C SDAs
-#define MISO_PIN 2  // SPI MISO SDO ADO SAO
+#define MISO_PIN 26  // SPI MISO SDO ADO SAO
 #define SPI_FAST_SPEED 10000000
 
 // CORRECCIÓN 1: Elimina "SPIClass spi_bus(SPI);" y pasa el objeto global "SPI" directamente.
