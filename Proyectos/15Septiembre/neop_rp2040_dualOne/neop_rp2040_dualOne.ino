@@ -2,9 +2,9 @@
 #include <Adafruit_NeoPixel.h>
 #include <Arduino.h>
 
-#define PIN 1       // El pin al que está conectada tu tira
-#define NUMPIXELS 100 // Cantidad de LEDs en tu tira
-const int lux = 20; 
+#define PIN 0       // El pin al que está conectada tu tira
+#define NUMPIXELS 300 // Cantidad de LEDs en tu tira
+const int lux = 100; 
 
 // Declaramos la tira de NeoPixels
 Adafruit_NeoPixel tira(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
@@ -23,7 +23,7 @@ void setup() {
 void loop() {
   // --- SECUENCIA 1: Bandera estática (se muestra por 3 segundos) ---
   mostrarBandera();
-  delay(3000); 
+  delay(2000); 
 
   // --- SECUENCIA 2: Llenado de colores (Olas verde, blanco, rojo) ---
   llenadoDeColor(verde, 30);
@@ -39,9 +39,9 @@ void loop() {
 // Función 1: Muestra los 100 LEDs divididos en 3 franjas
 void mostrarBandera() {
   for (int i = 0; i < NUMPIXELS; i++) {
-    if (i < 33) {
+    if (i < 100) {
       tira.setPixelColor(i, verde);
-    } else if (i < 66) {
+    } else if (i < 200) {
       tira.setPixelColor(i, blanco);
     } else {
       tira.setPixelColor(i, rojo);
