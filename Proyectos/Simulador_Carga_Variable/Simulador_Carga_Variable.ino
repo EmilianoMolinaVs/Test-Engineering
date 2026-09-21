@@ -11,7 +11,7 @@ float randomFloat(float min, float max) {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Pulsar C6 listo para JSON");
+  Serial.println("Pulsar C6 Simulador de Carga Variable");
 }
 
 void loop() {
@@ -32,7 +32,7 @@ void loop() {
 
       // ===== Lecturas simuladas =====
       float voltaje = randomFloat(2.8, 3.3);
-      float corriente = 0.4;
+      float corriente = 0.8;
       float potencia = voltaje * corriente;
 
       // ===== Formato solicitado =====

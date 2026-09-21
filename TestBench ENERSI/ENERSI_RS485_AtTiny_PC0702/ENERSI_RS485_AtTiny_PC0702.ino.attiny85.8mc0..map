@@ -91,7 +91,7 @@ exit                |00000dca|   W  |            NOTYPE|        |     |.text	/ho
 __stop_program      |00000de0|   t  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2280
 __data_load_start   |00000de2|   A  |            NOTYPE|        |     |*ABS*
 _etext              |00000de2|   T  |            NOTYPE|        |     |.text
-__data_load_end     |00000e24|   A  |            NOTYPE|        |     |*ABS*
+__data_load_end     |00000e2e|   A  |            NOTYPE|        |     |*ABS*
 __TEXT_REGION_LENGTH__|00002000|   A  |            NOTYPE|        |     |*ABS*
 __DATA_REGION_LENGTH__|0000ffa0|   A  |            NOTYPE|        |     |*ABS*
 __EEPROM_REGION_LENGTH__|00010000|   A  |            NOTYPE|        |     |*ABS*
@@ -102,21 +102,21 @@ __malloc_heap_end   |00800061|   D  |            OBJECT|00000002|     |.data
 __malloc_heap_start |00800063|   D  |            OBJECT|00000002|     |.data
 __malloc_margin     |00800065|   D  |            OBJECT|00000002|     |.data
 vtable for SoftwareSerial|00800067|   d  |            OBJECT|00000010|     |.data
-__bss_start         |008000a2|   B  |            NOTYPE|        |     |.bss
-__data_end          |008000a2|   D  |            NOTYPE|        |     |.data
-_edata              |008000a2|   D  |            NOTYPE|        |     |.data
-SoftwareSerial::_receive_buffer|008000a2|   b  |            OBJECT|00000040|     |.bss
-SoftwareSerial::_receive_buffer_head|008000e2|   b  |            OBJECT|00000001|     |.bss
-SoftwareSerial::_receive_buffer_tail|008000e3|   b  |            OBJECT|00000001|     |.bss
-SoftwareSerial::active_object|008000e4|   b  |            OBJECT|00000002|     |.bss
-previousMillis      |008000e6|   b  |            OBJECT|00000004|     |.bss	C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:10
-millis_timer_overflow_count|008000ea|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:178
-millis_timer_fract  |008000ee|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:181
-millis_timer_millis |008000ef|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:180
-miSerial            |008000f3|   b  |            OBJECT|0000001f|     |.bss	C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:7
-__brkval            |00800112|   B  |            OBJECT|00000002|     |.bss
-__flp               |00800114|   B  |            OBJECT|00000002|     |.bss
-__bss_end           |00800116|   B  |            NOTYPE|        |     |.bss
-__heap_start        |00800116|   N  |            NOTYPE|        |     |.comment
-_end                |00800116|   N  |            NOTYPE|        |     |.comment
+__bss_start         |008000ac|   B  |            NOTYPE|        |     |.bss
+__data_end          |008000ac|   D  |            NOTYPE|        |     |.data
+_edata              |008000ac|   D  |            NOTYPE|        |     |.data
+SoftwareSerial::_receive_buffer|008000ac|   b  |            OBJECT|00000040|     |.bss
+SoftwareSerial::_receive_buffer_head|008000ec|   b  |            OBJECT|00000001|     |.bss
+SoftwareSerial::_receive_buffer_tail|008000ed|   b  |            OBJECT|00000001|     |.bss
+SoftwareSerial::active_object|008000ee|   b  |            OBJECT|00000002|     |.bss
+previousMillis      |008000f0|   b  |            OBJECT|00000004|     |.bss	C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:10
+millis_timer_overflow_count|008000f4|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:178
+millis_timer_fract  |008000f8|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:181
+millis_timer_millis |008000f9|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:180
+miSerial            |008000fd|   b  |            OBJECT|0000001f|     |.bss	C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:7
+__brkval            |0080011c|   B  |            OBJECT|00000002|     |.bss
+__flp               |0080011e|   B  |            OBJECT|00000002|     |.bss
+__bss_end           |00800120|   B  |            NOTYPE|        |     |.bss
+__heap_start        |00800120|   N  |            NOTYPE|        |     |.comment
+_end                |00800120|   N  |            NOTYPE|        |     |.comment
 __eeprom_end        |00810000|   N  |            NOTYPE|        |     |.comment

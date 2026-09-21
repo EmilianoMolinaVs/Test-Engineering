@@ -8,7 +8,7 @@ SoftwareSerial miSerial(RX_PIN, TX_PIN);  // RX, TX
 
 // Variables para millis()
 unsigned long previousMillis = 0;
-const long interval = 500;
+const long interval = 100;
 bool ledState = HIGH;
 
 void setup() {
@@ -23,20 +23,20 @@ void loop() {
   // 1. Escucha Serial No Bloqueante
   if (miSerial.available() > 0) {
     String input = miSerial.readStringUntil('\n');
-    input.trim(); 
-    
+    input.trim();
+
     if (input == "ping") {
-      miSerial.println("pong");
+      miSerial.println("{\"Result\":\"OK\"}");
     } else {
       miSerial.println("FAIL: invalid option");
     }
-  } 
-  
+  }
+
   // 2. Parpadeo No Bloqueante
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
-    
+
     ledState = !ledState;
     digitalWrite(BLINK_PIN, ledState);
   }

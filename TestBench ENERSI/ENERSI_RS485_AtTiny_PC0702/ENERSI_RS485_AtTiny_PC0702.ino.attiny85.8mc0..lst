@@ -62,7 +62,7 @@ __do_clear_bss():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2441
   46:	21 e0       	ldi	r18, 0x01	; 1
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2442
-  48:	a2 ea       	ldi	r26, 0xA2	; 162
+  48:	ac ea       	ldi	r26, 0xAC	; 172
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2443
   4a:	b0 e0       	ldi	r27, 0x00	; 0
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2444
@@ -74,7 +74,7 @@ __do_clear_bss():
 
 00000050 <.do_clear_bss_start>:
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2448
-  50:	a6 31       	cpi	r26, 0x16	; 22
+  50:	a0 32       	cpi	r26, 0x20	; 32
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2449
   52:	b2 07       	cpc	r27, r18
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2450
@@ -99,7 +99,7 @@ __do_copy_data():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2422
   64:	0d 92       	st	X+, r0
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2424
-  66:	a2 3a       	cpi	r26, 0xA2	; 162
+  66:	ac 3a       	cpi	r26, 0xAC	; 172
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2425
   68:	b1 07       	cpc	r27, r17
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2426
@@ -203,8 +203,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
 int SoftwareSerial::peek() {
   if (!isListening())
-  d6:	20 91 e4 00 	lds	r18, 0x00E4	; 0x8000e4 <SoftwareSerial::active_object>
-  da:	30 91 e5 00 	lds	r19, 0x00E5	; 0x8000e5 <SoftwareSerial::active_object+0x1>
+  d6:	20 91 ee 00 	lds	r18, 0x00EE	; 0x8000ee <SoftwareSerial::active_object>
+  da:	30 91 ef 00 	lds	r19, 0x00EF	; 0x8000ef <SoftwareSerial::active_object+0x1>
   de:	28 17       	cp	r18, r24
   e0:	39 07       	cpc	r19, r25
   e2:	81 f4       	brne	.+32     	; 0x104 <SoftwareSerial::peek()+0x2e>
@@ -213,8 +213,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   // Empty buffer?
   if (_receive_buffer_head == _receive_buffer_tail)
-  e4:	90 91 e2 00 	lds	r25, 0x00E2	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
-  e8:	80 91 e3 00 	lds	r24, 0x00E3	; 0x8000e3 <SoftwareSerial::_receive_buffer_tail>
+  e4:	90 91 ec 00 	lds	r25, 0x00EC	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
+  e8:	80 91 ed 00 	lds	r24, 0x00ED	; 0x8000ed <SoftwareSerial::_receive_buffer_tail>
   ec:	98 17       	cp	r25, r24
   ee:	51 f0       	breq	.+20     	; 0x104 <SoftwareSerial::peek()+0x2e>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:450
@@ -222,9 +222,9 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   // Read from "head"
   return _receive_buffer[_receive_buffer_head];
-  f0:	e0 91 e2 00 	lds	r30, 0x00E2	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
+  f0:	e0 91 ec 00 	lds	r30, 0x00EC	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
   f4:	f0 e0       	ldi	r31, 0x00	; 0
-  f6:	ee 55       	subi	r30, 0x5E	; 94
+  f6:	e4 55       	subi	r30, 0x54	; 84
   f8:	ff 4f       	sbci	r31, 0xFF	; 255
   fa:	80 81       	ld	r24, Z
   fc:	08 2e       	mov	r0, r24
@@ -258,8 +258,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
 void SoftwareSerial::flush() {
   if (!isListening())
- 10a:	20 91 e4 00 	lds	r18, 0x00E4	; 0x8000e4 <SoftwareSerial::active_object>
- 10e:	30 91 e5 00 	lds	r19, 0x00E5	; 0x8000e5 <SoftwareSerial::active_object+0x1>
+ 10a:	20 91 ee 00 	lds	r18, 0x00EE	; 0x8000ee <SoftwareSerial::active_object>
+ 10e:	30 91 ef 00 	lds	r19, 0x00EF	; 0x8000ef <SoftwareSerial::active_object+0x1>
  112:	28 17       	cp	r18, r24
  114:	39 07       	cpc	r19, r25
  116:	39 f4       	brne	.+14     	; 0x126 <SoftwareSerial::flush()+0x1c>
@@ -273,8 +273,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  11a:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:437
   _receive_buffer_head = _receive_buffer_tail = 0;
- 11c:	10 92 e3 00 	sts	0x00E3, r1	; 0x8000e3 <SoftwareSerial::_receive_buffer_tail>
- 120:	10 92 e2 00 	sts	0x00E2, r1	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
+ 11c:	10 92 ed 00 	sts	0x00ED, r1	; 0x8000ed <SoftwareSerial::_receive_buffer_tail>
+ 120:	10 92 ec 00 	sts	0x00EC, r1	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:438
   SREG = oldSREG;
  124:	8f bf       	out	0x3f, r24	; 63
@@ -542,8 +542,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
 int SoftwareSerial::available() {
   if (!isListening()) {
- 1e0:	20 91 e4 00 	lds	r18, 0x00E4	; 0x8000e4 <SoftwareSerial::active_object>
- 1e4:	30 91 e5 00 	lds	r19, 0x00E5	; 0x8000e5 <SoftwareSerial::active_object+0x1>
+ 1e0:	20 91 ee 00 	lds	r18, 0x00EE	; 0x8000ee <SoftwareSerial::active_object>
+ 1e4:	30 91 ef 00 	lds	r19, 0x00EF	; 0x8000ef <SoftwareSerial::active_object+0x1>
  1e8:	28 17       	cp	r18, r24
  1ea:	39 07       	cpc	r19, r25
  1ec:	41 f4       	brne	.+16     	; 0x1fe <SoftwareSerial::available()+0x1e>
@@ -552,8 +552,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   }
 
   return (uint8_t)(_receive_buffer_tail + _SS_MAX_RX_BUFF - _receive_buffer_head) % _SS_MAX_RX_BUFF;
- 1ee:	80 91 e3 00 	lds	r24, 0x00E3	; 0x8000e3 <SoftwareSerial::_receive_buffer_tail>
- 1f2:	90 91 e2 00 	lds	r25, 0x00E2	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
+ 1ee:	80 91 ed 00 	lds	r24, 0x00ED	; 0x8000ed <SoftwareSerial::_receive_buffer_tail>
+ 1f2:	90 91 ec 00 	lds	r25, 0x00EC	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
  1f6:	89 1b       	sub	r24, r25
  1f8:	8f 73       	andi	r24, 0x3F	; 63
  1fa:	90 e0       	ldi	r25, 0x00	; 0
@@ -585,8 +585,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 // Read data from buffer
 int SoftwareSerial::read() {
   if (!isListening())
- 204:	20 91 e4 00 	lds	r18, 0x00E4	; 0x8000e4 <SoftwareSerial::active_object>
- 208:	30 91 e5 00 	lds	r19, 0x00E5	; 0x8000e5 <SoftwareSerial::active_object+0x1>
+ 204:	20 91 ee 00 	lds	r18, 0x00EE	; 0x8000ee <SoftwareSerial::active_object>
+ 208:	30 91 ef 00 	lds	r19, 0x00EF	; 0x8000ef <SoftwareSerial::active_object+0x1>
  20c:	28 17       	cp	r18, r24
  20e:	39 07       	cpc	r19, r25
  210:	a1 f4       	brne	.+40     	; 0x23a <SoftwareSerial::read()+0x36>
@@ -595,8 +595,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   // Empty buffer?
   if (_receive_buffer_head == _receive_buffer_tail)
- 212:	90 91 e2 00 	lds	r25, 0x00E2	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
- 216:	80 91 e3 00 	lds	r24, 0x00E3	; 0x8000e3 <SoftwareSerial::_receive_buffer_tail>
+ 212:	90 91 ec 00 	lds	r25, 0x00EC	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
+ 216:	80 91 ed 00 	lds	r24, 0x00ED	; 0x8000ed <SoftwareSerial::_receive_buffer_tail>
  21a:	98 17       	cp	r25, r24
  21c:	71 f0       	breq	.+28     	; 0x23a <SoftwareSerial::read()+0x36>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:362
@@ -604,17 +604,17 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   // Read from "head"
   uint8_t d = _receive_buffer[_receive_buffer_head]; // grab next byte
- 21e:	e0 91 e2 00 	lds	r30, 0x00E2	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
+ 21e:	e0 91 ec 00 	lds	r30, 0x00EC	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
  222:	f0 e0       	ldi	r31, 0x00	; 0
- 224:	ee 55       	subi	r30, 0x5E	; 94
+ 224:	e4 55       	subi	r30, 0x54	; 84
  226:	ff 4f       	sbci	r31, 0xFF	; 255
  228:	80 81       	ld	r24, Z
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:363
   _receive_buffer_head = (uint8_t)(_receive_buffer_head + 1) % _SS_MAX_RX_BUFF; // this cast saves 6 bytes
- 22a:	90 91 e2 00 	lds	r25, 0x00E2	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
+ 22a:	90 91 ec 00 	lds	r25, 0x00EC	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
  22e:	9f 5f       	subi	r25, 0xFF	; 255
  230:	9f 73       	andi	r25, 0x3F	; 63
- 232:	90 93 e2 00 	sts	0x00E2, r25	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
+ 232:	90 93 ec 00 	sts	0x00EC, r25	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:364
   return d;
  236:	90 e0       	ldi	r25, 0x00	; 0
@@ -655,10 +655,10 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  242:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:238
     m = millis_timer_millis;
- 244:	80 91 ef 00 	lds	r24, 0x00EF	; 0x8000ef <millis_timer_millis>
- 248:	90 91 f0 00 	lds	r25, 0x00F0	; 0x8000f0 <millis_timer_millis+0x1>
- 24c:	a0 91 f1 00 	lds	r26, 0x00F1	; 0x8000f1 <millis_timer_millis+0x2>
- 250:	b0 91 f2 00 	lds	r27, 0x00F2	; 0x8000f2 <millis_timer_millis+0x3>
+ 244:	80 91 f9 00 	lds	r24, 0x00F9	; 0x8000f9 <millis_timer_millis>
+ 248:	90 91 fa 00 	lds	r25, 0x00FA	; 0x8000fa <millis_timer_millis+0x1>
+ 24c:	a0 91 fb 00 	lds	r26, 0x00FB	; 0x8000fb <millis_timer_millis+0x2>
+ 250:	b0 91 fc 00 	lds	r27, 0x00FC	; 0x8000fc <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:239
     SREG = oldSREG;
  254:	2f bf       	out	0x3f, r18	; 63
@@ -670,14 +670,14 @@ int Stream::timedRead() {
   #if !defined(DISABLEMILLIS)
   int c;
   _startMillis = millis();
- 256:	80 93 fb 00 	sts	0x00FB, r24	; 0x8000fb <miSerial+0x8>
- 25a:	90 93 fc 00 	sts	0x00FC, r25	; 0x8000fc <miSerial+0x9>
- 25e:	a0 93 fd 00 	sts	0x00FD, r26	; 0x8000fd <miSerial+0xa>
- 262:	b0 93 fe 00 	sts	0x00FE, r27	; 0x8000fe <miSerial+0xb>
+ 256:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <miSerial+0x8>
+ 25a:	90 93 06 01 	sts	0x0106, r25	; 0x800106 <miSerial+0x9>
+ 25e:	a0 93 07 01 	sts	0x0107, r26	; 0x800107 <miSerial+0xa>
+ 262:	b0 93 08 01 	sts	0x0108, r27	; 0x800108 <miSerial+0xb>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:36
   do {
     c = read();
- 266:	83 ef       	ldi	r24, 0xF3	; 243
+ 266:	8d ef       	ldi	r24, 0xFD	; 253
  268:	90 e0       	ldi	r25, 0x00	; 0
  26a:	cc df       	rcall	.-104    	; 0x204 <SoftwareSerial::read()>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:37
@@ -701,28 +701,28 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  272:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:238
     m = millis_timer_millis;
- 274:	80 91 ef 00 	lds	r24, 0x00EF	; 0x8000ef <millis_timer_millis>
- 278:	90 91 f0 00 	lds	r25, 0x00F0	; 0x8000f0 <millis_timer_millis+0x1>
- 27c:	a0 91 f1 00 	lds	r26, 0x00F1	; 0x8000f1 <millis_timer_millis+0x2>
- 280:	b0 91 f2 00 	lds	r27, 0x00F2	; 0x8000f2 <millis_timer_millis+0x3>
+ 274:	80 91 f9 00 	lds	r24, 0x00F9	; 0x8000f9 <millis_timer_millis>
+ 278:	90 91 fa 00 	lds	r25, 0x00FA	; 0x8000fa <millis_timer_millis+0x1>
+ 27c:	a0 91 fb 00 	lds	r26, 0x00FB	; 0x8000fb <millis_timer_millis+0x2>
+ 280:	b0 91 fc 00 	lds	r27, 0x00FC	; 0x8000fc <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:239
     SREG = oldSREG;
  284:	2f bf       	out	0x3f, r18	; 63
 timedRead():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:38
   } while(millis() - _startMillis < _timeout);
- 286:	40 91 fb 00 	lds	r20, 0x00FB	; 0x8000fb <miSerial+0x8>
- 28a:	50 91 fc 00 	lds	r21, 0x00FC	; 0x8000fc <miSerial+0x9>
- 28e:	60 91 fd 00 	lds	r22, 0x00FD	; 0x8000fd <miSerial+0xa>
- 292:	70 91 fe 00 	lds	r23, 0x00FE	; 0x8000fe <miSerial+0xb>
+ 286:	40 91 05 01 	lds	r20, 0x0105	; 0x800105 <miSerial+0x8>
+ 28a:	50 91 06 01 	lds	r21, 0x0106	; 0x800106 <miSerial+0x9>
+ 28e:	60 91 07 01 	lds	r22, 0x0107	; 0x800107 <miSerial+0xa>
+ 292:	70 91 08 01 	lds	r23, 0x0108	; 0x800108 <miSerial+0xb>
  296:	84 1b       	sub	r24, r20
  298:	95 0b       	sbc	r25, r21
  29a:	a6 0b       	sbc	r26, r22
  29c:	b7 0b       	sbc	r27, r23
- 29e:	40 91 f7 00 	lds	r20, 0x00F7	; 0x8000f7 <miSerial+0x4>
- 2a2:	50 91 f8 00 	lds	r21, 0x00F8	; 0x8000f8 <miSerial+0x5>
- 2a6:	60 91 f9 00 	lds	r22, 0x00F9	; 0x8000f9 <miSerial+0x6>
- 2aa:	70 91 fa 00 	lds	r23, 0x00FA	; 0x8000fa <miSerial+0x7>
+ 29e:	40 91 01 01 	lds	r20, 0x0101	; 0x800101 <miSerial+0x4>
+ 2a2:	50 91 02 01 	lds	r21, 0x0102	; 0x800102 <miSerial+0x5>
+ 2a6:	60 91 03 01 	lds	r22, 0x0103	; 0x800103 <miSerial+0x6>
+ 2aa:	70 91 04 01 	lds	r23, 0x0104	; 0x800104 <miSerial+0x7>
  2ae:	84 17       	cp	r24, r20
  2b0:	95 07       	cpc	r25, r21
  2b2:	a6 07       	cpc	r26, r22
@@ -771,7 +771,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  2d2:	48 1b       	sub	r20, r24
  2d4:	59 0b       	sbc	r21, r25
  2d6:	bc 01       	movw	r22, r24
- 2d8:	83 ef       	ldi	r24, 0xF3	; 243
+ 2d8:	8d ef       	ldi	r24, 0xFD	; 253
  2da:	90 e0       	ldi	r25, 0x00	; 0
  2dc:	d4 de       	rcall	.-600    	; 0x86 <Print::write(unsigned char const*, unsigned int)>
  2de:	ec 01       	movw	r28, r24
@@ -784,12 +784,12 @@ size_t Print::print(const char str[]) {
 size_t Print::print(char c) {
   return write(c);
  2e0:	6d e0       	ldi	r22, 0x0D	; 13
- 2e2:	83 ef       	ldi	r24, 0xF3	; 243
+ 2e2:	8d ef       	ldi	r24, 0xFD	; 253
  2e4:	90 e0       	ldi	r25, 0x00	; 0
  2e6:	20 df       	rcall	.-448    	; 0x128 <SoftwareSerial::write(unsigned char)>
  2e8:	8c 01       	movw	r16, r24
  2ea:	6a e0       	ldi	r22, 0x0A	; 10
- 2ec:	83 ef       	ldi	r24, 0xF3	; 243
+ 2ec:	8d ef       	ldi	r24, 0xFD	; 253
  2ee:	90 e0       	ldi	r25, 0x00	; 0
  2f0:	1b df       	rcall	.-458    	; 0x128 <SoftwareSerial::write(unsigned char)>
 println():
@@ -1218,13 +1218,13 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     // copy these to local variables so they can be stored in registers
     // (volatile variables must be read from memory on every access)
     unsigned long m = millis_timer_millis;
- 440:	80 91 ef 00 	lds	r24, 0x00EF	; 0x8000ef <millis_timer_millis>
- 444:	90 91 f0 00 	lds	r25, 0x00F0	; 0x8000f0 <millis_timer_millis+0x1>
- 448:	a0 91 f1 00 	lds	r26, 0x00F1	; 0x8000f1 <millis_timer_millis+0x2>
- 44c:	b0 91 f2 00 	lds	r27, 0x00F2	; 0x8000f2 <millis_timer_millis+0x3>
+ 440:	80 91 f9 00 	lds	r24, 0x00F9	; 0x8000f9 <millis_timer_millis>
+ 444:	90 91 fa 00 	lds	r25, 0x00FA	; 0x8000fa <millis_timer_millis+0x1>
+ 448:	a0 91 fb 00 	lds	r26, 0x00FB	; 0x8000fb <millis_timer_millis+0x2>
+ 44c:	b0 91 fc 00 	lds	r27, 0x00FC	; 0x8000fc <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:205
     unsigned char f = millis_timer_fract;
- 450:	30 91 ee 00 	lds	r19, 0x00EE	; 0x8000ee <millis_timer_fract>
+ 450:	30 91 f8 00 	lds	r19, 0x00F8	; 0x8000f8 <millis_timer_fract>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:212
     static unsigned char correct_exact = 0;     // rollover intended
     if (++correct_exact < CORRECT_EXACT_MANY) {
@@ -1256,27 +1256,27 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     }
 
     millis_timer_fract = f;
- 466:	20 93 ee 00 	sts	0x00EE, r18	; 0x8000ee <millis_timer_fract>
+ 466:	20 93 f8 00 	sts	0x00F8, r18	; 0x8000f8 <millis_timer_fract>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:225
     millis_timer_millis = m;
- 46a:	80 93 ef 00 	sts	0x00EF, r24	; 0x8000ef <millis_timer_millis>
- 46e:	90 93 f0 00 	sts	0x00F0, r25	; 0x8000f0 <millis_timer_millis+0x1>
- 472:	a0 93 f1 00 	sts	0x00F1, r26	; 0x8000f1 <millis_timer_millis+0x2>
- 476:	b0 93 f2 00 	sts	0x00F2, r27	; 0x8000f2 <millis_timer_millis+0x3>
+ 46a:	80 93 f9 00 	sts	0x00F9, r24	; 0x8000f9 <millis_timer_millis>
+ 46e:	90 93 fa 00 	sts	0x00FA, r25	; 0x8000fa <millis_timer_millis+0x1>
+ 472:	a0 93 fb 00 	sts	0x00FB, r26	; 0x8000fb <millis_timer_millis+0x2>
+ 476:	b0 93 fc 00 	sts	0x00FC, r27	; 0x8000fc <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:227
 #ifndef CORRECT_EXACT_MICROS
     millis_timer_overflow_count++;
- 47a:	80 91 ea 00 	lds	r24, 0x00EA	; 0x8000ea <millis_timer_overflow_count>
- 47e:	90 91 eb 00 	lds	r25, 0x00EB	; 0x8000eb <millis_timer_overflow_count+0x1>
- 482:	a0 91 ec 00 	lds	r26, 0x00EC	; 0x8000ec <millis_timer_overflow_count+0x2>
- 486:	b0 91 ed 00 	lds	r27, 0x00ED	; 0x8000ed <millis_timer_overflow_count+0x3>
+ 47a:	80 91 f4 00 	lds	r24, 0x00F4	; 0x8000f4 <millis_timer_overflow_count>
+ 47e:	90 91 f5 00 	lds	r25, 0x00F5	; 0x8000f5 <millis_timer_overflow_count+0x1>
+ 482:	a0 91 f6 00 	lds	r26, 0x00F6	; 0x8000f6 <millis_timer_overflow_count+0x2>
+ 486:	b0 91 f7 00 	lds	r27, 0x00F7	; 0x8000f7 <millis_timer_overflow_count+0x3>
  48a:	01 96       	adiw	r24, 0x01	; 1
  48c:	a1 1d       	adc	r26, r1
  48e:	b1 1d       	adc	r27, r1
- 490:	80 93 ea 00 	sts	0x00EA, r24	; 0x8000ea <millis_timer_overflow_count>
- 494:	90 93 eb 00 	sts	0x00EB, r25	; 0x8000eb <millis_timer_overflow_count+0x1>
- 498:	a0 93 ec 00 	sts	0x00EC, r26	; 0x8000ec <millis_timer_overflow_count+0x2>
- 49c:	b0 93 ed 00 	sts	0x00ED, r27	; 0x8000ed <millis_timer_overflow_count+0x3>
+ 490:	80 93 f4 00 	sts	0x00F4, r24	; 0x8000f4 <millis_timer_overflow_count>
+ 494:	90 93 f5 00 	sts	0x00F5, r25	; 0x8000f5 <millis_timer_overflow_count+0x1>
+ 498:	a0 93 f6 00 	sts	0x00F6, r26	; 0x8000f6 <millis_timer_overflow_count+0x2>
+ 49c:	b0 93 f7 00 	sts	0x00F7, r27	; 0x8000f7 <millis_timer_overflow_count+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:229
 #endif
   }
@@ -1337,8 +1337,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 /* static */
 inline void SoftwareSerial::handle_interrupt() {
   if (active_object) {
- 4e0:	e0 91 e4 00 	lds	r30, 0x00E4	; 0x8000e4 <SoftwareSerial::active_object>
- 4e4:	f0 91 e5 00 	lds	r31, 0x00E5	; 0x8000e5 <SoftwareSerial::active_object+0x1>
+ 4e0:	e0 91 ee 00 	lds	r30, 0x00EE	; 0x8000ee <SoftwareSerial::active_object>
+ 4e4:	f0 91 ef 00 	lds	r31, 0x00EF	; 0x8000ef <SoftwareSerial::active_object+0x1>
  4e8:	30 97       	sbiw	r30, 0x00	; 0
  4ea:	49 f0       	breq	.+18     	; 0x4fe <__vector_2+0x40>
  4ec:	a6 85       	ldd	r26, Z+14	; 0x0e
@@ -1535,27 +1535,27 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
     // if buffer full, set the overflow flag and return
     uint8_t next = (_receive_buffer_tail + 1) % _SS_MAX_RX_BUFF;
- 56c:	80 91 e3 00 	lds	r24, 0x00E3	; 0x8000e3 <SoftwareSerial::_receive_buffer_tail>
+ 56c:	80 91 ed 00 	lds	r24, 0x00ED	; 0x8000ed <SoftwareSerial::_receive_buffer_tail>
  570:	90 e0       	ldi	r25, 0x00	; 0
  572:	01 96       	adiw	r24, 0x01	; 1
  574:	8f 73       	andi	r24, 0x3F	; 63
  576:	99 27       	eor	r25, r25
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:148
     if (next != _receive_buffer_head) {
- 578:	30 91 e2 00 	lds	r19, 0x00E2	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
+ 578:	30 91 ec 00 	lds	r19, 0x00EC	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
  57c:	38 17       	cp	r19, r24
  57e:	99 f0       	breq	.+38     	; 0x5a6 <__vector_2+0xe8>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:150
       // save new data in buffer: tail points to where byte goes
       _receive_buffer[_receive_buffer_tail] = d; // save new byte
- 580:	a0 91 e3 00 	lds	r26, 0x00E3	; 0x8000e3 <SoftwareSerial::_receive_buffer_tail>
+ 580:	a0 91 ed 00 	lds	r26, 0x00ED	; 0x8000ed <SoftwareSerial::_receive_buffer_tail>
  584:	b0 e0       	ldi	r27, 0x00	; 0
- 586:	ae 55       	subi	r26, 0x5E	; 94
+ 586:	a4 55       	subi	r26, 0x54	; 84
  588:	bf 4f       	sbci	r27, 0xFF	; 255
  58a:	2c 93       	st	X, r18
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:151
       _receive_buffer_tail = next;
- 58c:	80 93 e3 00 	sts	0x00E3, r24	; 0x8000e3 <SoftwareSerial::_receive_buffer_tail>
+ 58c:	80 93 ed 00 	sts	0x00ED, r24	; 0x8000ed <SoftwareSerial::_receive_buffer_tail>
 _delay_loop_2():
 c:\users\emiliano\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\avr\include\util/delay_basic.h:110
  590:	82 8d       	ldd	r24, Z+26	; 0x1a
@@ -1710,12 +1710,12 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
 void SoftwareSerial::begin(long speed) {
   _rx_delay_centering = _rx_delay_intrabit = _rx_delay_stopbit = _tx_delay = 0;
- 5f2:	10 92 0e 01 	sts	0x010E, r1	; 0x80010e <miSerial+0x1b>
- 5f6:	10 92 0d 01 	sts	0x010D, r1	; 0x80010d <miSerial+0x1a>
- 5fa:	10 92 0c 01 	sts	0x010C, r1	; 0x80010c <miSerial+0x19>
- 5fe:	10 92 0b 01 	sts	0x010B, r1	; 0x80010b <miSerial+0x18>
- 602:	10 92 0a 01 	sts	0x010A, r1	; 0x80010a <miSerial+0x17>
- 606:	10 92 09 01 	sts	0x0109, r1	; 0x800109 <miSerial+0x16>
+ 5f2:	10 92 18 01 	sts	0x0118, r1	; 0x800118 <miSerial+0x1b>
+ 5f6:	10 92 17 01 	sts	0x0117, r1	; 0x800117 <miSerial+0x1a>
+ 5fa:	10 92 16 01 	sts	0x0116, r1	; 0x800116 <miSerial+0x19>
+ 5fe:	10 92 15 01 	sts	0x0115, r1	; 0x800115 <miSerial+0x18>
+ 602:	10 92 14 01 	sts	0x0114, r1	; 0x800114 <miSerial+0x17>
+ 606:	10 92 13 01 	sts	0x0113, r1	; 0x800113 <miSerial+0x16>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:279
   // 12 (gcc 4.8.2) or 13 (gcc 4.3.2) cycles from start bit to first bit,
   // 15 (gcc 4.8.2) or 16 (gcc 4.3.2) cycles between bits,
@@ -1725,13 +1725,13 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   _tx_delay = subtract_cap(bit_delay, 15 / 4);
  60a:	8d ec       	ldi	r24, 0xCD	; 205
  60c:	90 e0       	ldi	r25, 0x00	; 0
- 60e:	90 93 10 01 	sts	0x0110, r25	; 0x800110 <miSerial+0x1d>
- 612:	80 93 0f 01 	sts	0x010F, r24	; 0x80010f <miSerial+0x1c>
+ 60e:	90 93 1a 01 	sts	0x011A, r25	; 0x80011a <miSerial+0x1d>
+ 612:	80 93 19 01 	sts	0x0119, r24	; 0x800119 <miSerial+0x1c>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:282
 
   // Only setup rx when we have a valid PCINT for this pin
   if (digitalPinToPCICR(_receivePin)) {
- 616:	30 91 ff 00 	lds	r19, 0x00FF	; 0x8000ff <miSerial+0xc>
+ 616:	30 91 09 01 	lds	r19, 0x0109	; 0x800109 <miSerial+0xc>
  61a:	36 30       	cpi	r19, 0x06	; 6
  61c:	18 f5       	brcc	.+70     	; 0x664 <main+0xb6>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:297
@@ -1743,16 +1743,16 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     _rx_delay_centering = subtract_cap(bit_delay / 2, (4 + 4 + 75 + 17 - 23) / 4);
  61e:	45 e5       	ldi	r20, 0x55	; 85
  620:	50 e0       	ldi	r21, 0x00	; 0
- 622:	50 93 0a 01 	sts	0x010A, r21	; 0x80010a <miSerial+0x17>
- 626:	40 93 09 01 	sts	0x0109, r20	; 0x800109 <miSerial+0x16>
+ 622:	50 93 14 01 	sts	0x0114, r21	; 0x800114 <miSerial+0x17>
+ 626:	40 93 13 01 	sts	0x0113, r20	; 0x800113 <miSerial+0x16>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:300
 
     // There are 23 cycles in each loop iteration (excluding the delay)
     _rx_delay_intrabit = subtract_cap(bit_delay, 23 / 4);
  62a:	4b ec       	ldi	r20, 0xCB	; 203
  62c:	50 e0       	ldi	r21, 0x00	; 0
- 62e:	50 93 0c 01 	sts	0x010C, r21	; 0x80010c <miSerial+0x19>
- 632:	40 93 0b 01 	sts	0x010B, r20	; 0x80010b <miSerial+0x18>
+ 62e:	50 93 16 01 	sts	0x0116, r21	; 0x800116 <miSerial+0x19>
+ 632:	40 93 15 01 	sts	0x0115, r20	; 0x800115 <miSerial+0x18>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:309
     // mask is enabled again (which _must_ happen during the stopbit).
     // This delay aims at 3/4 of a bit time, meaning the end of the
@@ -1762,8 +1762,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     _rx_delay_stopbit = subtract_cap(bit_delay * 3 / 4, (37 + 11) / 4);
  636:	40 e9       	ldi	r20, 0x90	; 144
  638:	50 e0       	ldi	r21, 0x00	; 0
- 63a:	50 93 0e 01 	sts	0x010E, r21	; 0x80010e <miSerial+0x1b>
- 63e:	40 93 0d 01 	sts	0x010D, r20	; 0x80010d <miSerial+0x1a>
+ 63a:	50 93 18 01 	sts	0x0118, r21	; 0x800118 <miSerial+0x1b>
+ 63e:	40 93 17 01 	sts	0x0117, r20	; 0x800117 <miSerial+0x1a>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:323
 
 
@@ -1782,15 +1782,15 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  648:	45 e3       	ldi	r20, 0x35	; 53
  64a:	50 e0       	ldi	r21, 0x00	; 0
 begin():
- 64c:	50 93 07 01 	sts	0x0107, r21	; 0x800107 <miSerial+0x14>
- 650:	40 93 06 01 	sts	0x0106, r20	; 0x800106 <miSerial+0x13>
+ 64c:	50 93 11 01 	sts	0x0111, r21	; 0x800111 <miSerial+0x14>
+ 650:	40 93 10 01 	sts	0x0110, r20	; 0x800110 <miSerial+0x13>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:327
     _pcint_maskvalue = _BV(digitalPinToPCMSKbit(_receivePin));
  654:	01 c0       	rjmp	.+2      	; 0x658 <main+0xaa>
  656:	ee 0f       	add	r30, r30
  658:	3a 95       	dec	r19
  65a:	ea f7       	brpl	.-6      	; 0x656 <main+0xa8>
- 65c:	e0 93 08 01 	sts	0x0108, r30	; 0x800108 <miSerial+0x15>
+ 65c:	e0 93 12 01 	sts	0x0112, r30	; 0x800112 <miSerial+0x15>
 _delay_loop_2():
 c:\users\emiliano\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\avr\include\util/delay_basic.h:110
  660:	01 97       	sbiw	r24, 0x01	; 1
@@ -1803,18 +1803,18 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 // one and returns true if it replaces another
 bool SoftwareSerial::listen() {
   if (!_rx_delay_stopbit)
- 664:	80 91 0d 01 	lds	r24, 0x010D	; 0x80010d <miSerial+0x1a>
- 668:	90 91 0e 01 	lds	r25, 0x010E	; 0x80010e <miSerial+0x1b>
+ 664:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <miSerial+0x1a>
+ 668:	90 91 18 01 	lds	r25, 0x0118	; 0x800118 <miSerial+0x1b>
  66c:	89 2b       	or	r24, r25
  66e:	49 f1       	breq	.+82     	; 0x6c2 <main+0x114>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:86
     return false;
 
   if (active_object != this) {
- 670:	e0 91 e4 00 	lds	r30, 0x00E4	; 0x8000e4 <SoftwareSerial::active_object>
- 674:	f0 91 e5 00 	lds	r31, 0x00E5	; 0x8000e5 <SoftwareSerial::active_object+0x1>
+ 670:	e0 91 ee 00 	lds	r30, 0x00EE	; 0x8000ee <SoftwareSerial::active_object>
+ 674:	f0 91 ef 00 	lds	r31, 0x00EF	; 0x8000ef <SoftwareSerial::active_object+0x1>
  678:	00 e0       	ldi	r16, 0x00	; 0
- 67a:	e3 3f       	cpi	r30, 0xF3	; 243
+ 67a:	ed 3f       	cpi	r30, 0xFD	; 253
  67c:	f0 07       	cpc	r31, r16
  67e:	09 f1       	breq	.+66     	; 0x6c2 <main+0x114>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:87
@@ -1844,19 +1844,19 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
       active_object->stopListening();
 
     _buffer_overflow = false;
- 692:	80 91 11 01 	lds	r24, 0x0111	; 0x800111 <miSerial+0x1e>
+ 692:	80 91 1b 01 	lds	r24, 0x011B	; 0x80011b <miSerial+0x1e>
  696:	8e 7f       	andi	r24, 0xFE	; 254
- 698:	80 93 11 01 	sts	0x0111, r24	; 0x800111 <miSerial+0x1e>
+ 698:	80 93 1b 01 	sts	0x011B, r24	; 0x80011b <miSerial+0x1e>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:91
     _receive_buffer_head = _receive_buffer_tail = 0;
- 69c:	10 92 e3 00 	sts	0x00E3, r1	; 0x8000e3 <SoftwareSerial::_receive_buffer_tail>
- 6a0:	10 92 e2 00 	sts	0x00E2, r1	; 0x8000e2 <SoftwareSerial::_receive_buffer_head>
+ 69c:	10 92 ed 00 	sts	0x00ED, r1	; 0x8000ed <SoftwareSerial::_receive_buffer_tail>
+ 6a0:	10 92 ec 00 	sts	0x00EC, r1	; 0x8000ec <SoftwareSerial::_receive_buffer_head>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:92
     active_object = this;
- 6a4:	83 ef       	ldi	r24, 0xF3	; 243
+ 6a4:	8d ef       	ldi	r24, 0xFD	; 253
  6a6:	90 e0       	ldi	r25, 0x00	; 0
- 6a8:	90 93 e5 00 	sts	0x00E5, r25	; 0x8000e5 <SoftwareSerial::active_object+0x1>
- 6ac:	80 93 e4 00 	sts	0x00E4, r24	; 0x8000e4 <SoftwareSerial::active_object>
+ 6a8:	90 93 ef 00 	sts	0x00EF, r25	; 0x8000ef <SoftwareSerial::active_object+0x1>
+ 6ac:	80 93 ee 00 	sts	0x00EE, r24	; 0x8000ee <SoftwareSerial::active_object>
 setRxIntMsk():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:342
   listen();
@@ -1865,15 +1865,15 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 void SoftwareSerial::setRxIntMsk(bool enable) {
     if (enable)
       *_pcint_maskreg |= _pcint_maskvalue;
- 6b0:	e0 91 06 01 	lds	r30, 0x0106	; 0x800106 <miSerial+0x13>
- 6b4:	f0 91 07 01 	lds	r31, 0x0107	; 0x800107 <miSerial+0x14>
+ 6b0:	e0 91 10 01 	lds	r30, 0x0110	; 0x800110 <miSerial+0x13>
+ 6b4:	f0 91 11 01 	lds	r31, 0x0111	; 0x800111 <miSerial+0x14>
  6b8:	80 81       	ld	r24, Z
- 6ba:	90 91 08 01 	lds	r25, 0x0108	; 0x800108 <miSerial+0x15>
+ 6ba:	90 91 12 01 	lds	r25, 0x0112	; 0x800112 <miSerial+0x15>
  6be:	89 2b       	or	r24, r25
  6c0:	80 83       	st	Z, r24
 setup():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:16
-const long interval = 500;
+const long interval = 100;
 bool ledState = HIGH;
 
 void setup() {
@@ -1899,7 +1899,7 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
-    
+
     ledState = !ledState;
  6d4:	bb 24       	eor	r11, r11
  6d6:	b3 94       	inc	r11
@@ -1910,7 +1910,7 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0
 void loop() {
   // 1. Escucha Serial No Bloqueante
   if (miSerial.available() > 0) {
- 6d8:	83 ef       	ldi	r24, 0xF3	; 243
+ 6d8:	8d ef       	ldi	r24, 0xFD	; 253
  6da:	90 e0       	ldi	r25, 0x00	; 0
  6dc:	81 dd       	rcall	.-1278   	; 0x1e0 <SoftwareSerial::available()>
  6de:	18 16       	cp	r1, r24
@@ -2100,14 +2100,14 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 loop():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:28
     String input = miSerial.readStringUntil('\n');
-    input.trim(); 
-    
+    input.trim();
+
     if (input == "ping") {
  78e:	89 2b       	or	r24, r25
  790:	09 f0       	breq	.+2      	; 0x794 <main+0x1e6>
  792:	6b c0       	rjmp	.+214    	; 0x86a <main+0x2bc>
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:29
-      miSerial.println("pong");
+      miSerial.println("{\"Result\":\"OK\"}");
  794:	87 e8       	ldi	r24, 0x87	; 135
  796:	90 e0       	ldi	r25, 0x00	; 0
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:31
@@ -2142,25 +2142,25 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  7a2:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:238
     m = millis_timer_millis;
- 7a4:	80 91 ef 00 	lds	r24, 0x00EF	; 0x8000ef <millis_timer_millis>
- 7a8:	90 91 f0 00 	lds	r25, 0x00F0	; 0x8000f0 <millis_timer_millis+0x1>
- 7ac:	a0 91 f1 00 	lds	r26, 0x00F1	; 0x8000f1 <millis_timer_millis+0x2>
- 7b0:	b0 91 f2 00 	lds	r27, 0x00F2	; 0x8000f2 <millis_timer_millis+0x3>
+ 7a4:	80 91 f9 00 	lds	r24, 0x00F9	; 0x8000f9 <millis_timer_millis>
+ 7a8:	90 91 fa 00 	lds	r25, 0x00FA	; 0x8000fa <millis_timer_millis+0x1>
+ 7ac:	a0 91 fb 00 	lds	r26, 0x00FB	; 0x8000fb <millis_timer_millis+0x2>
+ 7b0:	b0 91 fc 00 	lds	r27, 0x00FC	; 0x8000fc <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:239
     SREG = oldSREG;
  7b4:	2f bf       	out	0x3f, r18	; 63
 loop():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:37
     }
-  } 
-  
+  }
+
   // 2. Parpadeo No Bloqueante
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
- 7b6:	40 91 e6 00 	lds	r20, 0x00E6	; 0x8000e6 <previousMillis>
- 7ba:	50 91 e7 00 	lds	r21, 0x00E7	; 0x8000e7 <previousMillis+0x1>
- 7be:	60 91 e8 00 	lds	r22, 0x00E8	; 0x8000e8 <previousMillis+0x2>
- 7c2:	70 91 e9 00 	lds	r23, 0x00E9	; 0x8000e9 <previousMillis+0x3>
+ 7b6:	40 91 f0 00 	lds	r20, 0x00F0	; 0x8000f0 <previousMillis>
+ 7ba:	50 91 f1 00 	lds	r21, 0x00F1	; 0x8000f1 <previousMillis+0x1>
+ 7be:	60 91 f2 00 	lds	r22, 0x00F2	; 0x8000f2 <previousMillis+0x2>
+ 7c2:	70 91 f3 00 	lds	r23, 0x00F3	; 0x8000f3 <previousMillis+0x3>
  7c6:	8c 01       	movw	r16, r24
  7c8:	9d 01       	movw	r18, r26
  7ca:	04 1b       	sub	r16, r20
@@ -2169,20 +2169,20 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0
  7d0:	37 0b       	sbc	r19, r23
  7d2:	b9 01       	movw	r22, r18
  7d4:	a8 01       	movw	r20, r16
- 7d6:	44 3f       	cpi	r20, 0xF4	; 244
- 7d8:	51 40       	sbci	r21, 0x01	; 1
+ 7d6:	44 36       	cpi	r20, 0x64	; 100
+ 7d8:	51 05       	cpc	r21, r1
  7da:	61 05       	cpc	r22, r1
  7dc:	71 05       	cpc	r23, r1
  7de:	08 f4       	brcc	.+2      	; 0x7e2 <main+0x234>
  7e0:	7b cf       	rjmp	.-266    	; 0x6d8 <main+0x12a>
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:38
     previousMillis = currentMillis;
- 7e2:	80 93 e6 00 	sts	0x00E6, r24	; 0x8000e6 <previousMillis>
- 7e6:	90 93 e7 00 	sts	0x00E7, r25	; 0x8000e7 <previousMillis+0x1>
- 7ea:	a0 93 e8 00 	sts	0x00E8, r26	; 0x8000e8 <previousMillis+0x2>
- 7ee:	b0 93 e9 00 	sts	0x00E9, r27	; 0x8000e9 <previousMillis+0x3>
+ 7e2:	80 93 f0 00 	sts	0x00F0, r24	; 0x8000f0 <previousMillis>
+ 7e6:	90 93 f1 00 	sts	0x00F1, r25	; 0x8000f1 <previousMillis+0x1>
+ 7ea:	a0 93 f2 00 	sts	0x00F2, r26	; 0x8000f2 <previousMillis+0x2>
+ 7ee:	b0 93 f3 00 	sts	0x00F3, r27	; 0x8000f3 <previousMillis+0x3>
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:40
-    
+
     ledState = !ledState;
  7f2:	60 91 60 00 	lds	r22, 0x0060	; 0x800060 <__DATA_REGION_ORIGIN__>
  7f6:	6b 25       	eor	r22, r11
@@ -2264,13 +2264,13 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  868:	88 cf       	rjmp	.-240    	; 0x77a <main+0x1cc>
 loop():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:31
-    input.trim(); 
-    
+    input.trim();
+
     if (input == "ping") {
-      miSerial.println("pong");
+      miSerial.println("{\"Result\":\"OK\"}");
     } else {
       miSerial.println("FAIL: invalid option");
- 86a:	8c e8       	ldi	r24, 0x8C	; 140
+ 86a:	87 e9       	ldi	r24, 0x97	; 151
  86c:	90 e0       	ldi	r25, 0x00	; 0
  86e:	94 cf       	rjmp	.-216    	; 0x798 <main+0x1ea>
 
@@ -2283,8 +2283,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     void setWriteError(int err = 1) { write_error = err; }
   public:
     Print() : write_error(0) {}
- 870:	10 92 f6 00 	sts	0x00F6, r1	; 0x8000f6 <miSerial+0x3>
- 874:	10 92 f5 00 	sts	0x00F5, r1	; 0x8000f5 <miSerial+0x2>
+ 870:	10 92 00 01 	sts	0x0100, r1	; 0x800100 <miSerial+0x3>
+ 874:	10 92 ff 00 	sts	0x00FF, r1	; 0x8000ff <miSerial+0x2>
 _ZN6StreamC2Ev():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.h:64
     virtual int available() = 0;
@@ -2297,10 +2297,10 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  87a:	93 e0       	ldi	r25, 0x03	; 3
  87c:	a0 e0       	ldi	r26, 0x00	; 0
  87e:	b0 e0       	ldi	r27, 0x00	; 0
- 880:	80 93 f7 00 	sts	0x00F7, r24	; 0x8000f7 <miSerial+0x4>
- 884:	90 93 f8 00 	sts	0x00F8, r25	; 0x8000f8 <miSerial+0x5>
- 888:	a0 93 f9 00 	sts	0x00F9, r26	; 0x8000f9 <miSerial+0x6>
- 88c:	b0 93 fa 00 	sts	0x00FA, r27	; 0x8000fa <miSerial+0x7>
+ 880:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <miSerial+0x4>
+ 884:	90 93 02 01 	sts	0x0102, r25	; 0x800102 <miSerial+0x5>
+ 888:	a0 93 03 01 	sts	0x0103, r26	; 0x800103 <miSerial+0x6>
+ 88c:	b0 93 04 01 	sts	0x0104, r27	; 0x800104 <miSerial+0x7>
 __base_ctor ():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:223
   _rx_delay_centering(0),
@@ -2311,20 +2311,20 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   _inverse_logic(inverse_logic) {
  890:	8b e6       	ldi	r24, 0x6B	; 107
  892:	90 e0       	ldi	r25, 0x00	; 0
- 894:	90 93 f4 00 	sts	0x00F4, r25	; 0x8000f4 <miSerial+0x1>
- 898:	80 93 f3 00 	sts	0x00F3, r24	; 0x8000f3 <miSerial>
- 89c:	10 92 0a 01 	sts	0x010A, r1	; 0x80010a <miSerial+0x17>
- 8a0:	10 92 09 01 	sts	0x0109, r1	; 0x800109 <miSerial+0x16>
- 8a4:	10 92 0c 01 	sts	0x010C, r1	; 0x80010c <miSerial+0x19>
- 8a8:	10 92 0b 01 	sts	0x010B, r1	; 0x80010b <miSerial+0x18>
- 8ac:	10 92 0e 01 	sts	0x010E, r1	; 0x80010e <miSerial+0x1b>
- 8b0:	10 92 0d 01 	sts	0x010D, r1	; 0x80010d <miSerial+0x1a>
- 8b4:	10 92 10 01 	sts	0x0110, r1	; 0x800110 <miSerial+0x1d>
- 8b8:	10 92 0f 01 	sts	0x010F, r1	; 0x80010f <miSerial+0x1c>
- 8bc:	60 91 11 01 	lds	r22, 0x0111	; 0x800111 <miSerial+0x1e>
+ 894:	90 93 fe 00 	sts	0x00FE, r25	; 0x8000fe <miSerial+0x1>
+ 898:	80 93 fd 00 	sts	0x00FD, r24	; 0x8000fd <miSerial>
+ 89c:	10 92 14 01 	sts	0x0114, r1	; 0x800114 <miSerial+0x17>
+ 8a0:	10 92 13 01 	sts	0x0113, r1	; 0x800113 <miSerial+0x16>
+ 8a4:	10 92 16 01 	sts	0x0116, r1	; 0x800116 <miSerial+0x19>
+ 8a8:	10 92 15 01 	sts	0x0115, r1	; 0x800115 <miSerial+0x18>
+ 8ac:	10 92 18 01 	sts	0x0118, r1	; 0x800118 <miSerial+0x1b>
+ 8b0:	10 92 17 01 	sts	0x0117, r1	; 0x800117 <miSerial+0x1a>
+ 8b4:	10 92 1a 01 	sts	0x011A, r1	; 0x80011a <miSerial+0x1d>
+ 8b8:	10 92 19 01 	sts	0x0119, r1	; 0x800119 <miSerial+0x1c>
+ 8bc:	60 91 1b 01 	lds	r22, 0x011B	; 0x80011b <miSerial+0x1e>
  8c0:	6e 7f       	andi	r22, 0xFE	; 254
  8c2:	6d 7f       	andi	r22, 0xFD	; 253
- 8c4:	60 93 11 01 	sts	0x0111, r22	; 0x800111 <miSerial+0x1e>
+ 8c4:	60 93 1b 01 	sts	0x011B, r22	; 0x80011b <miSerial+0x1e>
 setTX():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:240
 void SoftwareSerial::setTX(uint8_t tx) {
@@ -2347,14 +2347,14 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:242
   _transmitBitMask = digitalPinToBitMask(tx);
  8da:	80 e1       	ldi	r24, 0x10	; 16
- 8dc:	80 93 03 01 	sts	0x0103, r24	; 0x800103 <miSerial+0x10>
+ 8dc:	80 93 0d 01 	sts	0x010D, r24	; 0x80010d <miSerial+0x10>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:244
   uint8_t port = digitalPinToPort(tx);
   _transmitPortRegister = portOutputRegister(port);
  8e0:	88 e3       	ldi	r24, 0x38	; 56
  8e2:	90 e0       	ldi	r25, 0x00	; 0
- 8e4:	90 93 05 01 	sts	0x0105, r25	; 0x800105 <miSerial+0x12>
- 8e8:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <miSerial+0x11>
+ 8e4:	90 93 0f 01 	sts	0x010F, r25	; 0x80010f <miSerial+0x12>
+ 8e8:	80 93 0e 01 	sts	0x010E, r24	; 0x80010e <miSerial+0x11>
 setRX():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:248
 }
@@ -2366,7 +2366,7 @@ void SoftwareSerial::setRX(uint8_t rx) {
  8f0:	44 dd       	rcall	.-1400   	; 0x37a <pinMode>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:249
   if (!_inverse_logic)
- 8f2:	80 91 11 01 	lds	r24, 0x0111	; 0x800111 <miSerial+0x1e>
+ 8f2:	80 91 1b 01 	lds	r24, 0x011B	; 0x80011b <miSerial+0x1e>
  8f6:	81 fd       	sbrc	r24, 1
  8f8:	03 c0       	rjmp	.+6      	; 0x900 <_GLOBAL__sub_I_miSerial+0x90>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:250
@@ -2377,22 +2377,22 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:251
   _receivePin = rx;
  900:	83 e0       	ldi	r24, 0x03	; 3
- 902:	80 93 ff 00 	sts	0x00FF, r24	; 0x8000ff <miSerial+0xc>
+ 902:	80 93 09 01 	sts	0x0109, r24	; 0x800109 <miSerial+0xc>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:252
   _receiveBitMask = digitalPinToBitMask(rx);
  906:	88 e0       	ldi	r24, 0x08	; 8
- 908:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <miSerial+0xd>
+ 908:	80 93 0a 01 	sts	0x010A, r24	; 0x80010a <miSerial+0xd>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:254
   uint8_t port = digitalPinToPort(rx);
   _receivePortRegister = portInputRegister(port);
  90c:	86 e3       	ldi	r24, 0x36	; 54
  90e:	90 e0       	ldi	r25, 0x00	; 0
- 910:	90 93 02 01 	sts	0x0102, r25	; 0x800102 <miSerial+0xf>
- 914:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <miSerial+0xe>
+ 910:	90 93 0c 01 	sts	0x010C, r25	; 0x80010c <miSerial+0xf>
+ 914:	80 93 0b 01 	sts	0x010B, r24	; 0x80010b <miSerial+0xe>
 _GLOBAL__sub_I_miSerial():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:43
     previousMillis = currentMillis;
-    
+
     ledState = !ledState;
     digitalWrite(BLINK_PIN, ledState);
   }
@@ -2409,8 +2409,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 SoftwareSerial::~SoftwareSerial() {
  91a:	8b e6       	ldi	r24, 0x6B	; 107
  91c:	90 e0       	ldi	r25, 0x00	; 0
- 91e:	90 93 f4 00 	sts	0x00F4, r25	; 0x8000f4 <miSerial+0x1>
- 922:	80 93 f3 00 	sts	0x00F3, r24	; 0x8000f3 <miSerial>
+ 91e:	90 93 fe 00 	sts	0x00FE, r25	; 0x8000fe <miSerial+0x1>
+ 922:	80 93 fd 00 	sts	0x00FD, r24	; 0x8000fd <miSerial>
 stopListening():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:103
   return false;
@@ -2419,9 +2419,9 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 // Stop listening. Returns true if we were actually listening.
 bool SoftwareSerial::stopListening() {
   if (active_object == this) {
- 926:	80 91 e4 00 	lds	r24, 0x00E4	; 0x8000e4 <SoftwareSerial::active_object>
- 92a:	90 91 e5 00 	lds	r25, 0x00E5	; 0x8000e5 <SoftwareSerial::active_object+0x1>
- 92e:	83 5f       	subi	r24, 0xF3	; 243
+ 926:	80 91 ee 00 	lds	r24, 0x00EE	; 0x8000ee <SoftwareSerial::active_object>
+ 92a:	90 91 ef 00 	lds	r25, 0x00EF	; 0x8000ef <SoftwareSerial::active_object+0x1>
+ 92e:	8d 5f       	subi	r24, 0xFD	; 253
  930:	90 40       	sbci	r25, 0x00	; 0
  932:	71 f4       	brne	.+28     	; 0x950 <_GLOBAL__sub_D_miSerial+0x36>
 setRxIntMsk():
@@ -2432,10 +2432,10 @@ void SoftwareSerial::setRxIntMsk(bool enable) {
       *_pcint_maskreg |= _pcint_maskvalue;
     else
       *_pcint_maskreg &= ~_pcint_maskvalue;
- 934:	e0 91 06 01 	lds	r30, 0x0106	; 0x800106 <miSerial+0x13>
- 938:	f0 91 07 01 	lds	r31, 0x0107	; 0x800107 <miSerial+0x14>
+ 934:	e0 91 10 01 	lds	r30, 0x0110	; 0x800110 <miSerial+0x13>
+ 938:	f0 91 11 01 	lds	r31, 0x0111	; 0x800111 <miSerial+0x14>
  93c:	90 81       	ld	r25, Z
- 93e:	80 91 08 01 	lds	r24, 0x0108	; 0x800108 <miSerial+0x15>
+ 93e:	80 91 12 01 	lds	r24, 0x0112	; 0x800112 <miSerial+0x15>
  942:	80 95       	com	r24
  944:	89 23       	and	r24, r25
  946:	80 83       	st	Z, r24
@@ -2447,8 +2447,8 @@ bool SoftwareSerial::stopListening() {
   if (active_object == this) {
     setRxIntMsk(false);
     active_object = NULL;
- 948:	10 92 e5 00 	sts	0x00E5, r1	; 0x8000e5 <SoftwareSerial::active_object+0x1>
- 94c:	10 92 e4 00 	sts	0x00E4, r1	; 0x8000e4 <SoftwareSerial::active_object>
+ 948:	10 92 ef 00 	sts	0x00EF, r1	; 0x8000ef <SoftwareSerial::active_object+0x1>
+ 94c:	10 92 ee 00 	sts	0x00EE, r1	; 0x8000ee <SoftwareSerial::active_object>
 _GLOBAL__sub_D_miSerial():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:43
  950:	08 95       	ret
@@ -2615,8 +2615,8 @@ malloc():
  9ee:	10 f4       	brcc	.+4      	; 0x9f4 <malloc+0x12>
  9f0:	82 e0       	ldi	r24, 0x02	; 2
  9f2:	90 e0       	ldi	r25, 0x00	; 0
- 9f4:	e0 91 14 01 	lds	r30, 0x0114	; 0x800114 <__flp>
- 9f8:	f0 91 15 01 	lds	r31, 0x0115	; 0x800115 <__flp+0x1>
+ 9f4:	e0 91 1e 01 	lds	r30, 0x011E	; 0x80011e <__flp>
+ 9f8:	f0 91 1f 01 	lds	r31, 0x011F	; 0x80011f <__flp+0x1>
  9fc:	30 e0       	ldi	r19, 0x00	; 0
  9fe:	20 e0       	ldi	r18, 0x00	; 0
  a00:	b0 e0       	ldi	r27, 0x00	; 0
@@ -2666,8 +2666,8 @@ malloc():
  a58:	1f 91       	pop	r17
  a5a:	0f 91       	pop	r16
  a5c:	08 95       	ret
- a5e:	00 93 14 01 	sts	0x0114, r16	; 0x800114 <__flp>
- a62:	10 93 15 01 	sts	0x0115, r17	; 0x800115 <__flp+0x1>
+ a5e:	00 93 1e 01 	sts	0x011E, r16	; 0x80011e <__flp>
+ a62:	10 93 1f 01 	sts	0x011F, r17	; 0x80011f <__flp+0x1>
  a66:	f4 cf       	rjmp	.-24     	; 0xa50 <malloc+0x6e>
  a68:	21 15       	cp	r18, r1
  a6a:	31 05       	cpc	r19, r1
@@ -2684,8 +2684,8 @@ malloc():
  a80:	c1 cf       	rjmp	.-126    	; 0xa04 <malloc+0x22>
  a82:	ef 01       	movw	r28, r30
  a84:	f9 cf       	rjmp	.-14     	; 0xa78 <malloc+0x96>
- a86:	90 93 15 01 	sts	0x0115, r25	; 0x800115 <__flp+0x1>
- a8a:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <__flp>
+ a86:	90 93 1f 01 	sts	0x011F, r25	; 0x80011f <__flp+0x1>
+ a8a:	80 93 1e 01 	sts	0x011E, r24	; 0x80011e <__flp>
  a8e:	cd cf       	rjmp	.-102    	; 0xa2a <malloc+0x48>
  a90:	fe 01       	movw	r30, r28
  a92:	e2 0f       	add	r30, r18
@@ -2697,14 +2697,14 @@ malloc():
  a9e:	39 83       	std	Y+1, r19	; 0x01
  aa0:	28 83       	st	Y, r18
  aa2:	d7 cf       	rjmp	.-82     	; 0xa52 <malloc+0x70>
- aa4:	20 91 12 01 	lds	r18, 0x0112	; 0x800112 <__brkval>
- aa8:	30 91 13 01 	lds	r19, 0x0113	; 0x800113 <__brkval+0x1>
+ aa4:	20 91 1c 01 	lds	r18, 0x011C	; 0x80011c <__brkval>
+ aa8:	30 91 1d 01 	lds	r19, 0x011D	; 0x80011d <__brkval+0x1>
  aac:	23 2b       	or	r18, r19
  aae:	41 f4       	brne	.+16     	; 0xac0 <malloc+0xde>
  ab0:	20 91 63 00 	lds	r18, 0x0063	; 0x800063 <__malloc_heap_start>
  ab4:	30 91 64 00 	lds	r19, 0x0064	; 0x800064 <__malloc_heap_start+0x1>
- ab8:	30 93 13 01 	sts	0x0113, r19	; 0x800113 <__brkval+0x1>
- abc:	20 93 12 01 	sts	0x0112, r18	; 0x800112 <__brkval>
+ ab8:	30 93 1d 01 	sts	0x011D, r19	; 0x80011d <__brkval+0x1>
+ abc:	20 93 1c 01 	sts	0x011C, r18	; 0x80011c <__brkval>
  ac0:	20 91 61 00 	lds	r18, 0x0061	; 0x800061 <__malloc_heap_end>
  ac4:	30 91 62 00 	lds	r19, 0x0062	; 0x800062 <__malloc_heap_end+0x1>
  ac8:	21 15       	cp	r18, r1
@@ -2716,8 +2716,8 @@ malloc():
  ad6:	50 91 66 00 	lds	r21, 0x0066	; 0x800066 <__malloc_margin+0x1>
  ada:	24 1b       	sub	r18, r20
  adc:	35 0b       	sbc	r19, r21
- ade:	e0 91 12 01 	lds	r30, 0x0112	; 0x800112 <__brkval>
- ae2:	f0 91 13 01 	lds	r31, 0x0113	; 0x800113 <__brkval+0x1>
+ ade:	e0 91 1c 01 	lds	r30, 0x011C	; 0x80011c <__brkval>
+ ae2:	f0 91 1d 01 	lds	r31, 0x011D	; 0x80011d <__brkval+0x1>
  ae6:	e2 17       	cp	r30, r18
  ae8:	f3 07       	cpc	r31, r19
  aea:	a0 f4       	brcc	.+40     	; 0xb14 <malloc+0x132>
@@ -2734,8 +2734,8 @@ malloc():
  b00:	48 f0       	brcs	.+18     	; 0xb14 <malloc+0x132>
  b02:	4e 0f       	add	r20, r30
  b04:	5f 1f       	adc	r21, r31
- b06:	50 93 13 01 	sts	0x0113, r21	; 0x800113 <__brkval+0x1>
- b0a:	40 93 12 01 	sts	0x0112, r20	; 0x800112 <__brkval>
+ b06:	50 93 1d 01 	sts	0x011D, r21	; 0x80011d <__brkval+0x1>
+ b0a:	40 93 1c 01 	sts	0x011C, r20	; 0x80011c <__brkval>
  b0e:	81 93       	st	Z+, r24
  b10:	91 93       	st	Z+, r25
  b12:	9f cf       	rjmp	.-194    	; 0xa52 <malloc+0x70>
@@ -2753,8 +2753,8 @@ free():
  b24:	32 97       	sbiw	r30, 0x02	; 2
  b26:	13 82       	std	Z+3, r1	; 0x03
  b28:	12 82       	std	Z+2, r1	; 0x02
- b2a:	a0 91 14 01 	lds	r26, 0x0114	; 0x800114 <__flp>
- b2e:	b0 91 15 01 	lds	r27, 0x0115	; 0x800115 <__flp+0x1>
+ b2a:	a0 91 1e 01 	lds	r26, 0x011E	; 0x80011e <__flp>
+ b2e:	b0 91 1f 01 	lds	r27, 0x011F	; 0x80011f <__flp+0x1>
  b32:	ed 01       	movw	r28, r26
  b34:	30 e0       	ldi	r19, 0x00	; 0
  b36:	20 e0       	ldi	r18, 0x00	; 0
@@ -2764,14 +2764,14 @@ free():
  b3e:	31 81       	ldd	r19, Z+1	; 0x01
  b40:	82 0f       	add	r24, r18
  b42:	93 1f       	adc	r25, r19
- b44:	20 91 12 01 	lds	r18, 0x0112	; 0x800112 <__brkval>
- b48:	30 91 13 01 	lds	r19, 0x0113	; 0x800113 <__brkval+0x1>
+ b44:	20 91 1c 01 	lds	r18, 0x011C	; 0x80011c <__brkval>
+ b48:	30 91 1d 01 	lds	r19, 0x011D	; 0x80011d <__brkval+0x1>
  b4c:	28 17       	cp	r18, r24
  b4e:	39 07       	cpc	r19, r25
  b50:	09 f0       	breq	.+2      	; 0xb54 <free+0x3a>
  b52:	61 c0       	rjmp	.+194    	; 0xc16 <free+0xfc>
- b54:	f0 93 13 01 	sts	0x0113, r31	; 0x800113 <__brkval+0x1>
- b58:	e0 93 12 01 	sts	0x0112, r30	; 0x800112 <__brkval>
+ b54:	f0 93 1d 01 	sts	0x011D, r31	; 0x80011d <__brkval+0x1>
+ b58:	e0 93 1c 01 	sts	0x011C, r30	; 0x80011c <__brkval>
  b5c:	df 91       	pop	r29
  b5e:	cf 91       	pop	r28
  b60:	08 95       	ret
@@ -2822,17 +2822,17 @@ free():
  bba:	02 96       	adiw	r24, 0x02	; 2
  bbc:	82 0f       	add	r24, r18
  bbe:	93 1f       	adc	r25, r19
- bc0:	20 91 12 01 	lds	r18, 0x0112	; 0x800112 <__brkval>
- bc4:	30 91 13 01 	lds	r19, 0x0113	; 0x800113 <__brkval+0x1>
+ bc0:	20 91 1c 01 	lds	r18, 0x011C	; 0x80011c <__brkval>
+ bc4:	30 91 1d 01 	lds	r19, 0x011D	; 0x80011d <__brkval+0x1>
  bc8:	28 17       	cp	r18, r24
  bca:	39 07       	cpc	r19, r25
  bcc:	39 f6       	brne	.-114    	; 0xb5c <free+0x42>
  bce:	30 97       	sbiw	r30, 0x00	; 0
  bd0:	51 f5       	brne	.+84     	; 0xc26 <free+0x10c>
- bd2:	10 92 15 01 	sts	0x0115, r1	; 0x800115 <__flp+0x1>
- bd6:	10 92 14 01 	sts	0x0114, r1	; 0x800114 <__flp>
- bda:	b0 93 13 01 	sts	0x0113, r27	; 0x800113 <__brkval+0x1>
- bde:	a0 93 12 01 	sts	0x0112, r26	; 0x800112 <__brkval>
+ bd2:	10 92 1f 01 	sts	0x011F, r1	; 0x80011f <__flp+0x1>
+ bd6:	10 92 1e 01 	sts	0x011E, r1	; 0x80011e <__flp>
+ bda:	b0 93 1d 01 	sts	0x011D, r27	; 0x80011d <__brkval+0x1>
+ bde:	a0 93 1c 01 	sts	0x011C, r26	; 0x80011c <__brkval>
  be2:	bc cf       	rjmp	.-136    	; 0xb5c <free+0x42>
  be4:	d3 83       	std	Z+3, r29	; 0x03
  be6:	c2 83       	std	Z+2, r28	; 0x02
@@ -2859,8 +2859,8 @@ free():
  c10:	31 05       	cpc	r19, r1
  c12:	09 f0       	breq	.+2      	; 0xc16 <free+0xfc>
  c14:	b0 cf       	rjmp	.-160    	; 0xb76 <free+0x5c>
- c16:	f0 93 15 01 	sts	0x0115, r31	; 0x800115 <__flp+0x1>
- c1a:	e0 93 14 01 	sts	0x0114, r30	; 0x800114 <__flp>
+ c16:	f0 93 1f 01 	sts	0x011F, r31	; 0x80011f <__flp+0x1>
+ c1a:	e0 93 1e 01 	sts	0x011E, r30	; 0x80011e <__flp>
  c1e:	9e cf       	rjmp	.-196    	; 0xb5c <free+0x42>
  c20:	fd 01       	movw	r30, r26
  c22:	dc 01       	movw	r26, r24
@@ -2928,16 +2928,16 @@ realloc():
  c98:	4c 01       	movw	r8, r24
  c9a:	8c 0e       	add	r8, r28
  c9c:	9d 1e       	adc	r9, r29
- c9e:	a0 91 14 01 	lds	r26, 0x0114	; 0x800114 <__flp>
- ca2:	b0 91 15 01 	lds	r27, 0x0115	; 0x800115 <__flp+0x1>
+ c9e:	a0 91 1e 01 	lds	r26, 0x011E	; 0x80011e <__flp>
+ ca2:	b0 91 1f 01 	lds	r27, 0x011F	; 0x80011f <__flp+0x1>
  ca6:	51 2c       	mov	r5, r1
  ca8:	41 2c       	mov	r4, r1
  caa:	f1 2c       	mov	r15, r1
  cac:	e1 2c       	mov	r14, r1
  cae:	10 97       	sbiw	r26, 0x00	; 0
  cb0:	31 f5       	brne	.+76     	; 0xcfe <realloc+0xd2>
- cb2:	80 91 12 01 	lds	r24, 0x0112	; 0x800112 <__brkval>
- cb6:	90 91 13 01 	lds	r25, 0x0113	; 0x800113 <__brkval+0x1>
+ cb2:	80 91 1c 01 	lds	r24, 0x011C	; 0x80011c <__brkval>
+ cb6:	90 91 1d 01 	lds	r25, 0x011D	; 0x80011d <__brkval+0x1>
  cba:	88 15       	cp	r24, r8
  cbc:	99 05       	cpc	r25, r9
  cbe:	09 f0       	breq	.+2      	; 0xcc2 <realloc+0x96>
@@ -2960,8 +2960,8 @@ realloc():
  ce8:	f9 07       	cpc	r31, r25
  cea:	08 f0       	brcs	.+2      	; 0xcee <realloc+0xc2>
  cec:	52 c0       	rjmp	.+164    	; 0xd92 <realloc+0x166>
- cee:	f0 93 13 01 	sts	0x0113, r31	; 0x800113 <__brkval+0x1>
- cf2:	e0 93 12 01 	sts	0x0112, r30	; 0x800112 <__brkval>
+ cee:	f0 93 1d 01 	sts	0x011D, r31	; 0x80011d <__brkval+0x1>
+ cf2:	e0 93 1c 01 	sts	0x011C, r30	; 0x80011c <__brkval>
  cf6:	f9 01       	movw	r30, r18
  cf8:	71 83       	std	Z+1, r23	; 0x01
  cfa:	60 83       	st	Z, r22
@@ -3016,8 +3016,8 @@ realloc():
  d5c:	80 83       	st	Z, r24
  d5e:	f3 01       	movw	r30, r6
  d60:	ef cf       	rjmp	.-34     	; 0xd40 <realloc+0x114>
- d62:	f0 93 15 01 	sts	0x0115, r31	; 0x800115 <__flp+0x1>
- d66:	e0 93 14 01 	sts	0x0114, r30	; 0x800114 <__flp>
+ d62:	f0 93 1f 01 	sts	0x011F, r31	; 0x80011f <__flp+0x1>
+ d66:	e0 93 1e 01 	sts	0x011E, r30	; 0x80011e <__flp>
  d6a:	6b cf       	rjmp	.-298    	; 0xc42 <realloc+0x16>
  d6c:	48 16       	cp	r4, r24
  d6e:	59 06       	cpc	r5, r25
