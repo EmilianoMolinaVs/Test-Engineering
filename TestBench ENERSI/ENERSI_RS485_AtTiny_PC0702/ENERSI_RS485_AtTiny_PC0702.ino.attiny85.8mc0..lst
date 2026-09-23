@@ -1873,7 +1873,7 @@ void SoftwareSerial::setRxIntMsk(bool enable) {
  6c0:	80 83       	st	Z, r24
 setup():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:16
-const long interval = 100;
+const long interval = 1000;
 bool ledState = HIGH;
 
 void setup() {
@@ -1894,7 +1894,7 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0
  6d0:	81 e0       	ldi	r24, 0x01	; 1
  6d2:	18 de       	rcall	.-976    	; 0x304 <digitalWrite>
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:40
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:41
   // 2. Parpadeo No Bloqueante
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
@@ -1903,11 +1903,11 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0
     ledState = !ledState;
  6d4:	bb 24       	eor	r11, r11
  6d6:	b3 94       	inc	r11
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:24
-  digitalWrite(BLINK_PIN, HIGH);
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:25
 }
 
 void loop() {
+
   // 1. Escucha Serial No Bloqueante
   if (miSerial.available() > 0) {
  6d8:	8d ef       	ldi	r24, 0xFD	; 253
@@ -2098,7 +2098,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  78a:	9a 81       	ldd	r25, Y+2	; 0x02
  78c:	0e d3       	rcall	.+1564   	; 0xdaa <strcmp>
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:28
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:29
     String input = miSerial.readStringUntil('\n');
     input.trim();
 
@@ -2106,11 +2106,11 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0
  78e:	89 2b       	or	r24, r25
  790:	09 f0       	breq	.+2      	; 0x794 <main+0x1e6>
  792:	6b c0       	rjmp	.+214    	; 0x86a <main+0x2bc>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:29
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:30
       miSerial.println("{\"Result\":\"OK\"}");
  794:	87 e8       	ldi	r24, 0x87	; 135
  796:	90 e0       	ldi	r25, 0x00	; 0
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:31
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:32
     } else {
       miSerial.println("FAIL: invalid option");
  798:	92 dd       	rcall	.-1244   	; 0x2be <Print::println(char const*) [clone .constprop.11]>
@@ -2150,7 +2150,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     SREG = oldSREG;
  7b4:	2f bf       	out	0x3f, r18	; 63
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:37
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:38
     }
   }
 
@@ -2169,25 +2169,25 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0
  7d0:	37 0b       	sbc	r19, r23
  7d2:	b9 01       	movw	r22, r18
  7d4:	a8 01       	movw	r20, r16
- 7d6:	44 36       	cpi	r20, 0x64	; 100
- 7d8:	51 05       	cpc	r21, r1
+ 7d6:	48 3e       	cpi	r20, 0xE8	; 232
+ 7d8:	53 40       	sbci	r21, 0x03	; 3
  7da:	61 05       	cpc	r22, r1
  7dc:	71 05       	cpc	r23, r1
  7de:	08 f4       	brcc	.+2      	; 0x7e2 <main+0x234>
  7e0:	7b cf       	rjmp	.-266    	; 0x6d8 <main+0x12a>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:38
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:39
     previousMillis = currentMillis;
  7e2:	80 93 f0 00 	sts	0x00F0, r24	; 0x8000f0 <previousMillis>
  7e6:	90 93 f1 00 	sts	0x00F1, r25	; 0x8000f1 <previousMillis+0x1>
  7ea:	a0 93 f2 00 	sts	0x00F2, r26	; 0x8000f2 <previousMillis+0x2>
  7ee:	b0 93 f3 00 	sts	0x00F3, r27	; 0x8000f3 <previousMillis+0x3>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:40
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:41
 
     ledState = !ledState;
  7f2:	60 91 60 00 	lds	r22, 0x0060	; 0x800060 <__DATA_REGION_ORIGIN__>
  7f6:	6b 25       	eor	r22, r11
  7f8:	60 93 60 00 	sts	0x0060, r22	; 0x800060 <__DATA_REGION_ORIGIN__>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:41
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:42
     digitalWrite(BLINK_PIN, ledState);
  7fc:	81 e0       	ldi	r24, 0x01	; 1
  7fe:	82 dd       	rcall	.-1276   	; 0x304 <digitalWrite>
@@ -2263,7 +2263,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  866:	10 82       	st	Z, r1
  868:	88 cf       	rjmp	.-240    	; 0x77a <main+0x1cc>
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:31
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:32
     input.trim();
 
     if (input == "ping") {
@@ -2390,7 +2390,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
  910:	90 93 0c 01 	sts	0x010C, r25	; 0x80010c <miSerial+0xf>
  914:	80 93 0b 01 	sts	0x010B, r24	; 0x80010b <miSerial+0xe>
 _GLOBAL__sub_I_miSerial():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:43
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:44
     previousMillis = currentMillis;
 
     ledState = !ledState;
@@ -2450,7 +2450,7 @@ bool SoftwareSerial::stopListening() {
  948:	10 92 ef 00 	sts	0x00EF, r1	; 0x8000ef <SoftwareSerial::active_object+0x1>
  94c:	10 92 ee 00 	sts	0x00EE, r1	; 0x8000ee <SoftwareSerial::active_object>
 _GLOBAL__sub_D_miSerial():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:43
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:44
  950:	08 95       	ret
 
 00000952 <isspace>:

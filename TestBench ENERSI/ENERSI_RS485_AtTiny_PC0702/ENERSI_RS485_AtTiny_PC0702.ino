@@ -8,7 +8,7 @@ SoftwareSerial miSerial(RX_PIN, TX_PIN);  // RX, TX
 
 // Variables para millis()
 unsigned long previousMillis = 0;
-const long interval = 100;
+const long interval = 1000;
 bool ledState = HIGH;
 
 void setup() {
@@ -20,6 +20,7 @@ void setup() {
 }
 
 void loop() {
+
   // 1. Escucha Serial No Bloqueante
   if (miSerial.available() > 0) {
     String input = miSerial.readStringUntil('\n');

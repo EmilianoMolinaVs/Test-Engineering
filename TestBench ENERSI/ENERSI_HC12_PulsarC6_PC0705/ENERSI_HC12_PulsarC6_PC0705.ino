@@ -27,18 +27,19 @@ void setup() {
 }
 
 void loop() {
-  /*
+
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');
     sendJSON.clear();
-    sendJSON["Serial"] = input;
+    sendJSON["msg"] = input;
     serializeJson(sendJSON, UART);
     UART.println();
   }
-*/
+
 
   if (UART.available()) {
     String input = UART.readStringUntil('\n');
+    Serial.println("message input: " + input);
     DeserializationError error = deserializeJson(receiveJSON, input);
 
     if (!error) {

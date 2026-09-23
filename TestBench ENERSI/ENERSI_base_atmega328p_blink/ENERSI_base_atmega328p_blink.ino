@@ -17,7 +17,7 @@ const uint8_t EEPROM_ADDR = 0x50;  // A0..A2 = GND | ADDR DEFAULT
 
 // ==== VARIABLES GLOBALES ====
 unsigned long previousMillis = 0;
-const long blinkInterval = 200;
+const long blinkInterval = 500;
 bool ledState = LOW;
 
 // ==== FUNCIONES DE UTILIDAD PARA EEPROM ====
