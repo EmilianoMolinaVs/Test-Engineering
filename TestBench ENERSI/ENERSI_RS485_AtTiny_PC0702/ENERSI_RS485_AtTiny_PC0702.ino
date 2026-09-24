@@ -8,7 +8,7 @@ SoftwareSerial miSerial(RX_PIN, TX_PIN);  // RX, TX
 
 // Variables para millis()
 unsigned long previousMillis = 0;
-const long interval = 1000;
+const long interval = 2000;
 bool ledState = HIGH;
 
 void setup() {

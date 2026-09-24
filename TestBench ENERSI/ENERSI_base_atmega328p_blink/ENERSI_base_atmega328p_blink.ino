@@ -1,5 +1,21 @@
 /*
 Firmware Test para Placa base de ENERSI
+
+Este firmware se encarga de testear los perifericos existentes para el microcontrolador 
+atmega328p en la placa base de ENERSI 
+
+Descripción de perifericos y funciones de gpios: 
+-> UART gpios PD0 y PD1 
+-> PD2 como entrada de blink en puente con PD3
+-> PD3 como salida de blink en puente con PD2 
+-> PD4 controlador de Relevador 1
+-> PD5 controlador de Relevador 2
+-> PD6 Etiquetado como RESET (para dispositivo externo) activa un blink comandado 
+-> PD7 Pin 13 Blink nativo a LED en HC12
+
+
+
+
 */
 
 // ==== BIBLIOTECAS ====

@@ -77,7 +77,6 @@ void setup() {
   } else {
     Serial.println("Couldn't find HUSB238, check your wiring?");
     //while (1)
-    
   }
 
   // Configurar pines de relés como salida

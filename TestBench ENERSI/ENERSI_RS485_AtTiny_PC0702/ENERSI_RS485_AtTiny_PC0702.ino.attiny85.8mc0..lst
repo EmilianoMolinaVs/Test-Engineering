@@ -1873,7 +1873,7 @@ void SoftwareSerial::setRxIntMsk(bool enable) {
  6c0:	80 83       	st	Z, r24
 setup():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0702/ENERSI_RS485_AtTiny_PC0702.ino:16
-const long interval = 1000;
+const long interval = 2000;
 bool ledState = HIGH;
 
 void setup() {
@@ -2169,8 +2169,8 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_RS485_AtTiny_PC0
  7d0:	37 0b       	sbc	r19, r23
  7d2:	b9 01       	movw	r22, r18
  7d4:	a8 01       	movw	r20, r16
- 7d6:	48 3e       	cpi	r20, 0xE8	; 232
- 7d8:	53 40       	sbci	r21, 0x03	; 3
+ 7d6:	40 3d       	cpi	r20, 0xD0	; 208
+ 7d8:	57 40       	sbci	r21, 0x07	; 7
  7da:	61 05       	cpc	r22, r1
  7dc:	71 05       	cpc	r23, r1
  7de:	08 f4       	brcc	.+2      	; 0x7e2 <main+0x234>
