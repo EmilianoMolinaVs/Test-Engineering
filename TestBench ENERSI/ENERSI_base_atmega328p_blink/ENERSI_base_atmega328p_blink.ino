@@ -138,62 +138,45 @@ void setup() {
 void loop() {
   // 1. ESCUCHAR DISPOSITIVO EXTERNO (RX/TX en pines 9 y 10)
   if (extSerial.available()) {
-    String incomingData = extSerial.readStringUntil('\n');
+    char buffer[128];
+    size_t len = extSerial.readBytesUntil('\n', buffer, sizeof(buffer) - 1);
+    buffer[len] = '\0';
 
-    // Filtro contra ruido espurio (\u0000 o basura)
-    String cleanData = "";
-    for (int i = 0; i < incomingData.length(); i++) {
-      char c = incomingData.charAt(i);
-      // Solo aceptamos caracteres ASCII imprimibles (esto incluye llaves y comillas de JSON)
-      if (c >= 32 && c <= 126) {
-        cleanData += c;
+    size_t cleanIdx = 0;
+    for (size_t i = 0; i < len; i++) {
+      if (buffer[i] >= 32 && buffer[i] <= 126) {
+        buffer[cleanIdx++] = buffer[i];
       }
     }
+    buffer[cleanIdx] = '\0';
 
-    cleanData.trim();
+    if (cleanIdx > 0) {
+      JsonDocument extDoc;
+      JsonDocument receivedJSON;
 
-    // Solo procesamos si quedó una cadena válida
-    if (cleanData.length() > 0) {
-      JsonDocument extDoc;        // Documento que enviaremos a la PC
-      JsonDocument receivedJSON;  // Documento para decodificar lo que llegó del transmisor
-
-      // Intentamos parsear la cadena limpia como JSON
-      DeserializationError error = deserializeJson(receivedJSON, cleanData);
+      DeserializationError error = deserializeJson(receivedJSON, buffer);
 
       if (!error) {
-        // Parseo exitoso. Asignamos el JSON recibido dentro de nuestro JSON de respuesta.
-        // ArduinoJson es inteligente y anidará el objeto automáticamente.
         extDoc["event"] = "ext_data_received";
         extDoc["data"] = receivedJSON;
 
-        int opc = 0;
-        if (receivedJSON["msg"] == "blink") opc = 1;
-
-        switch (opc) {
-          case 1:
-            {
-              int delay_ms = 50;
-              for (int i = 0; i < 10; i++) {
-                digitalWrite(HC12_LED, HIGH);
-                delay(delay_ms);
-                digitalWrite(HC12_LED, LOW);
-                delay(delay_ms);
-              }
-              break;
-            }
-
-          default:
-            extDoc["error_switch"] = "invalid option";
+        // Cero Strings, lo leemos directo del objeto
+        if (receivedJSON["msg"] == "blink") {
+          int delay_ms = 50;
+          for (int i = 0; i < 10; i++) {
+            digitalWrite(HC12_LED, HIGH);
+            delay(delay_ms);
+            digitalWrite(HC12_LED, LOW);
+            delay(delay_ms);
+          }
+        } else {
+          extDoc["error_switch"] = "invalid option";
         }
-
-
       } else {
-        // Si lo que llegó no era un JSON válido (basura o texto plano)
         extDoc["event"] = "ext_data_error";
         extDoc["error"] = error.c_str();
-        extDoc["raw_data"] = cleanData;
+        extDoc["raw_data"] = buffer;
       }
-
       serializeJson(extDoc, Serial);
       Serial.println();
     }
@@ -201,207 +184,223 @@ void loop() {
 
   // 2. ESCUCHAR COMANDOS DEL HOST (UART Nativo)
   if (Serial.available()) {
-    String inJSON = Serial.readStringUntil('\n');
-    JsonDocument receiveJSON;
-    JsonDocument sendJSON;
-    DeserializationError error = deserializeJson(receiveJSON, inJSON);
+    // ELIMINAMOS el uso de String. Usamos un buffer de 192 bytes.
+    char inBuffer[192];
+    size_t len = Serial.readBytesUntil('\n', inBuffer, sizeof(inBuffer) - 1);
+    inBuffer[len] = '\0';
 
-    if (error) {
-      sendJSON["status"] = "FAIL";
-      sendJSON["error"] = String("Invalid JSON: ") + error.c_str();
-      serializeJson(sendJSON, Serial);
-      Serial.println();
-    } else {
-      String Function = receiveJSON["Function"];
-      int noRelay = receiveJSON["noRelay"] | 0;
-      String gpio_blink = receiveJSON["gpio"] | "";  // Se lee como String ("6", "A2", "A3")
-      int opc = 0;
+    // Filtramos la basura (como \r, saltos vacios o caracteres no ASCII)
+    size_t cleanIdx = 0;
+    for (size_t i = 0; i < len; i++) {
+      if (inBuffer[i] >= 32 && inBuffer[i] <= 126) {
+        inBuffer[cleanIdx++] = inBuffer[i];
+      }
+    }
+    inBuffer[cleanIdx] = '\0';
 
-      if (Function == "ping") opc = 1;              // {"Function":"ping"}
-      else if (Function == "scan_i2c") opc = 2;     // {"Function":"scan_i2c"}
-      else if (Function == "onRelay") opc = 3;      // {"Function":"onRelay", "noRelay":1}
-      else if (Function == "offRelay") opc = 4;     // {"Function":"offRelay", "noRelay":1}
-      else if (Function == "eeprom") opc = 5;       // {"Function":"eeprom"}
-      else if (Function == "test_bridge") opc = 6;  // {"Function":"test_bridge"}
-      else if (Function == "blink_on") opc = 7;     // {"Function":"blink_on", "gpio": "A2"}
-      else if (Function == "blink_off") opc = 8;    // {"Function":"blink_off", "gpio": "A2"}
-      else if (Function == "send_ext") opc = 9;     // {"Function":"send_ext", "data": "Hola"}
-      else if (Function == "read_temp") opc = 10;   // {"Function":"read_temp"}
+    if (cleanIdx > 0) {
+      JsonDocument receiveJSON;
+      JsonDocument sendJSON;
+      DeserializationError error = deserializeJson(receiveJSON, inBuffer);
 
-      switch (opc) {
-        case 1:
-          {
+      if (error) {
+        sendJSON["status"] = "FAIL";
+        sendJSON["error"] = error.c_str();
+        serializeJson(sendJSON, Serial);
+        Serial.println();
+      } else {
+        int opc = 0;
+
+        // Evaluamos DIRECTO del JSON. ¡El ahorro de RAM es masivo!
+        if (Function == "ping") opc = 1;              // {"Function":"ping"}
+        else if (Function == "scan_i2c") opc = 2;     // {"Function":"scan_i2c"}
+        else if (Function == "onRelay") opc = 3;      // {"Function":"onRelay", "noRelay":1}
+        else if (Function == "offRelay") opc = 4;     // {"Function":"offRelay", "noRelay":1}
+        else if (Function == "eeprom") opc = 5;       // {"Function":"eeprom"}
+        else if (Function == "test_bridge") opc = 6;  // {"Function":"test_bridge"}
+        else if (Function == "blink_on") opc = 7;     // {"Function":"blink_on", "gpio": "A2"}
+        else if (Function == "blink_off") opc = 8;    // {"Function":"blink_off", "gpio": "A2"}
+        else if (Function == "send_ext") opc = 9;     // {"Function":"send_ext", "data": "Hola"}
+        else if (Function == "read_temp") opc = 10;   // {"Function":"read_temp"}
+
+
+        switch (opc) {
+          case 1:
             sendJSON["Function"] = "ping";
             sendJSON["status"] = "OK";
             sendJSON["ping"] = "pong";
             break;
-          }
 
-        case 2:
-          {
-            sendJSON["Function"] = "scan_i2c";
-            JsonArray devices = sendJSON["devices"].to<JsonArray>();
-            for (byte addr = 1; addr < 127; addr++) {
-              Wire.beginTransmission(addr);
-              if (Wire.endTransmission() == 0) {
-                char hexAddr[5];
-                sprintf(hexAddr, "0x%02X", addr);
-                devices.add(hexAddr);
+          case 2:
+            {
+              //sendJSON["Function"] = "scan_i2c";
+              JsonArray devices = sendJSON["devices"].to<JsonArray>();
+              for (byte addr = 1; addr < 127; addr++) {
+                Wire.beginTransmission(addr);
+                if (Wire.endTransmission() == 0) {
+                  char hexAddr[5];
+                  sprintf(hexAddr, "0x%02X", addr);
+                  devices.add(hexAddr);
+                }
               }
+              if (devices.size() > 0) {
+                sendJSON["status"] = "OK";
+                sendJSON["count"] = devices.size();
+              } else {
+                sendJSON["status"] = "FAIL";
+                sendJSON["message"] = "No I2C devices found";
+              }
+              break;
             }
-            if (devices.size() > 0) {
+
+          case 3:
+          case 4:
+            {
+              // sendJSON["Function"] = receiveJSON["Function"];
+              int noRelay = receiveJSON["noRelay"] | 0;
+              sendJSON["noRelay"] = noRelay;
+
+              uint8_t state = (opc == 3) ? HIGH : LOW;
+              bool validRelay = true;
+
+              if (noRelay == 1) digitalWrite(RELAY1, state);
+              else if (noRelay == 2) digitalWrite(RELAY2, state);
+              else if (noRelay == 3) digitalWrite(RELAY3, state);
+              else validRelay = false;
+
+              if (validRelay) {
+                // sendJSON["status"] = "OK";
+                sendJSON["state"] = (opc == 3) ? "ON" : "OFF";
+              } else {
+                sendJSON["status"] = "FAIL";
+                sendJSON["error"] = "Invalid relay number";
+              }
+              break;
+            }
+
+          case 5:
+            {
+              // sendJSON["Function"] = "eeprom";
+              uint16_t testAddr = 10;
+              writeByte(testAddr, 'Z');
+              byte c = readByte(testAddr);
+
+              const char* msg = "Hola AT24C256!.";
+              writeString(15, msg);
+              char buf[64];
+              readData(15, buf, strlen(msg));
+
               sendJSON["status"] = "OK";
-              sendJSON["count"] = devices.size();
-            } else {
-              sendJSON["status"] = "FAIL";
-              sendJSON["message"] = "No I2C devices found";
+              JsonObject byteTest = sendJSON["byte_test"].to<JsonObject>();
+              byteTest["address"] = testAddr;
+
+              // Se convierte el caracter 'c' sin usar String
+              char c_str[2] = { (char)c, '\0' };
+              byteTest["written"] = "Z";
+              byteTest["read"] = c_str;
+
+              JsonObject stringTest = sendJSON["string_test"].to<JsonObject>();
+              stringTest["address"] = 15;
+              stringTest["written"] = msg;
+              stringTest["read"] = buf;
+              break;
             }
-            break;
-          }
 
-        case 3:
-        case 4:
-          {
-            sendJSON["Function"] = Function;
-            sendJSON["noRelay"] = noRelay;
+          case 6:
+            {
+              //sendJSON["Function"] = "test_bridge";
 
-            uint8_t state = (opc == 3) ? HIGH : LOW;
-            bool validRelay = true;
+              digitalWrite(BLINK_OUT, HIGH);
+              delay(5);
+              bool testHigh = digitalRead(BLINK_IN);
 
-            if (noRelay == 1) digitalWrite(RELAY1, state);
-            else if (noRelay == 2) digitalWrite(RELAY2, state);
-            else if (noRelay == 3) digitalWrite(RELAY3, state);
-            else validRelay = false;
+              digitalWrite(BLINK_OUT, LOW);
+              delay(5);
+              bool testLow = digitalRead(BLINK_IN);
 
-            if (validRelay) {
+              if (testHigh == HIGH && testLow == LOW) {
+                sendJSON["status"] = "OK";
+                // sendJSON["message"] = "Puente fisico detectado correctamente";
+              } else {
+                sendJSON["status"] = "FAIL";
+                //  sendJSON["error"] = "Fallo en lectura logica del puente";
+                //  sendJSON["read_high"] = testHigh;
+                //sendJSON["read_low"] = testLow;
+              }
+              break;
+            }
+
+          case 7:
+          case 8:
+            {
+              sendJSON["Function"] = receiveJSON["Function"];
+              sendJSON["gpio"] = receiveJSON["gpio"];
+
+              uint8_t state = (opc == 7) ? HIGH : LOW;
+              bool validGpio = true;
+
+              if (receiveJSON["gpio"] == "6") digitalWrite(RST_BLINK, state);
+              else if (receiveJSON["gpio"] == "A2") digitalWrite(SC1, state);
+              else if (receiveJSON["gpio"] == "A3") digitalWrite(SC2, state);
+              else validGpio = false;
+
+              if (validGpio) {
+                // sendJSON["status"] = "OK";
+                sendJSON["state"] = (opc == 7) ? "ON" : "OFF";
+              } else {
+                //  sendJSON["status"] = "FAIL";
+                sendJSON["error"] = "Invalid GPIO";
+              }
+              break;
+            }
+
+          case 9:
+            {
+              // sendJSON["Function"] = "send_ext";
+
+              if (receiveJSON.containsKey("data")) {
+                JsonObject outExtJSON = sendJSON["sent_to_ext"].to<JsonObject>();
+                outExtJSON["msg"] = receiveJSON["data"];
+
+                serializeJson(outExtJSON, extSerial);
+                extSerial.println();
+
+                sendJSON["status"] = "OK";
+              } else {
+                sendJSON["status"] = "FAIL";
+                sendJSON["error"] = "La clave 'data' no existe en el comando";
+              }
+              break;
+            }
+
+          case 10:
+            {
+              // sendJSON["Function"] = "read_temp";
+
+              int adcSum = 0;
+              for (int i = 0; i < 5; i++) {
+                adcSum += analogRead(TEMP_PIN);
+                delay(2);
+              }
+              float adcProm = adcSum / 5.0;
+              float tempC = (adcProm * 500.0) / 1024.0;
+
               sendJSON["status"] = "OK";
-              sendJSON["state"] = (opc == 3) ? "ON" : "OFF";
-            } else {
+              sendJSON["temp_celsius"] = tempC;
+              sendJSON["adc_raw"] = adcProm;
+              break;
+            }
+
+          default:
+            {
               sendJSON["status"] = "FAIL";
-              sendJSON["error"] = "Invalid relay number";
+              sendJSON["error"] = "Unknown Function";
+              break;
             }
-            break;
-          }
-
-        case 5:
-          {
-            sendJSON["Function"] = "eeprom";
-            uint16_t testAddr = 10;
-            writeByte(testAddr, 'Z');
-            byte c = readByte(testAddr);
-
-            const char* msg = "Hola AT24C256!.";
-            writeString(15, msg);
-            char buf[64];
-            readData(15, buf, strlen(msg));
-
-            sendJSON["status"] = "OK";
-            JsonObject byteTest = sendJSON["byte_test"].to<JsonObject>();
-            byteTest["address"] = testAddr;
-            byteTest["written"] = "Z";
-            byteTest["read"] = String((char)c);
-
-            JsonObject stringTest = sendJSON["string_test"].to<JsonObject>();
-            stringTest["address"] = 15;
-            stringTest["written"] = msg;
-            stringTest["read"] = String(buf);
-            break;
-          }
-
-        case 6:  // TEST BRIDGE DIGITAL: Comprueba lógica ALTA y BAJA
-          {
-            sendJSON["Function"] = "test_bridge";
-
-            digitalWrite(BLINK_OUT, HIGH);
-            delay(5);
-            bool testHigh = digitalRead(BLINK_IN);
-
-            digitalWrite(BLINK_OUT, LOW);
-            delay(5);
-            bool testLow = digitalRead(BLINK_IN);
-
-            if (testHigh == HIGH && testLow == LOW) {
-              sendJSON["status"] = "OK";
-              sendJSON["message"] = "Puente fisico detectado correctamente";
-            } else {
-              sendJSON["status"] = "FAIL";
-              sendJSON["error"] = "Fallo en lectura logica del puente";
-              sendJSON["read_high"] = testHigh;
-              sendJSON["read_low"] = testLow;
-            }
-            break;
-          }
-
-        case 7:
-        case 8:  // BLINK ON / BLINK OFF
-          {
-            sendJSON["Function"] = Function;
-            sendJSON["gpio"] = gpio_blink;
-
-            uint8_t state = (opc == 7) ? HIGH : LOW;
-            bool validGpio = true;
-
-            if (gpio_blink == "6") digitalWrite(RST_BLINK, state);
-            else if (gpio_blink == "A2") digitalWrite(SC1, state);
-            else if (gpio_blink == "A3") digitalWrite(SC2, state);
-            else validGpio = false;
-
-            if (validGpio) {
-              sendJSON["status"] = "OK";
-              sendJSON["state"] = (opc == 7) ? "ON" : "OFF";
-            } else {
-              sendJSON["status"] = "FAIL";
-              sendJSON["error"] = "Invalid GPIO";
-            }
-            break;
-          }
-
-        case 9:  // SEND EXT: Envia cadena al dispositivo externo
-          {
-            String dataToSend = receiveJSON["data"] | "";
-            sendJSON["Function"] = "send_ext";
-
-            if (dataToSend.length() > 0) {
-              extSerial.println(dataToSend);
-              sendJSON["status"] = "OK";
-              sendJSON["sent"] = dataToSend;
-            } else {
-              sendJSON["status"] = "FAIL";
-              sendJSON["error"] = "No data provided";
-            }
-            break;
-          }
-
-        case 10:  // READ TEMP: Lectura del LM35
-          {
-            sendJSON["Function"] = "read_temp";
-
-            // Promedio de 5 lecturas para estabilizar
-            int adcSum = 0;
-            for (int i = 0; i < 5; i++) {
-              adcSum += analogRead(TEMP_PIN);
-              delay(2);
-            }
-            float adcProm = adcSum / 5.0;
-
-            // Fórmula LM35: 10mV/°C. (V = ADC * 5V / 1024). Temp = V * 100.
-            float tempC = (adcProm * 500.0) / 1024.0;
-
-            sendJSON["status"] = "OK";
-            sendJSON["temp_celsius"] = tempC;
-            sendJSON["adc_raw"] = adcProm;
-            break;
-          }
-
-        default:
-          {
-            sendJSON["status"] = "FAIL";
-            sendJSON["error"] = "Unknown Function";
-            break;
-          }
+        }
+        serializeJson(sendJSON, Serial);
+        Serial.println();
       }
-      serializeJson(sendJSON, Serial);
-      Serial.println();
     }
   } else {
     demo();
