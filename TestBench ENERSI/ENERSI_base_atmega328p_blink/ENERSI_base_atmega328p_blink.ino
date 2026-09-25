@@ -2,48 +2,25 @@
 Firmware Test para Placa base de ENERSI
 Este firmware se encarga de testear los perifericos existentes para el microcontrolador
 atmega328p en la placa base de ENERSI
-
-Descripción de perifericos y funciones de gpios:
--> PC6 Pin 1 RESET para debug
--> PD0 Pin 02 RX Serial UART nativo
--> PD1 Pin 03 TX Serial UART nativo
--> PD2 Pin 04 como entrada de blink en puente con PD3
--> PD3 Pin 05 como salida de blink en puente con PD2
--> PD4 Pin 06 controlador de Relevador 1
--> PD5 Pin 11 controlador de Relevador 2
--> PD6 Pin 12 etiquetado como RESET (para dispositivo externo) activa un blink comandado
--> PD7 Pin 13 blink nativo a LED en HC12
--> PB0 Pin 14 controlador de Relevador 3
--> PB1 Pin 15 se conecta a RO del módulo RS485 montado *
--> PB2 Pin 16 conectado a TX del módulo HC12, es un receptor de datos inalámbricos
--> PB3 Pin 17 MOSI de programación
--> PB4 Pin 18 MISO de programación
--> PB5 Pin 19 SCK de programación | Blink sobre PCB Base
--> PC0 Pin 23 sin pista ruteada
--> PC1 Pin 24 entrada analógica de sensor LM35
--> PC2 Pin 25 conexión a pin 1 de SC1 *
--> PC3 Pin 26 conexión a pin 1 de SC2 *
--> PD4 Pin 27 SDA de bus I2C
--> PC5 Pin 28 SCL de bus I2C
 */
 
 // ==== BIBLIOTECAS ====
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <Wire.h>
-#include <SoftwareSerial.h>  // Para la transmisión de cadenas en el puente
+#include <SoftwareSerial.h>
 
 // ==== DECLARACIÓN DE GPIOS (Nombres Cortos) ====
-#define BLINK_IN 2   // PD2 / Pin 04: entrada de blink en puente con PD3 | OK
-#define BLINK_OUT 3  // PD3 / Pin 05: salida de blink en puente con PD2 | OK
-#define RELAY1 4     // PD4 / Pin 06: control del relevador 1 | OK
-#define RELAY2 5     // PD5 / Pin 11: control del relevador 2 |OK
+#define BLINK_IN 2   // PD2 / Pin 04: entrada de blink en puente con PD3
+#define BLINK_OUT 3  // PD3 / Pin 05: salida de blink en puente con PD2
+#define RELAY1 4     // PD4 / Pin 06: control del relevador 1
+#define RELAY2 5     // PD5 / Pin 11: control del relevador 2
 #define RST_BLINK 6  // PD6 / Pin 12: señal RESET, activa un blink comandado
-#define HC12_LED 7   // PD7 / Pin 13: LED nativo del módulo HC12 | OK
-#define RELAY3 8     // PB0 / Pin 14: control del relevador 3 | OK
-#define RS485_RX 9   // PB1 / Pin 15: RO del módulo RS485 montado
-#define HC12_TX 10   // PB2 / Pin 16: TX del módulo HC12, receptor inalambrico
-#define PCB_LED 13   // PB5 / Pin 19: SCK de programación / blink sobre PCB base| OK
+#define HC12_LED 7   // PD7 / Pin 13: LED nativo del módulo HC12
+#define RELAY3 8     // PB0 / Pin 14: control del relevador 3
+#define RS485_TX 9   // PB1 / Pin 15: RO del módulo RS485 montado (RX Ext)
+#define HC12_RX 10   // PB2 / Pin 16: TX del módulo HC12, receptor inalambrico (TX Ext)
+#define PCB_LED 13   // PB5 / Pin 19: SCK de programación / blink sobre PCB base
 #define TEMP_PIN A1  // PC1 / Pin 24: entrada analógica del sensor LM35
 #define SC1 A2       // PC2 / Pin 25: salida hacia pin 1 de SC1
 #define SC2 A3       // PC3 / Pin 26: salida hacia pin 1 de SC2
@@ -54,8 +31,8 @@ unsigned long previousMillis = 0;
 const long blinkInterval = 500;
 bool ledState = LOW;
 
-// Objeto para comunicación serial en el puente físico (RX=BLINK_IN, TX=BLINK_OUT)
-SoftwareSerial bridgeSerial(BLINK_IN, BLINK_OUT);
+// Objeto para comunicación serial con dispositivo externo (RX=9, TX=10)
+SoftwareSerial extSerial(HC12_RX, RS485_TX);
 
 // ==== FUNCIONES DE UTILIDAD PARA EEPROM ====
 void writeByte(uint16_t memAddr, byte data) {
@@ -131,13 +108,25 @@ void demo() {
 void setup() {
   Serial.begin(115200);
   Wire.begin();
-  bridgeSerial.begin(9600);  // Inicializa puerto de prueba del puente
 
+  extSerial.begin(9600);
+  extSerial.setTimeout(150);  // Evita bloqueos largos al leer cadenas
+
+  // Configuración de pines de hardware
   pinMode(PCB_LED, OUTPUT);
   pinMode(HC12_LED, OUTPUT);
   pinMode(RELAY1, OUTPUT);
   pinMode(RELAY2, OUTPUT);
   pinMode(RELAY3, OUTPUT);
+
+  pinMode(RST_BLINK, OUTPUT);
+  pinMode(SC1, OUTPUT);
+  pinMode(SC2, OUTPUT);
+
+  pinMode(BLINK_OUT, OUTPUT);
+  pinMode(BLINK_IN, INPUT);
+
+  pinMode(HC12_RX, INPUT_PULLUP);
 
   JsonDocument startupDoc;
   startupDoc["status"] = "ready";
@@ -147,6 +136,70 @@ void setup() {
 }
 
 void loop() {
+  // 1. ESCUCHAR DISPOSITIVO EXTERNO (RX/TX en pines 9 y 10)
+  if (extSerial.available()) {
+    String incomingData = extSerial.readStringUntil('\n');
+
+    // Filtro contra ruido espurio (\u0000 o basura)
+    String cleanData = "";
+    for (int i = 0; i < incomingData.length(); i++) {
+      char c = incomingData.charAt(i);
+      // Solo aceptamos caracteres ASCII imprimibles (esto incluye llaves y comillas de JSON)
+      if (c >= 32 && c <= 126) {
+        cleanData += c;
+      }
+    }
+
+    cleanData.trim();
+
+    // Solo procesamos si quedó una cadena válida
+    if (cleanData.length() > 0) {
+      JsonDocument extDoc;        // Documento que enviaremos a la PC
+      JsonDocument receivedJSON;  // Documento para decodificar lo que llegó del transmisor
+
+      // Intentamos parsear la cadena limpia como JSON
+      DeserializationError error = deserializeJson(receivedJSON, cleanData);
+
+      if (!error) {
+        // Parseo exitoso. Asignamos el JSON recibido dentro de nuestro JSON de respuesta.
+        // ArduinoJson es inteligente y anidará el objeto automáticamente.
+        extDoc["event"] = "ext_data_received";
+        extDoc["data"] = receivedJSON;
+
+        int opc = 0;
+        if (receivedJSON["msg"] == "blink") opc = 1;
+
+        switch (opc) {
+          case 1:
+            {
+              int delay_ms = 50;
+              for (int i = 0; i < 10; i++) {
+                digitalWrite(HC12_LED, HIGH);
+                delay(delay_ms);
+                digitalWrite(HC12_LED, LOW);
+                delay(delay_ms);
+              }
+              break;
+            }
+
+          default:
+            extDoc["error_switch"] = "invalid option";
+        }
+
+
+      } else {
+        // Si lo que llegó no era un JSON válido (basura o texto plano)
+        extDoc["event"] = "ext_data_error";
+        extDoc["error"] = error.c_str();
+        extDoc["raw_data"] = cleanData;
+      }
+
+      serializeJson(extDoc, Serial);
+      Serial.println();
+    }
+  }
+
+  // 2. ESCUCHAR COMANDOS DEL HOST (UART Nativo)
   if (Serial.available()) {
     String inJSON = Serial.readStringUntil('\n');
     JsonDocument receiveJSON;
@@ -161,6 +214,7 @@ void loop() {
     } else {
       String Function = receiveJSON["Function"];
       int noRelay = receiveJSON["noRelay"] | 0;
+      String gpio_blink = receiveJSON["gpio"] | "";  // Se lee como String ("6", "A2", "A3")
       int opc = 0;
 
       if (Function == "ping") opc = 1;              // {"Function":"ping"}
@@ -169,6 +223,10 @@ void loop() {
       else if (Function == "offRelay") opc = 4;     // {"Function":"offRelay", "noRelay":1}
       else if (Function == "eeprom") opc = 5;       // {"Function":"eeprom"}
       else if (Function == "test_bridge") opc = 6;  // {"Function":"test_bridge"}
+      else if (Function == "blink_on") opc = 7;     // {"Function":"blink_on", "gpio": "A2"}
+      else if (Function == "blink_off") opc = 8;    // {"Function":"blink_off", "gpio": "A2"}
+      else if (Function == "send_ext") opc = 9;     // {"Function":"send_ext", "data": "Hola"}
+      else if (Function == "read_temp") opc = 10;   // {"Function":"read_temp"}
 
       switch (opc) {
         case 1:
@@ -250,36 +308,88 @@ void loop() {
             break;
           }
 
-        case 6:  // TEST BRIDGE: Valida envío/recepción de cadena
+        case 6:  // TEST BRIDGE DIGITAL: Comprueba lógica ALTA y BAJA
           {
             sendJSON["Function"] = "test_bridge";
-            String testString = "ENERSI_TEST_OK";
 
-            // Limpia el buffer de entrada por si había basura
-            while (bridgeSerial.available()) bridgeSerial.read();
+            digitalWrite(BLINK_OUT, HIGH);
+            delay(5);
+            bool testHigh = digitalRead(BLINK_IN);
 
-            // Envía la cadena por BLINK_OUT (TX)
-            bridgeSerial.println(testString);
+            digitalWrite(BLINK_OUT, LOW);
+            delay(5);
+            bool testLow = digitalRead(BLINK_IN);
 
-            // Espera breve para asegurar que los bits hayan viajado a BLINK_IN (RX)
-            delay(50);
-
-            String receivedString = "";
-            while (bridgeSerial.available()) {
-              receivedString += (char)bridgeSerial.read();
-            }
-
-            // Limpiamos los caracteres de salto de línea de println (\r\n)
-            receivedString.trim();
-
-            // Verificamos coincidencia
-            if (receivedString == testString) {
+            if (testHigh == HIGH && testLow == LOW) {
               sendJSON["status"] = "OK";
-              sendJSON["message"] = "Cadena puenteada correctamente";
+              sendJSON["message"] = "Puente fisico detectado correctamente";
             } else {
               sendJSON["status"] = "FAIL";
-              sendJSON["error"] = "Error en el puente. Recibido: " + receivedString;
+              sendJSON["error"] = "Fallo en lectura logica del puente";
+              sendJSON["read_high"] = testHigh;
+              sendJSON["read_low"] = testLow;
             }
+            break;
+          }
+
+        case 7:
+        case 8:  // BLINK ON / BLINK OFF
+          {
+            sendJSON["Function"] = Function;
+            sendJSON["gpio"] = gpio_blink;
+
+            uint8_t state = (opc == 7) ? HIGH : LOW;
+            bool validGpio = true;
+
+            if (gpio_blink == "6") digitalWrite(RST_BLINK, state);
+            else if (gpio_blink == "A2") digitalWrite(SC1, state);
+            else if (gpio_blink == "A3") digitalWrite(SC2, state);
+            else validGpio = false;
+
+            if (validGpio) {
+              sendJSON["status"] = "OK";
+              sendJSON["state"] = (opc == 7) ? "ON" : "OFF";
+            } else {
+              sendJSON["status"] = "FAIL";
+              sendJSON["error"] = "Invalid GPIO";
+            }
+            break;
+          }
+
+        case 9:  // SEND EXT: Envia cadena al dispositivo externo
+          {
+            String dataToSend = receiveJSON["data"] | "";
+            sendJSON["Function"] = "send_ext";
+
+            if (dataToSend.length() > 0) {
+              extSerial.println(dataToSend);
+              sendJSON["status"] = "OK";
+              sendJSON["sent"] = dataToSend;
+            } else {
+              sendJSON["status"] = "FAIL";
+              sendJSON["error"] = "No data provided";
+            }
+            break;
+          }
+
+        case 10:  // READ TEMP: Lectura del LM35
+          {
+            sendJSON["Function"] = "read_temp";
+
+            // Promedio de 5 lecturas para estabilizar
+            int adcSum = 0;
+            for (int i = 0; i < 5; i++) {
+              adcSum += analogRead(TEMP_PIN);
+              delay(2);
+            }
+            float adcProm = adcSum / 5.0;
+
+            // Fórmula LM35: 10mV/°C. (V = ADC * 5V / 1024). Temp = V * 100.
+            float tempC = (adcProm * 500.0) / 1024.0;
+
+            sendJSON["status"] = "OK";
+            sendJSON["temp_celsius"] = tempC;
+            sendJSON["adc_raw"] = adcProm;
             break;
           }
 
