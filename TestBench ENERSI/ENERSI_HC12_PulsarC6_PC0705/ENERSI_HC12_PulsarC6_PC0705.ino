@@ -21,7 +21,8 @@ void serialDebug(String cmd) {
 void setup() {
   Serial.begin(115200);
   UART.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN);
-  delay(1000);
+  delay(1000);n
+  nn
 
   serialDebug("Hola pulsar C6");
 }

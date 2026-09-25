@@ -1951,7 +1951,7 @@ loop():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_base_attiny85_test/ENERSI_base_attiny85_test.ino:21
     // Leemos hasta el salto de línea
     String input = miSerial.readStringUntil('\n');
-    input.trim(); // Limpiamos espacios o retornos de carro (\r) extra
+    input.trim(); // Limpiamos espacios o retornos de c+arro (\r) extra
 
     if (input == "ping") {
  716:	89 2b       	or	r24, r25

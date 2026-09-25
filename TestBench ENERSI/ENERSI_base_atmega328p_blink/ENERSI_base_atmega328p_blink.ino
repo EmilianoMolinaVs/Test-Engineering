@@ -356,6 +356,7 @@ void loop() {
 
           case 9:
             {
+              // El envío está limitado a 16 caracteres por cuestiones de memoria
               // sendJSON["Function"] = "send_ext";
 
               if (receiveJSON.containsKey("data")) {
