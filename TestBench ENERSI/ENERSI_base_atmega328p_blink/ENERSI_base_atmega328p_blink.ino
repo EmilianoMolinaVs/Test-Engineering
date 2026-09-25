@@ -213,13 +213,13 @@ void loop() {
 
         if (receiveJSON["Function"] == "ping") opc = 1;              // {"Function":"ping"}
         else if (receiveJSON["Function"] == "scan_i2c") opc = 2;     // {"Function":"scan_i2c"}
-        else if (receiveJSON["Function"] == "onRelay") opc = 3;      // {"Function":"onRelay"}
-        else if (receiveJSON["Function"] == "offRelay") opc = 4;     // {"Function":"offRelay"}
+        else if (receiveJSON["Function"] == "onRelay") opc = 3;      // {"Function":"onRelay", "noRelay":1}
+        else if (receiveJSON["Function"] == "offRelay") opc = 4;     // {"Function":"offRelay", "noRelay":1}
         else if (receiveJSON["Function"] == "eeprom") opc = 5;       // {"Function":"eeprom"}
         else if (receiveJSON["Function"] == "test_bridge") opc = 6;  // {"Function":"test_bridge"}
         else if (receiveJSON["Function"] == "blink_on") opc = 7;     // {"Function":"blink_on"}
         else if (receiveJSON["Function"] == "blink_off") opc = 8;    // {"Function":"blink_off"}
-        else if (receiveJSON["Function"] == "send_ext") opc = 9;     // {"Function":"send_ext"}
+        else if (receiveJSON["Function"] == "send_ext") opc = 9;     // {"Function":"send_ext", "data":"Hola"}
         else if (receiveJSON["Function"] == "read_temp") opc = 10;   // {"Function":"read_temp"}
 
         switch (opc) {
@@ -309,11 +309,11 @@ void loop() {
               //sendJSON["Function"] = "test_bridge";
 
               digitalWrite(BLINK_OUT, HIGH);
-              delay(5);
+              delay(50);
               bool testHigh = digitalRead(BLINK_IN);
 
               digitalWrite(BLINK_OUT, LOW);
-              delay(5);
+              delay(50);
               bool testLow = digitalRead(BLINK_IN);
 
               if (testHigh == HIGH && testLow == LOW) {
@@ -384,7 +384,7 @@ void loop() {
               float adcProm = adcSum / 5.0;
               float tempC = (adcProm * 500.0) / 1024.0;
 
-              sendJSON["status"] = "OK";
+              //sendJSON["status"] = "OK";
               sendJSON["temp_celsius"] = tempC;
               sendJSON["adc_raw"] = adcProm;
               break;
