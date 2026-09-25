@@ -218,7 +218,7 @@ void loop() {
         else if (receiveJSON["Function"] == "offRelay") opc = 4;     // {"Function":"offRelay", "noRelay":1}
         else if (receiveJSON["Function"] == "eeprom") opc = 5;       // {"Function":"eeprom"}
         else if (receiveJSON["Function"] == "test_bridge") opc = 6;  // {"Function":"test_bridge"}
-        else if (receiveJSON["Function"] == "blink_on") opc = 7;     // {"Function":"blink_on", "gpio":A2}
+        else if (receiveJSON["Function"] == "blink_on") opc = 7;     // {"Function":"blink_on", "gpio":"A2"}
         else if (receiveJSON["Function"] == "blink_off") opc = 8;    // {"Function":"blink_off"}
         else if (receiveJSON["Function"] == "send_ext") opc = 9;     // {"Function":"send_ext", "data":"Hola"}
         else if (receiveJSON["Function"] == "read_temp") opc = 10;   // {"Function":"read_temp"}
@@ -434,6 +434,7 @@ void loop() {
               float volts = (adcProm * 5.0) / 1024.0;
 
               //sendJSON["status"] = "OK";
+              if (volts > 2.1 && volts < 2.7) sendJSON["Result"] = "OK";
               sendJSON["volts"] = volts;
               sendJSON["adc_raw"] = adcProm;
               break;
