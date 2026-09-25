@@ -320,24 +320,39 @@ void loop() {
 
           case 6:
             {
-              //sendJSON["Function"] = "test_bridge";
+              // Trama de 8 bits a enviar (0xA5 = 10100101 en binario)
+              uint8_t testFrame = 0xA5;
+              uint8_t readFrame = 0x00;
+              bool success = true;
 
-              digitalWrite(BLINK_OUT, HIGH);
-              delay(50);
-              bool testHigh = digitalRead(BLINK_IN);
+              for (int i = 0; i < 8; i++) {
+                // Extraer el bit correspondiente (del 0 al 7)
+                bool bitToSend = bitRead(testFrame, i);
 
+                digitalWrite(BLINK_OUT, bitToSend);
+                delay(10);  // Retardo breve para estabilizar la capacitancia del cable/pista
+
+                bool bitReadVal = digitalRead(BLINK_IN);
+                bitWrite(readFrame, i, bitReadVal);
+
+                // Si hay una discrepancia, la prueba falla inmediatamente
+                if (bitReadVal != bitToSend) {
+                  success = false;
+                  break;
+                }
+              }
+
+              // Retornar el pin de salida a un estado seguro
               digitalWrite(BLINK_OUT, LOW);
-              delay(50);
-              bool testLow = digitalRead(BLINK_IN);
 
-              if (testHigh == HIGH && testLow == LOW) {
+              if (success) {
                 sendJSON["Result"] = "OK";
-                // sendJSON["message"] = "Puente fisico detectado correctamente";
               } else {
                 sendJSON["status"] = "FAIL";
-                //  sendJSON["error"] = "Fallo en lectura logica del puente";
-                //  sendJSON["read_high"] = testHigh;
-                //sendJSON["read_low"] = testLow;
+                // Keys opcionales por si necesitas debugear qué falló exactamente:
+                // sendJSON["error"] = "Trama corrupta o linea abierta";
+                // sendJSON["expected"] = testFrame;
+                // sendJSON["read"] = readFrame;
               }
               break;
             }
