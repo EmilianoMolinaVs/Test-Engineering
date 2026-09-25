@@ -211,23 +211,21 @@ void loop() {
       } else {
         int opc = 0;
 
-        // Evaluamos DIRECTO del JSON. ¡El ahorro de RAM es masivo!
-        if (Function == "ping") opc = 1;              // {"Function":"ping"}
-        else if (Function == "scan_i2c") opc = 2;     // {"Function":"scan_i2c"}
-        else if (Function == "onRelay") opc = 3;      // {"Function":"onRelay", "noRelay":1}
-        else if (Function == "offRelay") opc = 4;     // {"Function":"offRelay", "noRelay":1}
-        else if (Function == "eeprom") opc = 5;       // {"Function":"eeprom"}
-        else if (Function == "test_bridge") opc = 6;  // {"Function":"test_bridge"}
-        else if (Function == "blink_on") opc = 7;     // {"Function":"blink_on", "gpio": "A2"}
-        else if (Function == "blink_off") opc = 8;    // {"Function":"blink_off", "gpio": "A2"}
-        else if (Function == "send_ext") opc = 9;     // {"Function":"send_ext", "data": "Hola"}
-        else if (Function == "read_temp") opc = 10;   // {"Function":"read_temp"}
-
+        if (receiveJSON["Function"] == "ping") opc = 1;              // {"Function":"ping"}
+        else if (receiveJSON["Function"] == "scan_i2c") opc = 2;     // {"Function":"scan_i2c"}
+        else if (receiveJSON["Function"] == "onRelay") opc = 3;      // {"Function":"onRelay"}
+        else if (receiveJSON["Function"] == "offRelay") opc = 4;     // {"Function":"offRelay"}
+        else if (receiveJSON["Function"] == "eeprom") opc = 5;       // {"Function":"eeprom"}
+        else if (receiveJSON["Function"] == "test_bridge") opc = 6;  // {"Function":"test_bridge"}
+        else if (receiveJSON["Function"] == "blink_on") opc = 7;     // {"Function":"blink_on"}
+        else if (receiveJSON["Function"] == "blink_off") opc = 8;    // {"Function":"blink_off"}
+        else if (receiveJSON["Function"] == "send_ext") opc = 9;     // {"Function":"send_ext"}
+        else if (receiveJSON["Function"] == "read_temp") opc = 10;   // {"Function":"read_temp"}
 
         switch (opc) {
           case 1:
-            sendJSON["Function"] = "ping";
-            sendJSON["status"] = "OK";
+            // sendJSON["Function"] = "ping";
+            // sendJSON["status"] = "OK";
             sendJSON["ping"] = "pong";
             break;
 
