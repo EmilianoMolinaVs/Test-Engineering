@@ -280,19 +280,31 @@ void loop() {
             {
               // sendJSON["Function"] = "eeprom";
               uint16_t testAddr = 10;
-              writeByte(testAddr, 'Z');
+              char charToWrite = 'Z';
+              writeByte(testAddr, charToWrite);
               byte c = readByte(testAddr);
 
               const char* msg = "Hola AT24C256!.";
+              size_t msgLen = strlen(msg);
               writeString(15, msg);
-              char buf[64];
-              readData(15, buf, strlen(msg));
 
-              sendJSON["status"] = "OK";
+              char buf[64];
+              readData(15, buf, msgLen);
+              buf[msgLen] = '\0';  // Asegura el terminador nulo para comparar y serializar correctamente
+
+              // Validación estricta de coherencia en ambas pruebas
+              bool byteMatch = ((char)c == charToWrite);
+              bool stringMatch = (strcmp(buf, msg) == 0);
+
+              if (byteMatch && stringMatch) {
+                sendJSON["Result"] = "OK";
+              } else {
+                sendJSON["state"] = "ERROR";
+              }
+
               JsonObject byteTest = sendJSON["byte_test"].to<JsonObject>();
               byteTest["address"] = testAddr;
 
-              // Se convierte el caracter 'c' sin usar String
               char c_str[2] = { (char)c, '\0' };
               byteTest["written"] = "Z";
               byteTest["read"] = c_str;
