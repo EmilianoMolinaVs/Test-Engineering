@@ -21,6 +21,7 @@ atmega328p en la placa base de ENERSI
 #define RS485_TX 9   // PB1 / Pin 15: RO del módulo RS485 montado (RX Ext)
 #define HC12_RX 10   // PB2 / Pin 16: TX del módulo HC12, receptor inalambrico (TX Ext)
 #define PCB_LED 13   // PB5 / Pin 19: SCK de programación / blink sobre PCB base
+#define DIV_PIN A0   // PC0 / Pin 23: Pin analógico en divisor de tensión
 #define TEMP_PIN A1  // PC1 / Pin 24: entrada analógica del sensor LM35
 #define SC1 A2       // PC2 / Pin 25: salida hacia pin 1 de SC1
 #define SC2 A3       // PC3 / Pin 26: salida hacia pin 1 de SC2
@@ -217,10 +218,11 @@ void loop() {
         else if (receiveJSON["Function"] == "offRelay") opc = 4;     // {"Function":"offRelay", "noRelay":1}
         else if (receiveJSON["Function"] == "eeprom") opc = 5;       // {"Function":"eeprom"}
         else if (receiveJSON["Function"] == "test_bridge") opc = 6;  // {"Function":"test_bridge"}
-        else if (receiveJSON["Function"] == "blink_on") opc = 7;     // {"Function":"blink_on"}
+        else if (receiveJSON["Function"] == "blink_on") opc = 7;     // {"Function":"blink_on", "gpio":A2}
         else if (receiveJSON["Function"] == "blink_off") opc = 8;    // {"Function":"blink_off"}
         else if (receiveJSON["Function"] == "send_ext") opc = 9;     // {"Function":"send_ext", "data":"Hola"}
         else if (receiveJSON["Function"] == "read_temp") opc = 10;   // {"Function":"read_temp"}
+        else if (receiveJSON["Function"] == "volt_div") opc = 11;    // {"Function":"volt_div"}
 
         switch (opc) {
           case 1:
@@ -242,7 +244,7 @@ void loop() {
                 }
               }
               if (devices.size() > 0) {
-                sendJSON["status"] = "OK";
+                sendJSON["Result"] = "OK";
                 sendJSON["count"] = devices.size();
               } else {
                 sendJSON["status"] = "FAIL";
@@ -329,7 +331,7 @@ void loop() {
               bool testLow = digitalRead(BLINK_IN);
 
               if (testHigh == HIGH && testLow == LOW) {
-                sendJSON["status"] = "OK";
+                sendJSON["Result"] = "OK";
                 // sendJSON["message"] = "Puente fisico detectado correctamente";
               } else {
                 sendJSON["status"] = "FAIL";
@@ -366,17 +368,21 @@ void loop() {
 
           case 9:
             {
-              // El envío está limitado a 16 caracteres por cuestiones de memoria
-              // sendJSON["Function"] = "send_ext";
-
+              // Enviar datos al puerto externo
               if (receiveJSON.containsKey("data")) {
-                JsonObject outExtJSON = sendJSON["sent_to_ext"].to<JsonObject>();
-                outExtJSON["msg"] = receiveJSON["data"];
 
-                serializeJson(outExtJSON, extSerial);
+                StaticJsonDocument<48> localDoc;
+
+                // 2. Asignamos el dato
+                localDoc["msg"] = receiveJSON["data"];
+
+                // 3. Serializamos directamente desde el documento local
+                serializeJson(localDoc, extSerial);
                 extSerial.println();
 
+                // 4. Confirmamos el éxito en el JSON principal (sin anidar más objetos)
                 sendJSON["status"] = "OK";
+
               } else {
                 sendJSON["status"] = "FAIL";
                 sendJSON["error"] = "La clave 'data' no existe en el comando";
@@ -389,16 +395,33 @@ void loop() {
               // sendJSON["Function"] = "read_temp";
 
               int adcSum = 0;
-              for (int i = 0; i < 5; i++) {
+              for (int i = 0; i < 10; i++) {
                 adcSum += analogRead(TEMP_PIN);
-                delay(2);
+                delay(50);
               }
-              float adcProm = adcSum / 5.0;
+              float adcProm = adcSum / 10.0;
               float tempC = (adcProm * 500.0) / 1024.0;
 
               //sendJSON["status"] = "OK";
-              sendJSON["temp_celsius"] = tempC;
+              sendJSON["temp_c"] = tempC;
               sendJSON["adc_raw"] = adcProm;
+              break;
+            }
+
+          case 11:
+            {
+              int adcSum = 0;
+              for (int i = 0; i < 10; i++) {
+                adcSum += analogRead(DIV_PIN);
+                delay(50);
+              }
+              float adcProm = adcSum / 10.0;
+              float volts = (adcProm * 5.0) / 1024.0;
+
+              //sendJSON["status"] = "OK";
+              sendJSON["volts"] = volts;
+              sendJSON["adc_raw"] = adcProm;
+              break;
               break;
             }
 
