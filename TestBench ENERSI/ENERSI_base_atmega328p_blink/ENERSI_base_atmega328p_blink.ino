@@ -331,7 +331,7 @@ void loop() {
           case 7:
           case 8:
             {
-              sendJSON["Function"] = receiveJSON["Function"];
+              // sendJSON["Function"] = receiveJSON["Function"];
               sendJSON["gpio"] = receiveJSON["gpio"];
 
               uint8_t state = (opc == 7) ? HIGH : LOW;
