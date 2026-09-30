@@ -14,6 +14,8 @@ StaticJsonDocument<512> sendJSON;     ///< Documento JSON para armar respuestas
 int relay[] = { D0, D1, 9, 15, 19, 20, 21, 18 };
 int noRelays = sizeof(relay) / sizeof(relay[0]);
 
+int enable[] = { 7, 2 };
+
 void setup() {
 
   // ==== INICIALIZACIONES ====
@@ -26,13 +28,17 @@ void setup() {
   serializeJson(doc, Serial);
   Serial.println();
 
-
   // ==== ENTRADAS Y SALIDAS DEL ESP32 ====
   for (int i = 0; i < noRelays; i++) {
     pinMode(relay[i], OUTPUT);
     delay(10);
     digitalWrite(relay[i], HIGH);
   }
+
+  pinMode(enable[0], OUTPUT);
+  pinMode(enable[1], OUTPUT);
+  digitalWrite(enable[0], LOW);
+  digitalWrite(enable[1], LOW);
 }
 
 void loop() {
@@ -51,12 +57,15 @@ void loop() {
     } else {
       String Function = receiveJSON["Function"];
       int noRelay = receiveJSON["noRelay"] | 0;
+      int noEn = receiveJSON["noEn"] | 0;
       int opc = 0;
 
 
-      if (Function == "ping") opc = 1;           // {"Function":"ping"}
-      else if (Function == "onRelay") opc = 2;   // {"Function":"onRelay", "noRelay":1}
-      else if (Function == "offRelay") opc = 3;  // {"Function":"offRelay", "noRelay":1}
+      if (Function == "ping") opc = 1;            // {"Function":"ping"}
+      else if (Function == "onRelay") opc = 2;    // {"Function":"onRelay", "noRelay":1}
+      else if (Function == "offRelay") opc = 3;   // {"Function":"offRelay", "noRelay":1}
+      else if (Function == "onEnable") opc = 4;   // {"Function":"onEnable", "noEn":0}
+      else if (Function == "offEnable") opc = 5;  // {"Function":"offEnable", "noEn":0}
 
       switch (opc) {
         case 1:
@@ -78,7 +87,11 @@ void loop() {
           }
 
         case 4:
+        case 5:
           {
+            sendJSON.clear();
+            uint8_t state = (opc == 4) ? HIGH : LOW;
+            digitalWrite(enable[noEn], state);
             break;
           }
       }
