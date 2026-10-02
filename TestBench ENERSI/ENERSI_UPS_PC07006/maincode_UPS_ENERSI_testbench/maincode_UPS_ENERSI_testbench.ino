@@ -90,7 +90,7 @@ void loop() {
         case 5:
           {
             sendJSON.clear();
-            uint8_t state = (opc == 4) ? HIGH : LOW;
+            uint8_t state = (opc == 5) ? HIGH : LOW;
             digitalWrite(enable[noEn], state);
             break;
           }
