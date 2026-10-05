@@ -5,6 +5,7 @@
  * Dispositivo: ESP32-C6 / ESP32-H2
  * Función: Espera comandos JSON por puerto Serial, ejecuta rutinas de prueba 
  *          (como ráfagas CAN) y reporta los resultados de vuelta en formato JSON.
+ * El transmisor es el encargado de gestionar el TestBench con la interfaz de pruebas.
  * ==============================================================================
  */
 
