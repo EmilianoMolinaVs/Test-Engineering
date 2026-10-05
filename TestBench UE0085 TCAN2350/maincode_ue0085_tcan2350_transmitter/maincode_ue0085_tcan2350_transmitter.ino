@@ -1,10 +1,16 @@
- 
+/*
+
+Este firmware funciona como main 
+*/
+
+
+
 #include <DevLab_TCAN1051HVD.h>
 
 #define CAN_TX_PIN GPIO_NUM_6
 #define CAN_RX_PIN GPIO_NUM_7
 
-  DevLab_TCAN1051HVD can(CAN_TX_PIN, CAN_RX_PIN);
+DevLab_TCAN1051HVD can(CAN_TX_PIN, CAN_RX_PIN);
 
 uint8_t contador = 0;
 
