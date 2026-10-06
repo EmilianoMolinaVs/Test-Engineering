@@ -77,7 +77,6 @@ void loop() {
           break;
         }
 
-
       default:
         vrserial.print("invalid option: [");
         vrserial.print(input);
