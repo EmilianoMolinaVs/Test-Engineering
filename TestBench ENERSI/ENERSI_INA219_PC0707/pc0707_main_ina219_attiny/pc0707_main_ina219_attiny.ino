@@ -74,7 +74,6 @@ void loop() {
             vrserial.println("{\"Result\":\"OK\"}");
           }
 
-
           break;
         }
 
