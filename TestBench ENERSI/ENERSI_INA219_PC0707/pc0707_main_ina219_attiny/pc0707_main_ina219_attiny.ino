@@ -148,6 +148,8 @@ void loop() {
             vrserial.print("{\"voltage\":\"");
             vrserial.print(bus_V, 3);
             vrserial.println("\"}");
+
+            if (bus_V > 10) vrserial.println("{\"Result\":\"OK\"}");
           }
 
           break;

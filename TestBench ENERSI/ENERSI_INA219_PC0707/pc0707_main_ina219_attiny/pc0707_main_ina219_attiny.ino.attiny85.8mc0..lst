@@ -39,11 +39,11 @@ __trampolines_start():
 
 00000034 <__ctors_start>:
 __ctors_start():
-      34:	9a 06       	cpc	r9, r26
+      34:	a6 06       	cpc	r10, r22
 
 00000036 <__ctors_end>:
 __dtors_start():
-      36:	f2 06       	cpc	r15, r18
+      36:	fe 06       	cpc	r15, r30
 
 00000038 <__dtors_end>:
 __dtors_end():
@@ -86,7 +86,7 @@ __do_copy_data():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2411
       58:	b0 e0       	ldi	r27, 0x00	; 0
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2412
-      5a:	e6 e1       	ldi	r30, 0x16	; 22
+      5a:	e6 e3       	ldi	r30, 0x36	; 54
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2413
       5c:	f2 e1       	ldi	r31, 0x12	; 18
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2414
@@ -117,7 +117,7 @@ __do_global_ctors():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2480
       74:	fe 01       	movw	r30, r28
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2481
-      76:	b4 d8       	rcall	.-3736   	; 0xfffff1e0 <__eeprom_end+0xff7ef1e0>
+      76:	c4 d8       	rcall	.-3704   	; 0xfffff200 <__eeprom_end+0xff7ef200>
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2483
       78:	ca 31       	cpi	r28, 0x1A	; 26
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2484
@@ -125,7 +125,7 @@ __do_global_ctors():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2489
       7c:	d1 f7       	brne	.-12     	; 0x72 <__do_global_ctors+0x8>
       7e:	57 d4       	rcall	.+2222   	; 0x92e <main>
-      80:	be c8       	rjmp	.-3716   	; 0xfffff1fe <__eeprom_end+0xff7ef1fe>
+      80:	ce c8       	rjmp	.-3684   	; 0xfffff21e <__eeprom_end+0xff7ef21e>
 
 00000082 <__bad_interrupt>:
 __vector_1():
@@ -1461,12 +1461,12 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      4e6:	61 2f       	mov	r22, r17
      4e8:	a5 01       	movw	r20, r10
      4ea:	94 01       	movw	r18, r8
-     4ec:	57 d6       	rcall	.+3246   	; 0x119c <__udivmodsi4>
+     4ec:	67 d6       	rcall	.+3278   	; 0x11bc <__udivmodsi4>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:240
     char c = m - base * n;
      4ee:	80 2f       	mov	r24, r16
      4f0:	62 2f       	mov	r22, r18
-     4f2:	b5 d5       	rcall	.+2922   	; 0x105e <__mulqi3>
+     4f2:	c1 d5       	rcall	.+2946   	; 0x1076 <__mulqi3>
      4f4:	18 1b       	sub	r17, r24
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:241
     *--str = c < 10 ? c + '0' : c + 'A' - 10;
@@ -1587,7 +1587,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
 00000572 <readINA219BusVoltage(unsigned char)>:
 _Z20readINA219BusVoltageh():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:14
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:37
 
 // ==== CREACIÓN DE OBJETOS ====
 SoftwareSerial vrserial(3, 4);  // PINES RX y TX
@@ -1630,7 +1630,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
       BufferLength = BufferIndex;
      58e:	80 93 c2 01 	sts	0x01C2, r24	; 0x8001c2 <TwoWire::BufferLength>
 _Z20readINA219BusVoltageh():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:19
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:42
   Wire.beginTransmission(i2c_addr);
   Wire.write(0x02);
 
@@ -1640,13 +1640,13 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
      594:	a7 de       	rcall	.-690    	; 0x2e4 <TwoWire::endTransmission(unsigned char) [clone .constprop.24]>
      596:	88 23       	and	r24, r24
      598:	39 f0       	breq	.+14     	; 0x5a8 <readINA219BusVoltage(unsigned char)+0x36>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:20
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:43
     return -1.0;
      59a:	60 e0       	ldi	r22, 0x00	; 0
      59c:	70 e0       	ldi	r23, 0x00	; 0
      59e:	80 e8       	ldi	r24, 0x80	; 128
      5a0:	9f eb       	ldi	r25, 0xBF	; 191
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:30
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:53
     uint16_t value = (Wire.read() << 8) | Wire.read();
     value >>= 3;
     return value * 0.004;
@@ -1703,7 +1703,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      5ce:	81 50       	subi	r24, 0x01	; 1
      5d0:	99 0b       	sbc	r25, r25
 _Z20readINA219BusVoltageh():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:24
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:47
   if (Wire.endTransmission(false) != 0) {
     return -1.0;
   }
@@ -1712,7 +1712,7 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
   if (Wire.available() == 2) {
      5d2:	02 97       	sbiw	r24, 0x02	; 2
      5d4:	11 f7       	brne	.-60     	; 0x59a <readINA219BusVoltage(unsigned char)+0x28>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:25
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:48
     uint16_t value = (Wire.read() << 8) | Wire.read();
      5d6:	d5 dd       	rcall	.-1110   	; 0x182 <TwoWire::read() [clone .constprop.27]>
      5d8:	c8 2f       	mov	r28, r24
@@ -1721,23 +1721,23 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
      5de:	7c 2f       	mov	r23, r28
      5e0:	68 2b       	or	r22, r24
      5e2:	79 2b       	or	r23, r25
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:26
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:49
     value >>= 3;
      5e4:	83 e0       	ldi	r24, 0x03	; 3
      5e6:	76 95       	lsr	r23
      5e8:	67 95       	ror	r22
      5ea:	8a 95       	dec	r24
      5ec:	e1 f7       	brne	.-8      	; 0x5e6 <readINA219BusVoltage(unsigned char)+0x74>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:27
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:50
     return value * 0.004;
      5ee:	90 e0       	ldi	r25, 0x00	; 0
      5f0:	80 e0       	ldi	r24, 0x00	; 0
-     5f2:	18 d4       	rcall	.+2096   	; 0xe24 <__floatunsisf>
+     5f2:	24 d4       	rcall	.+2120   	; 0xe3c <__floatunsisf>
      5f4:	2f e6       	ldi	r18, 0x6F	; 111
      5f6:	32 e1       	ldi	r19, 0x12	; 18
      5f8:	43 e8       	ldi	r20, 0x83	; 131
      5fa:	5b e3       	ldi	r21, 0x3B	; 59
-     5fc:	74 d4       	rcall	.+2280   	; 0xee6 <__mulsf3>
+     5fc:	80 d4       	rcall	.+2304   	; 0xefe <__mulsf3>
      5fe:	d1 cf       	rjmp	.-94     	; 0x5a2 <readINA219BusVoltage(unsigned char)+0x30>
 requestFrom():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:435
@@ -2685,7 +2685,7 @@ int main(void)
      930:	df 93       	push	r29
      932:	cd b7       	in	r28, 0x3d	; 61
      934:	de b7       	in	r29, 0x3e	; 62
-     936:	60 97       	sbiw	r28, 0x10	; 16
+     936:	62 97       	sbiw	r28, 0x12	; 18
      938:	0f b6       	in	r0, 0x3f	; 63
      93a:	f8 94       	cli
      93c:	de bf       	out	0x3e, r29	; 62
@@ -2954,7 +2954,7 @@ void SoftwareSerial::setRxIntMsk(bool enable) {
      a3e:	89 2b       	or	r24, r25
      a40:	80 83       	st	Z, r24
 setup():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:36
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:59
 
 void setup() {
 
@@ -2966,7 +2966,7 @@ void setup() {
      a46:	80 e0       	ldi	r24, 0x00	; 0
      a48:	90 e0       	ldi	r25, 0x00	; 0
      a4a:	42 db       	rcall	.-2428   	; 0xd0 <delay>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:38
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:61
 
   while (vrserial.available() > 0) {  // Limpieza de buffer
      a4c:	8e e9       	ldi	r24, 0x9E	; 158
@@ -2975,7 +2975,7 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
      a52:	18 16       	cp	r1, r24
      a54:	19 06       	cpc	r1, r25
      a56:	24 f4       	brge	.+8      	; 0xa60 <main+0x132>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:39
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:62
     vrserial.read();
      a58:	8e e9       	ldi	r24, 0x9E	; 158
      a5a:	91 e0       	ldi	r25, 0x01	; 1
@@ -3033,7 +3033,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      a7c:	80 ef       	ldi	r24, 0xF0	; 240
      a7e:	8e b9       	out	0x0e, r24	; 14
 setup():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:44
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:67
   }
 
   // ==== Inicialización de BUS I2C ====
@@ -3044,7 +3044,7 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
      a84:	80 e0       	ldi	r24, 0x00	; 0
      a86:	90 e0       	ldi	r25, 0x00	; 0
      a88:	23 db       	rcall	.-2490   	; 0xd0 <delay>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:47
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:70
 
   // ---- Attiny inicializado correctamente... ----
   vrserial.println("Hi World...");
@@ -3059,20 +3059,21 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   void TwoWire::beginTransmission(uint8_t address) {
     // indicate that we are transmitting
     transmitting = 1;
-     a90:	01 e0       	ldi	r16, 0x01	; 1
+     a90:	33 24       	eor	r3, r3
+     a92:	33 94       	inc	r3
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:50
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:73
 }
 void loop() {
   if (vrserial.available()) {
-     a92:	8e e9       	ldi	r24, 0x9E	; 158
-     a94:	91 e0       	ldi	r25, 0x01	; 1
-     a96:	cb dc       	rcall	.-1642   	; 0x42e <SoftwareSerial::available()>
-     a98:	89 2b       	or	r24, r25
-     a9a:	d9 f3       	breq	.-10     	; 0xa92 <main+0x164>
-     a9c:	fe 01       	movw	r30, r28
-     a9e:	31 96       	adiw	r30, 0x01	; 1
-     aa0:	5f 01       	movw	r10, r30
+     a94:	8e e9       	ldi	r24, 0x9E	; 158
+     a96:	91 e0       	ldi	r25, 0x01	; 1
+     a98:	ca dc       	rcall	.-1644   	; 0x42e <SoftwareSerial::available()>
+     a9a:	89 2b       	or	r24, r25
+     a9c:	d9 f3       	breq	.-10     	; 0xa94 <main+0x166>
+     a9e:	fe 01       	movw	r30, r28
+     aa0:	31 96       	adiw	r30, 0x01	; 1
+     aa2:	6f 01       	movw	r12, r30
 main():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:243
 // terminates if length characters have been read, timeout, or if the terminator character  detected
@@ -3081,9 +3082,9 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 size_t Stream::readBytesUntil(char terminator, char *buffer, size_t length) {
   if (length < 1) return 0;
   size_t index = 0;
-     aa2:	f1 2c       	mov	r15, r1
-     aa4:	e1 2c       	mov	r14, r1
-     aa6:	6f 01       	movw	r12, r30
+     aa4:	10 e0       	ldi	r17, 0x00	; 0
+     aa6:	00 e0       	ldi	r16, 0x00	; 0
+     aa8:	7f 01       	movw	r14, r30
 millis():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:233
 #endif
@@ -3092,22 +3093,22 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   uint32_t millis() {
     uint32_t m;
     uint8_t oldSREG = SREG;
-     aa8:	2f b7       	in	r18, 0x3f	; 63
+     aaa:	2f b7       	in	r18, 0x3f	; 63
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:237
 
     // disable interrupts while we read millis_timer_millis or we might get an
     // inconsistent value (e.g. in the middle of a write to millis_timer_millis)
     cli();
-     aaa:	f8 94       	cli
+     aac:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:238
     m = millis_timer_millis;
-     aac:	80 91 96 01 	lds	r24, 0x0196	; 0x800196 <millis_timer_millis>
-     ab0:	90 91 97 01 	lds	r25, 0x0197	; 0x800197 <millis_timer_millis+0x1>
-     ab4:	a0 91 98 01 	lds	r26, 0x0198	; 0x800198 <millis_timer_millis+0x2>
-     ab8:	b0 91 99 01 	lds	r27, 0x0199	; 0x800199 <millis_timer_millis+0x3>
+     aae:	80 91 96 01 	lds	r24, 0x0196	; 0x800196 <millis_timer_millis>
+     ab2:	90 91 97 01 	lds	r25, 0x0197	; 0x800197 <millis_timer_millis+0x1>
+     ab6:	a0 91 98 01 	lds	r26, 0x0198	; 0x800198 <millis_timer_millis+0x2>
+     aba:	b0 91 99 01 	lds	r27, 0x0199	; 0x800199 <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:239
     SREG = oldSREG;
-     abc:	2f bf       	out	0x3f, r18	; 63
+     abe:	2f bf       	out	0x3f, r18	; 63
 timedRead():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:34
 
@@ -3116,20 +3117,20 @@ int Stream::timedRead() {
   #if !defined(DISABLEMILLIS)
   int c;
   _startMillis = millis();
-     abe:	80 93 a6 01 	sts	0x01A6, r24	; 0x8001a6 <vrserial+0x8>
-     ac2:	90 93 a7 01 	sts	0x01A7, r25	; 0x8001a7 <vrserial+0x9>
-     ac6:	a0 93 a8 01 	sts	0x01A8, r26	; 0x8001a8 <vrserial+0xa>
-     aca:	b0 93 a9 01 	sts	0x01A9, r27	; 0x8001a9 <vrserial+0xb>
+     ac0:	80 93 a6 01 	sts	0x01A6, r24	; 0x8001a6 <vrserial+0x8>
+     ac4:	90 93 a7 01 	sts	0x01A7, r25	; 0x8001a7 <vrserial+0x9>
+     ac8:	a0 93 a8 01 	sts	0x01A8, r26	; 0x8001a8 <vrserial+0xa>
+     acc:	b0 93 a9 01 	sts	0x01A9, r27	; 0x8001a9 <vrserial+0xb>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:36
   do {
     c = read();
-     ace:	8e e9       	ldi	r24, 0x9E	; 158
-     ad0:	91 e0       	ldi	r25, 0x01	; 1
-     ad2:	bf dc       	rcall	.-1666   	; 0x452 <SoftwareSerial::read()>
+     ad0:	8e e9       	ldi	r24, 0x9E	; 158
+     ad2:	91 e0       	ldi	r25, 0x01	; 1
+     ad4:	be dc       	rcall	.-1668   	; 0x452 <SoftwareSerial::read()>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:37
     if (c >= 0) return c;
-     ad4:	97 ff       	sbrs	r25, 7
-     ad6:	18 c1       	rjmp	.+560    	; 0xd08 <main+0x3da>
+     ad6:	97 ff       	sbrs	r25, 7
+     ad8:	25 c1       	rjmp	.+586    	; 0xd24 <main+0x3f6>
 millis():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:233
 #endif
@@ -3138,105 +3139,104 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   uint32_t millis() {
     uint32_t m;
     uint8_t oldSREG = SREG;
-     ad8:	2f b7       	in	r18, 0x3f	; 63
+     ada:	2f b7       	in	r18, 0x3f	; 63
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:237
 
     // disable interrupts while we read millis_timer_millis or we might get an
     // inconsistent value (e.g. in the middle of a write to millis_timer_millis)
     cli();
-     ada:	f8 94       	cli
+     adc:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:238
     m = millis_timer_millis;
-     adc:	80 91 96 01 	lds	r24, 0x0196	; 0x800196 <millis_timer_millis>
-     ae0:	90 91 97 01 	lds	r25, 0x0197	; 0x800197 <millis_timer_millis+0x1>
-     ae4:	a0 91 98 01 	lds	r26, 0x0198	; 0x800198 <millis_timer_millis+0x2>
-     ae8:	b0 91 99 01 	lds	r27, 0x0199	; 0x800199 <millis_timer_millis+0x3>
+     ade:	80 91 96 01 	lds	r24, 0x0196	; 0x800196 <millis_timer_millis>
+     ae2:	90 91 97 01 	lds	r25, 0x0197	; 0x800197 <millis_timer_millis+0x1>
+     ae6:	a0 91 98 01 	lds	r26, 0x0198	; 0x800198 <millis_timer_millis+0x2>
+     aea:	b0 91 99 01 	lds	r27, 0x0199	; 0x800199 <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:239
     SREG = oldSREG;
-     aec:	2f bf       	out	0x3f, r18	; 63
+     aee:	2f bf       	out	0x3f, r18	; 63
 timedRead():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:38
   } while(millis() - _startMillis < _timeout);
-     aee:	40 91 a6 01 	lds	r20, 0x01A6	; 0x8001a6 <vrserial+0x8>
-     af2:	50 91 a7 01 	lds	r21, 0x01A7	; 0x8001a7 <vrserial+0x9>
-     af6:	60 91 a8 01 	lds	r22, 0x01A8	; 0x8001a8 <vrserial+0xa>
-     afa:	70 91 a9 01 	lds	r23, 0x01A9	; 0x8001a9 <vrserial+0xb>
-     afe:	84 1b       	sub	r24, r20
-     b00:	95 0b       	sbc	r25, r21
-     b02:	a6 0b       	sbc	r26, r22
-     b04:	b7 0b       	sbc	r27, r23
-     b06:	40 91 a2 01 	lds	r20, 0x01A2	; 0x8001a2 <vrserial+0x4>
-     b0a:	50 91 a3 01 	lds	r21, 0x01A3	; 0x8001a3 <vrserial+0x5>
-     b0e:	60 91 a4 01 	lds	r22, 0x01A4	; 0x8001a4 <vrserial+0x6>
-     b12:	70 91 a5 01 	lds	r23, 0x01A5	; 0x8001a5 <vrserial+0x7>
-     b16:	84 17       	cp	r24, r20
-     b18:	95 07       	cpc	r25, r21
-     b1a:	a6 07       	cpc	r26, r22
-     b1c:	b7 07       	cpc	r27, r23
-     b1e:	b8 f2       	brcs	.-82     	; 0xace <main+0x1a0>
+     af0:	40 91 a6 01 	lds	r20, 0x01A6	; 0x8001a6 <vrserial+0x8>
+     af4:	50 91 a7 01 	lds	r21, 0x01A7	; 0x8001a7 <vrserial+0x9>
+     af8:	60 91 a8 01 	lds	r22, 0x01A8	; 0x8001a8 <vrserial+0xa>
+     afc:	70 91 a9 01 	lds	r23, 0x01A9	; 0x8001a9 <vrserial+0xb>
+     b00:	84 1b       	sub	r24, r20
+     b02:	95 0b       	sbc	r25, r21
+     b04:	a6 0b       	sbc	r26, r22
+     b06:	b7 0b       	sbc	r27, r23
+     b08:	40 91 a2 01 	lds	r20, 0x01A2	; 0x8001a2 <vrserial+0x4>
+     b0c:	50 91 a3 01 	lds	r21, 0x01A3	; 0x8001a3 <vrserial+0x5>
+     b10:	60 91 a4 01 	lds	r22, 0x01A4	; 0x8001a4 <vrserial+0x6>
+     b14:	70 91 a5 01 	lds	r23, 0x01A5	; 0x8001a5 <vrserial+0x7>
+     b18:	84 17       	cp	r24, r20
+     b1a:	95 07       	cpc	r25, r21
+     b1c:	a6 07       	cpc	r26, r22
+     b1e:	b7 07       	cpc	r27, r23
+     b20:	b8 f2       	brcs	.-82     	; 0xad0 <main+0x1a2>
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:54
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:77
 
     char input[15];
     int len = vrserial.readBytesUntil('\n', input, sizeof(input) - 1);
     input[len] = '\0';  // Terminar el string de C
-     b20:	f6 01       	movw	r30, r12
-     b22:	ee 0d       	add	r30, r14
-     b24:	ff 1d       	adc	r31, r15
-     b26:	10 82       	st	Z, r1
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:57
+     b22:	f7 01       	movw	r30, r14
+     b24:	e0 0f       	add	r30, r16
+     b26:	f1 1f       	adc	r31, r17
+     b28:	10 82       	st	Z, r1
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:80
 
     // Limpiar retorno de carro '\r' si tu monitor serial lo envía (equivalente a trim)
     if (len > 0 && input[len - 1] == '\r') {
-     b28:	e1 14       	cp	r14, r1
-     b2a:	f1 04       	cpc	r15, r1
-     b2c:	21 f4       	brne	.+8      	; 0xb36 <main+0x208>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:64
+     b2a:	01 15       	cp	r16, r1
+     b2c:	11 05       	cpc	r17, r1
+     b2e:	21 f4       	brne	.+8      	; 0xb38 <main+0x20a>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:87
       len--;
     }
 
     // Filtro extra
     if (len == 0) {
       vrserial.println("mensaje vaciooOooooo");
-     b2e:	8c e7       	ldi	r24, 0x7C	; 124
-     b30:	90 e0       	ldi	r25, 0x00	; 0
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:127
+     b30:	8c e7       	ldi	r24, 0x7C	; 124
+     b32:	90 e0       	ldi	r25, 0x00	; 0
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:146
+            bus_V = readINA219BusVoltage(0x44);
+          else
+            bus_V = readINA219BusVoltage(0x45);
+
           if (bus_V < 0) {
             vrserial.println("error");
-          } else {
-            vrserial.print("{\"voltage\":\"");
-            vrserial.print(bus_V, 3);
-            vrserial.println("\"}");
-     b32:	07 dd       	rcall	.-1522   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
-     b34:	ae cf       	rjmp	.-164    	; 0xa92 <main+0x164>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:57
+     b34:	06 dd       	rcall	.-1524   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
+     b36:	ae cf       	rjmp	.-164    	; 0xa94 <main+0x166>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:80
     char input[15];
     int len = vrserial.readBytesUntil('\n', input, sizeof(input) - 1);
     input[len] = '\0';  // Terminar el string de C
 
     // Limpiar retorno de carro '\r' si tu monitor serial lo envía (equivalente a trim)
     if (len > 0 && input[len - 1] == '\r') {
-     b36:	91 e0       	ldi	r25, 0x01	; 1
-     b38:	e9 1a       	sub	r14, r25
-     b3a:	f1 08       	sbc	r15, r1
-     b3c:	f6 01       	movw	r30, r12
-     b3e:	ee 0d       	add	r30, r14
-     b40:	ff 1d       	adc	r31, r15
+     b38:	01 50       	subi	r16, 0x01	; 1
+     b3a:	11 09       	sbc	r17, r1
+     b3c:	f7 01       	movw	r30, r14
+     b3e:	e0 0f       	add	r30, r16
+     b40:	f1 1f       	adc	r31, r17
      b42:	80 81       	ld	r24, Z
      b44:	8d 30       	cpi	r24, 0x0D	; 13
      b46:	19 f4       	brne	.+6      	; 0xb4e <main+0x220>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:58
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:81
       input[len - 1] = '\0';
      b48:	10 82       	st	Z, r1
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:63
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:86
       len--;
     }
 
     // Filtro extra
     if (len == 0) {
-     b4a:	ef 28       	or	r14, r15
-     b4c:	81 f3       	breq	.-32     	; 0xb2e <main+0x200>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:69
+     b4a:	01 2b       	or	r16, r17
+     b4c:	89 f3       	breq	.-30     	; 0xb30 <main+0x202>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:92
       vrserial.println("mensaje vaciooOooooo");
       return;
     }
@@ -3245,11 +3245,11 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
     if (strcmp(input, "ping") == 0) opc = 1;       // ping
      b4e:	61 e9       	ldi	r22, 0x91	; 145
      b50:	70 e0       	ldi	r23, 0x00	; 0
-     b52:	c6 01       	movw	r24, r12
-     b54:	4b d3       	rcall	.+1686   	; 0x11ec <strcmp>
+     b52:	c7 01       	movw	r24, r14
+     b54:	5b d3       	rcall	.+1718   	; 0x120c <strcmp>
      b56:	89 2b       	or	r24, r25
      b58:	19 f4       	brne	.+6      	; 0xb60 <main+0x232>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:78
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:101
     else if (strcmp(input, "u3") == 0) opc = 5;    // u3
     else if (strcmp(input, "u4") == 0) opc = 6;    // u4
 
@@ -3258,8 +3258,8 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
         vrserial.println("{\"ping\":\"pong\"}");
      b5a:	86 e9       	ldi	r24, 0x96	; 150
      b5c:	90 e0       	ldi	r25, 0x00	; 0
-     b5e:	e9 cf       	rjmp	.-46     	; 0xb32 <main+0x204>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:70
+     b5e:	ea cf       	rjmp	.-44     	; 0xb34 <main+0x206>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:93
       return;
     }
 
@@ -3268,54 +3268,54 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
     else if (strcmp(input, "scan") == 0) opc = 2;  // scan
      b60:	66 ea       	ldi	r22, 0xA6	; 166
      b62:	70 e0       	ldi	r23, 0x00	; 0
-     b64:	c6 01       	movw	r24, r12
-     b66:	42 d3       	rcall	.+1668   	; 0x11ec <strcmp>
+     b64:	c7 01       	movw	r24, r14
+     b66:	52 d3       	rcall	.+1700   	; 0x120c <strcmp>
      b68:	89 2b       	or	r24, r25
      b6a:	21 f1       	breq	.+72     	; 0xbb4 <main+0x286>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:71
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:94
     else if (strcmp(input, "u1") == 0) opc = 3;    // u1
      b6c:	6b ea       	ldi	r22, 0xAB	; 171
      b6e:	70 e0       	ldi	r23, 0x00	; 0
-     b70:	c6 01       	movw	r24, r12
-     b72:	3c d3       	rcall	.+1656   	; 0x11ec <strcmp>
+     b70:	c7 01       	movw	r24, r14
+     b72:	4c d3       	rcall	.+1688   	; 0x120c <strcmp>
      b74:	89 2b       	or	r24, r25
      b76:	09 f4       	brne	.+2      	; 0xb7a <main+0x24c>
-     b78:	69 c0       	rjmp	.+210    	; 0xc4c <main+0x31e>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:72
+     b78:	68 c0       	rjmp	.+208    	; 0xc4a <main+0x31c>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:95
     else if (strcmp(input, "u2") == 0) opc = 4;    // u2
      b7a:	6e ea       	ldi	r22, 0xAE	; 174
      b7c:	70 e0       	ldi	r23, 0x00	; 0
-     b7e:	c6 01       	movw	r24, r12
-     b80:	35 d3       	rcall	.+1642   	; 0x11ec <strcmp>
+     b7e:	c7 01       	movw	r24, r14
+     b80:	45 d3       	rcall	.+1674   	; 0x120c <strcmp>
      b82:	89 2b       	or	r24, r25
      b84:	09 f4       	brne	.+2      	; 0xb88 <main+0x25a>
-     b86:	d0 c0       	rjmp	.+416    	; 0xd28 <main+0x3fa>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:73
+     b86:	dc c0       	rjmp	.+440    	; 0xd40 <main+0x412>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:96
     else if (strcmp(input, "u3") == 0) opc = 5;    // u3
      b88:	61 eb       	ldi	r22, 0xB1	; 177
      b8a:	70 e0       	ldi	r23, 0x00	; 0
-     b8c:	c6 01       	movw	r24, r12
-     b8e:	2e d3       	rcall	.+1628   	; 0x11ec <strcmp>
+     b8c:	c7 01       	movw	r24, r14
+     b8e:	3e d3       	rcall	.+1660   	; 0x120c <strcmp>
      b90:	89 2b       	or	r24, r25
      b92:	09 f4       	brne	.+2      	; 0xb96 <main+0x268>
-     b94:	cb c0       	rjmp	.+406    	; 0xd2c <main+0x3fe>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:74
+     b94:	d7 c0       	rjmp	.+430    	; 0xd44 <main+0x416>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:97
     else if (strcmp(input, "u4") == 0) opc = 6;    // u4
      b96:	64 eb       	ldi	r22, 0xB4	; 180
      b98:	70 e0       	ldi	r23, 0x00	; 0
-     b9a:	c6 01       	movw	r24, r12
-     b9c:	27 d3       	rcall	.+1614   	; 0x11ec <strcmp>
+     b9a:	c7 01       	movw	r24, r14
+     b9c:	37 d3       	rcall	.+1646   	; 0x120c <strcmp>
      b9e:	89 2b       	or	r24, r25
      ba0:	09 f4       	brne	.+2      	; 0xba4 <main+0x276>
-     ba2:	c6 c0       	rjmp	.+396    	; 0xd30 <main+0x402>
+     ba2:	d2 c0       	rjmp	.+420    	; 0xd48 <main+0x41a>
 write():
      ba4:	87 eb       	ldi	r24, 0xB7	; 183
      ba6:	90 e0       	ldi	r25, 0x00	; 0
      ba8:	72 dc       	rcall	.-1820   	; 0x48e <Print::write(char const*) [clone .part.1] [clone .constprop.14]>
-     baa:	c6 01       	movw	r24, r12
+     baa:	c7 01       	movw	r24, r14
      bac:	70 dc       	rcall	.-1824   	; 0x48e <Print::write(char const*) [clone .part.1] [clone .constprop.14]>
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:136
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:161
         }
 
       default:
@@ -3324,26 +3324,26 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
         vrserial.println("]");
      bae:	89 ec       	ldi	r24, 0xC9	; 201
      bb0:	90 e0       	ldi	r25, 0x00	; 0
-     bb2:	bf cf       	rjmp	.-130    	; 0xb32 <main+0x204>
+     bb2:	c0 cf       	rjmp	.-128    	; 0xb34 <main+0x206>
 main():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:83
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:106
         vrserial.println("{\"ping\":\"pong\"}");
         break;
 
       case 2:
         {
           bool found40 = false, found41 = false, found44 = false, found45 = false;
-     bb4:	f1 2c       	mov	r15, r1
-     bb6:	e1 2c       	mov	r14, r1
-     bb8:	d1 2c       	mov	r13, r1
-     bba:	c1 2c       	mov	r12, r1
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:85
+     bb4:	00 e0       	ldi	r16, 0x00	; 0
+     bb6:	f1 2c       	mov	r15, r1
+     bb8:	e1 2c       	mov	r14, r1
+     bba:	d1 2c       	mov	r13, r1
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:108
 
           for (uint8_t addr = 1; addr < 127; addr++) {
      bbc:	11 e0       	ldi	r17, 0x01	; 1
 beginTransmission():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:459
-     bbe:	00 93 be 01 	sts	0x01BE, r16	; 0x8001be <TwoWire::transmitting>
+     bbe:	30 92 be 01 	sts	0x01BE, r3	; 0x8001be <TwoWire::transmitting>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:461
     // set address of targeted slave and write mode
     Buffer[0] = (address << TWI_ADR_BITS) | (0 << TWI_READ_BIT);
@@ -3353,10 +3353,10 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:463
     // reset tx buffer iterator vars
     BufferIndex = 1; // reserved by slave address
-     bca:	00 93 c1 01 	sts	0x01C1, r16	; 0x8001c1 <TwoWire::BufferIndex>
+     bca:	30 92 c1 01 	sts	0x01C1, r3	; 0x8001c1 <TwoWire::BufferIndex>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:464
     BufferLength = BufferIndex;
-     bce:	00 93 c2 01 	sts	0x01C2, r16	; 0x8001c2 <TwoWire::BufferLength>
+     bce:	30 92 c2 01 	sts	0x01C2, r3	; 0x8001c2 <TwoWire::BufferLength>
 endTransmission():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:497
     }
@@ -3368,156 +3368,148 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      bd2:	81 e0       	ldi	r24, 0x01	; 1
      bd4:	87 db       	rcall	.-2290   	; 0x2e4 <TwoWire::endTransmission(unsigned char) [clone .constprop.24]>
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:87
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:110
             Wire.beginTransmission(addr);
             if (Wire.endTransmission() == 0) {
      bd6:	81 11       	cpse	r24, r1
-     bd8:	0a c0       	rjmp	.+20     	; 0xbee <main+0x2c0>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:88
+     bd8:	09 c0       	rjmp	.+18     	; 0xbec <main+0x2be>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:111
               if (addr == 0x40) found40 = true;
      bda:	10 34       	cpi	r17, 0x40	; 64
-     bdc:	71 f1       	breq	.+92     	; 0xc3a <main+0x30c>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:89
+     bdc:	69 f1       	breq	.+90     	; 0xc38 <main+0x30a>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:112
               else if (addr == 0x41) found41 = true;
      bde:	11 34       	cpi	r17, 0x41	; 65
-     be0:	79 f1       	breq	.+94     	; 0xc40 <main+0x312>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:90
+     be0:	71 f1       	breq	.+92     	; 0xc3e <main+0x310>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:113
               else if (addr == 0x44) found44 = true;
      be2:	14 34       	cpi	r17, 0x44	; 68
-     be4:	81 f1       	breq	.+96     	; 0xc46 <main+0x318>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:91
+     be4:	79 f1       	breq	.+94     	; 0xc44 <main+0x316>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:114
               else if (addr == 0x45) found45 = true;
      be6:	15 34       	cpi	r17, 0x45	; 69
-     be8:	11 f4       	brne	.+4      	; 0xbee <main+0x2c0>
+     be8:	09 f4       	brne	.+2      	; 0xbec <main+0x2be>
 main():
-     bea:	ff 24       	eor	r15, r15
-     bec:	f3 94       	inc	r15
+     bea:	01 e0       	ldi	r16, 0x01	; 1
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:85
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:108
 
       case 2:
         {
           bool found40 = false, found41 = false, found44 = false, found45 = false;
 
           for (uint8_t addr = 1; addr < 127; addr++) {
-     bee:	1f 5f       	subi	r17, 0xFF	; 255
-     bf0:	1f 37       	cpi	r17, 0x7F	; 127
-     bf2:	29 f7       	brne	.-54     	; 0xbbe <main+0x290>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:95
+     bec:	1f 5f       	subi	r17, 0xFF	; 255
+     bee:	1f 37       	cpi	r17, 0x7F	; 127
+     bf0:	31 f7       	brne	.-52     	; 0xbbe <main+0x290>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:118
               else if (addr == 0x44) found44 = true;
               else if (addr == 0x45) found45 = true;
             }
           }
 
           if (found40) vrserial.println("{\"0x40\":\"true\"}");
-     bf4:	cc 20       	and	r12, r12
-     bf6:	19 f0       	breq	.+6      	; 0xbfe <main+0x2d0>
-     bf8:	8b ec       	ldi	r24, 0xCB	; 203
-     bfa:	90 e0       	ldi	r25, 0x00	; 0
-     bfc:	a2 dc       	rcall	.-1724   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:96
+     bf2:	dd 20       	and	r13, r13
+     bf4:	19 f0       	breq	.+6      	; 0xbfc <main+0x2ce>
+     bf6:	8b ec       	ldi	r24, 0xCB	; 203
+     bf8:	90 e0       	ldi	r25, 0x00	; 0
+     bfa:	a3 dc       	rcall	.-1722   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:119
           if (found41) vrserial.println("{\"0x41\":\"true\"}");
-     bfe:	dd 20       	and	r13, r13
-     c00:	19 f0       	breq	.+6      	; 0xc08 <main+0x2da>
-     c02:	8b ed       	ldi	r24, 0xDB	; 219
-     c04:	90 e0       	ldi	r25, 0x00	; 0
-     c06:	9d dc       	rcall	.-1734   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:97
+     bfc:	ee 20       	and	r14, r14
+     bfe:	19 f0       	breq	.+6      	; 0xc06 <main+0x2d8>
+     c00:	8b ed       	ldi	r24, 0xDB	; 219
+     c02:	90 e0       	ldi	r25, 0x00	; 0
+     c04:	9e dc       	rcall	.-1732   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:120
           if (found44) vrserial.println("{\"0x44\":\"true\"}");
-     c08:	ee 20       	and	r14, r14
-     c0a:	19 f0       	breq	.+6      	; 0xc12 <main+0x2e4>
-     c0c:	8b ee       	ldi	r24, 0xEB	; 235
-     c0e:	90 e0       	ldi	r25, 0x00	; 0
-     c10:	98 dc       	rcall	.-1744   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:98
+     c06:	ff 20       	and	r15, r15
+     c08:	19 f0       	breq	.+6      	; 0xc10 <main+0x2e2>
+     c0a:	8b ee       	ldi	r24, 0xEB	; 235
+     c0c:	90 e0       	ldi	r25, 0x00	; 0
+     c0e:	99 dc       	rcall	.-1742   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:121
           if (found45) vrserial.println("{\"0x45\":\"true\"}");
-     c12:	ff 20       	and	r15, r15
-     c14:	19 f0       	breq	.+6      	; 0xc1c <main+0x2ee>
-     c16:	8b ef       	ldi	r24, 0xFB	; 251
-     c18:	90 e0       	ldi	r25, 0x00	; 0
-     c1a:	93 dc       	rcall	.-1754   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:100
+     c10:	00 23       	and	r16, r16
+     c12:	19 f0       	breq	.+6      	; 0xc1a <main+0x2ec>
+     c14:	8b ef       	ldi	r24, 0xFB	; 251
+     c16:	90 e0       	ldi	r25, 0x00	; 0
+     c18:	94 dc       	rcall	.-1752   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:123
 
           if (found40 && found41 && found44 && found45) {
-     c1c:	cc 20       	and	r12, r12
-     c1e:	09 f4       	brne	.+2      	; 0xc22 <main+0x2f4>
-     c20:	38 cf       	rjmp	.-400    	; 0xa92 <main+0x164>
-     c22:	dd 20       	and	r13, r13
-     c24:	09 f4       	brne	.+2      	; 0xc28 <main+0x2fa>
-     c26:	35 cf       	rjmp	.-406    	; 0xa92 <main+0x164>
-     c28:	ee 20       	and	r14, r14
-     c2a:	09 f4       	brne	.+2      	; 0xc2e <main+0x300>
-     c2c:	32 cf       	rjmp	.-412    	; 0xa92 <main+0x164>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:101
+     c1a:	dd 20       	and	r13, r13
+     c1c:	09 f4       	brne	.+2      	; 0xc20 <main+0x2f2>
+     c1e:	3a cf       	rjmp	.-396    	; 0xa94 <main+0x166>
+     c20:	ee 20       	and	r14, r14
+     c22:	09 f4       	brne	.+2      	; 0xc26 <main+0x2f8>
+     c24:	37 cf       	rjmp	.-402    	; 0xa94 <main+0x166>
+     c26:	ff 20       	and	r15, r15
+     c28:	09 f4       	brne	.+2      	; 0xc2c <main+0x2fe>
+     c2a:	34 cf       	rjmp	.-408    	; 0xa94 <main+0x166>
+     c2c:	00 23       	and	r16, r16
+     c2e:	09 f4       	brne	.+2      	; 0xc32 <main+0x304>
+     c30:	31 cf       	rjmp	.-414    	; 0xa94 <main+0x166>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:124
             vrserial.println("{\"Result\":\"OK\"}");
-     c2e:	8b e0       	ldi	r24, 0x0B	; 11
-     c30:	91 e0       	ldi	r25, 0x01	; 1
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:100
-          if (found40) vrserial.println("{\"0x40\":\"true\"}");
-          if (found41) vrserial.println("{\"0x41\":\"true\"}");
-          if (found44) vrserial.println("{\"0x44\":\"true\"}");
-          if (found45) vrserial.println("{\"0x45\":\"true\"}");
-
-          if (found40 && found41 && found44 && found45) {
-     c32:	ff 20       	and	r15, r15
-     c34:	09 f4       	brne	.+2      	; 0xc38 <main+0x30a>
-     c36:	2d cf       	rjmp	.-422    	; 0xa92 <main+0x164>
-     c38:	7c cf       	rjmp	.-264    	; 0xb32 <main+0x204>
+     c32:	8b e0       	ldi	r24, 0x0B	; 11
+     c34:	91 e0       	ldi	r25, 0x01	; 1
+     c36:	7e cf       	rjmp	.-260    	; 0xb34 <main+0x206>
 main():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:88
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:111
           bool found40 = false, found41 = false, found44 = false, found45 = false;
 
           for (uint8_t addr = 1; addr < 127; addr++) {
             Wire.beginTransmission(addr);
             if (Wire.endTransmission() == 0) {
               if (addr == 0x40) found40 = true;
-     c3a:	cc 24       	eor	r12, r12
-     c3c:	c3 94       	inc	r12
-     c3e:	d7 cf       	rjmp	.-82     	; 0xbee <main+0x2c0>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:89
+     c38:	dd 24       	eor	r13, r13
+     c3a:	d3 94       	inc	r13
+     c3c:	d7 cf       	rjmp	.-82     	; 0xbec <main+0x2be>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:112
               else if (addr == 0x41) found41 = true;
-     c40:	dd 24       	eor	r13, r13
-     c42:	d3 94       	inc	r13
-     c44:	d4 cf       	rjmp	.-88     	; 0xbee <main+0x2c0>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:90
+     c3e:	ee 24       	eor	r14, r14
+     c40:	e3 94       	inc	r14
+     c42:	d4 cf       	rjmp	.-88     	; 0xbec <main+0x2be>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:113
               else if (addr == 0x44) found44 = true;
-     c46:	ee 24       	eor	r14, r14
-     c48:	e3 94       	inc	r14
-     c4a:	d1 cf       	rjmp	.-94     	; 0xbee <main+0x2c0>
+     c44:	ff 24       	eor	r15, r15
+     c46:	f3 94       	inc	r15
+     c48:	d1 cf       	rjmp	.-94     	; 0xbec <main+0x2be>
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:114
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:137
       case 6:
         {
           float bus_V = -1.0;
 
           if (opc == 3)
             bus_V = readINA219BusVoltage(0x40);
-     c4c:	80 e4       	ldi	r24, 0x40	; 64
-     c4e:	91 dc       	rcall	.-1758   	; 0x572 <readINA219BusVoltage(unsigned char)>
-     c50:	6b 01       	movw	r12, r22
-     c52:	7c 01       	movw	r14, r24
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:122
+     c4a:	80 e4       	ldi	r24, 0x40	; 64
+     c4c:	92 dc       	rcall	.-1756   	; 0x572 <readINA219BusVoltage(unsigned char)>
+     c4e:	4b 01       	movw	r8, r22
+     c50:	5c 01       	movw	r10, r24
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:145
           else if (opc == 5)
             bus_V = readINA219BusVoltage(0x44);
           else
             bus_V = readINA219BusVoltage(0x45);
 
           if (bus_V < 0) {
-     c54:	20 e0       	ldi	r18, 0x00	; 0
-     c56:	30 e0       	ldi	r19, 0x00	; 0
-     c58:	a9 01       	movw	r20, r18
-     c5a:	e0 d0       	rcall	.+448    	; 0xe1c <__cmpsf2>
-     c5c:	87 ff       	sbrs	r24, 7
-     c5e:	03 c0       	rjmp	.+6      	; 0xc66 <main+0x338>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:123
+     c52:	20 e0       	ldi	r18, 0x00	; 0
+     c54:	30 e0       	ldi	r19, 0x00	; 0
+     c56:	a9 01       	movw	r20, r18
+     c58:	ed d0       	rcall	.+474    	; 0xe34 <__cmpsf2>
+     c5a:	87 ff       	sbrs	r24, 7
+     c5c:	03 c0       	rjmp	.+6      	; 0xc64 <main+0x336>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:146
             vrserial.println("error");
-     c60:	8b e1       	ldi	r24, 0x1B	; 27
-     c62:	91 e0       	ldi	r25, 0x01	; 1
-     c64:	66 cf       	rjmp	.-308    	; 0xb32 <main+0x204>
+     c5e:	8b e1       	ldi	r24, 0x1B	; 27
+     c60:	91 e0       	ldi	r25, 0x01	; 1
+     c62:	68 cf       	rjmp	.-304    	; 0xb34 <main+0x206>
 write():
-     c66:	81 e2       	ldi	r24, 0x21	; 33
-     c68:	91 e0       	ldi	r25, 0x01	; 1
-     c6a:	11 dc       	rcall	.-2014   	; 0x48e <Print::write(char const*) [clone .part.1] [clone .constprop.14]>
+     c64:	81 e2       	ldi	r24, 0x21	; 33
+     c66:	91 e0       	ldi	r25, 0x01	; 1
+     c68:	12 dc       	rcall	.-2012   	; 0x48e <Print::write(char const*) [clone .part.1] [clone .constprop.14]>
 printFloat():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:261
   // Round correctly so that print(1.999, 2) prints as "2.00"
@@ -3526,32 +3518,32 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     rounding /= 10.0;
 
   number += rounding;
-     c6c:	2e e6       	ldi	r18, 0x6E	; 110
-     c6e:	32 e1       	ldi	r19, 0x12	; 18
-     c70:	43 e0       	ldi	r20, 0x03	; 3
-     c72:	5a e3       	ldi	r21, 0x3A	; 58
-     c74:	c7 01       	movw	r24, r14
-     c76:	b6 01       	movw	r22, r12
-     c78:	fc d1       	rcall	.+1016   	; 0x1072 <__addsf3>
-     c7a:	6b 01       	movw	r12, r22
-     c7c:	7c 01       	movw	r14, r24
+     c6a:	2e e6       	ldi	r18, 0x6E	; 110
+     c6c:	32 e1       	ldi	r19, 0x12	; 18
+     c6e:	43 e0       	ldi	r20, 0x03	; 3
+     c70:	5a e3       	ldi	r21, 0x3A	; 58
+     c72:	c5 01       	movw	r24, r10
+     c74:	b4 01       	movw	r22, r8
+     c76:	09 d2       	rcall	.+1042   	; 0x108a <__addsf3>
+     c78:	6b 01       	movw	r12, r22
+     c7a:	7c 01       	movw	r14, r24
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:264
 
   // Extract the integer part of the number and print it
   unsigned long int_part = (unsigned long)number;
-     c7e:	62 d2       	rcall	.+1220   	; 0x1144 <__fixunssfsi>
-     c80:	4b 01       	movw	r8, r22
-     c82:	5c 01       	movw	r10, r24
+     c7c:	6f d2       	rcall	.+1246   	; 0x115c <__fixunssfsi>
+     c7e:	2b 01       	movw	r4, r22
+     c80:	3c 01       	movw	r6, r24
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:265
   double remainder = number - (double)int_part;
-     c84:	cf d0       	rcall	.+414    	; 0xe24 <__floatunsisf>
-     c86:	9b 01       	movw	r18, r22
-     c88:	ac 01       	movw	r20, r24
-     c8a:	c7 01       	movw	r24, r14
-     c8c:	b6 01       	movw	r22, r12
-     c8e:	f0 d1       	rcall	.+992    	; 0x1070 <__subsf3>
-     c90:	6b 01       	movw	r12, r22
-     c92:	7c 01       	movw	r14, r24
+     c82:	dc d0       	rcall	.+440    	; 0xe3c <__floatunsisf>
+     c84:	9b 01       	movw	r18, r22
+     c86:	ac 01       	movw	r20, r24
+     c88:	c7 01       	movw	r24, r14
+     c8a:	b6 01       	movw	r22, r12
+     c8c:	fd d1       	rcall	.+1018   	; 0x1088 <__subsf3>
+     c8e:	6b 01       	movw	r12, r22
+     c90:	7c 01       	movw	r14, r24
 print():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:86
   }
@@ -3560,16 +3552,16 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 size_t Print::print(unsigned long n, int base) {
   if (base == 0) return write(n);
   else return printNumber(n, base);
-     c94:	4a e0       	ldi	r20, 0x0A	; 10
-     c96:	c5 01       	movw	r24, r10
-     c98:	b4 01       	movw	r22, r8
-     c9a:	05 dc       	rcall	.-2038   	; 0x4a6 <Print::printNumber(unsigned long, unsigned char) [clone .constprop.9]>
+     c92:	4a e0       	ldi	r20, 0x0A	; 10
+     c94:	c3 01       	movw	r24, r6
+     c96:	b2 01       	movw	r22, r4
+     c98:	06 dc       	rcall	.-2036   	; 0x4a6 <Print::printNumber(unsigned long, unsigned char) [clone .constprop.9]>
 write():
-     c9c:	8a e7       	ldi	r24, 0x7A	; 122
-     c9e:	90 e0       	ldi	r25, 0x00	; 0
-     ca0:	f6 db       	rcall	.-2068   	; 0x48e <Print::write(char const*) [clone .part.1] [clone .constprop.14]>
-     ca2:	14 e0       	ldi	r17, 0x04	; 4
-     ca4:	11 50       	subi	r17, 0x01	; 1
+     c9a:	8a e7       	ldi	r24, 0x7A	; 122
+     c9c:	90 e0       	ldi	r25, 0x00	; 0
+     c9e:	f7 db       	rcall	.-2066   	; 0x48e <Print::write(char const*) [clone .part.1] [clone .constprop.14]>
+     ca0:	14 e0       	ldi	r17, 0x04	; 4
+     ca2:	11 50       	subi	r17, 0x01	; 1
 printFloat():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:274
   if (digits > 0) {
@@ -3578,21 +3570,21 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   // Extract digits from the remainder one at a time
   while (digits-- > 0) {
-     ca6:	69 f1       	breq	.+90     	; 0xd02 <main+0x3d4>
+     ca4:	89 f1       	breq	.+98     	; 0xd08 <main+0x3da>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:275
     remainder *= 10.0;
-     ca8:	20 e0       	ldi	r18, 0x00	; 0
-     caa:	30 e0       	ldi	r19, 0x00	; 0
-     cac:	40 e2       	ldi	r20, 0x20	; 32
-     cae:	51 e4       	ldi	r21, 0x41	; 65
-     cb0:	c7 01       	movw	r24, r14
-     cb2:	b6 01       	movw	r22, r12
-     cb4:	18 d1       	rcall	.+560    	; 0xee6 <__mulsf3>
-     cb6:	4b 01       	movw	r8, r22
-     cb8:	5c 01       	movw	r10, r24
+     ca6:	20 e0       	ldi	r18, 0x00	; 0
+     ca8:	30 e0       	ldi	r19, 0x00	; 0
+     caa:	40 e2       	ldi	r20, 0x20	; 32
+     cac:	51 e4       	ldi	r21, 0x41	; 65
+     cae:	c7 01       	movw	r24, r14
+     cb0:	b6 01       	movw	r22, r12
+     cb2:	25 d1       	rcall	.+586    	; 0xefe <__mulsf3>
+     cb4:	2b 01       	movw	r4, r22
+     cb6:	3c 01       	movw	r6, r24
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:276
     int toPrint = int(remainder);
-     cba:	3f d2       	rcall	.+1150   	; 0x113a <__fixsfsi>
+     cb8:	4c d2       	rcall	.+1176   	; 0x1152 <__fixsfsi>
 print():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:62
 size_t Print::print(unsigned char b, int base) {
@@ -3601,12 +3593,14 @@ size_t Print::print(unsigned char b, int base) {
 
 size_t Print::print(int n, int base) {
   return print((long) n, base);
-     cbc:	6b 01       	movw	r12, r22
-     cbe:	77 0f       	add	r23, r23
-     cc0:	ee 08       	sbc	r14, r14
-     cc2:	ff 08       	sbc	r15, r15
-     cc4:	26 01       	movw	r4, r12
-     cc6:	37 01       	movw	r6, r14
+     cba:	6b 01       	movw	r12, r22
+     cbc:	77 0f       	add	r23, r23
+     cbe:	ee 08       	sbc	r14, r14
+     cc0:	ff 08       	sbc	r15, r15
+     cc2:	2c 2c       	mov	r2, r12
+     cc4:	d9 8a       	std	Y+17, r13	; 0x11
+     cc6:	0e 2d       	mov	r16, r14
+     cc8:	fa 8a       	std	Y+18, r15	; 0x12
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:74
 size_t Print::print(long n, int base) {
   if (base == 0) {
@@ -3614,8 +3608,8 @@ size_t Print::print(long n, int base) {
   } else if (base == 10) {
     int t = 0;
     if (n < 0) {
-     cc8:	f7 fe       	sbrs	r15, 7
-     cca:	0c c0       	rjmp	.+24     	; 0xce4 <main+0x3b6>
+     cca:	f7 fe       	sbrs	r15, 7
+     ccc:	0c c0       	rjmp	.+24     	; 0xce6 <main+0x3b8>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:54
 size_t Print::print(const char str[]) {
   return write(str);
@@ -3623,10 +3617,10 @@ size_t Print::print(const char str[]) {
 
 size_t Print::print(char c) {
   return write(c);
-     ccc:	6d e2       	ldi	r22, 0x2D	; 45
-     cce:	8e e9       	ldi	r24, 0x9E	; 158
-     cd0:	91 e0       	ldi	r25, 0x01	; 1
-     cd2:	51 db       	rcall	.-2398   	; 0x376 <SoftwareSerial::write(unsigned char)>
+     cce:	6d e2       	ldi	r22, 0x2D	; 45
+     cd0:	8e e9       	ldi	r24, 0x9E	; 158
+     cd2:	91 e0       	ldi	r25, 0x01	; 1
+     cd4:	50 db       	rcall	.-2400   	; 0x376 <SoftwareSerial::write(unsigned char)>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:76
     return write(n);
   } else if (base == 10) {
@@ -3634,21 +3628,21 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     if (n < 0) {
       t = print('-');
       n = -n;
-     cd4:	f0 94       	com	r15
-     cd6:	e0 94       	com	r14
-     cd8:	d0 94       	com	r13
-     cda:	c0 94       	com	r12
-     cdc:	c1 1c       	adc	r12, r1
-     cde:	d1 1c       	adc	r13, r1
-     ce0:	e1 1c       	adc	r14, r1
-     ce2:	f1 1c       	adc	r15, r1
+     cd6:	f0 94       	com	r15
+     cd8:	e0 94       	com	r14
+     cda:	d0 94       	com	r13
+     cdc:	c0 94       	com	r12
+     cde:	c1 1c       	adc	r12, r1
+     ce0:	d1 1c       	adc	r13, r1
+     ce2:	e1 1c       	adc	r14, r1
+     ce4:	f1 1c       	adc	r15, r1
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:78
     }
     return printNumber(n, 10) + t;
-     ce4:	4a e0       	ldi	r20, 0x0A	; 10
-     ce6:	c7 01       	movw	r24, r14
-     ce8:	b6 01       	movw	r22, r12
-     cea:	dd db       	rcall	.-2118   	; 0x4a6 <Print::printNumber(unsigned long, unsigned char) [clone .constprop.9]>
+     ce6:	4a e0       	ldi	r20, 0x0A	; 10
+     ce8:	c7 01       	movw	r24, r14
+     cea:	b6 01       	movw	r22, r12
+     cec:	dc db       	rcall	.-2120   	; 0x4a6 <Print::printNumber(unsigned long, unsigned char) [clone .constprop.9]>
 printFloat():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:278
   // Extract digits from the remainder one at a time
@@ -3657,26 +3651,42 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     int toPrint = int(remainder);
     n += print(toPrint);
     remainder -= toPrint;
-     cec:	b2 01       	movw	r22, r4
-     cee:	c3 01       	movw	r24, r6
-     cf0:	9b d0       	rcall	.+310    	; 0xe28 <__floatsisf>
-     cf2:	9b 01       	movw	r18, r22
-     cf4:	ac 01       	movw	r20, r24
-     cf6:	c5 01       	movw	r24, r10
-     cf8:	b4 01       	movw	r22, r8
-     cfa:	ba d1       	rcall	.+884    	; 0x1070 <__subsf3>
-     cfc:	6b 01       	movw	r12, r22
-     cfe:	7c 01       	movw	r14, r24
-     d00:	d1 cf       	rjmp	.-94     	; 0xca4 <main+0x376>
+     cee:	62 2d       	mov	r22, r2
+     cf0:	79 89       	ldd	r23, Y+17	; 0x11
+     cf2:	80 2f       	mov	r24, r16
+     cf4:	9a 89       	ldd	r25, Y+18	; 0x12
+     cf6:	a4 d0       	rcall	.+328    	; 0xe40 <__floatsisf>
+     cf8:	9b 01       	movw	r18, r22
+     cfa:	ac 01       	movw	r20, r24
+     cfc:	c3 01       	movw	r24, r6
+     cfe:	b2 01       	movw	r22, r4
+     d00:	c3 d1       	rcall	.+902    	; 0x1088 <__subsf3>
+     d02:	6b 01       	movw	r12, r22
+     d04:	7c 01       	movw	r14, r24
+     d06:	cd cf       	rjmp	.-102    	; 0xca2 <main+0x374>
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:127
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:150
           } else {
             vrserial.print("{\"voltage\":\"");
             vrserial.print(bus_V, 3);
             vrserial.println("\"}");
-     d02:	88 e1       	ldi	r24, 0x18	; 24
-     d04:	91 e0       	ldi	r25, 0x01	; 1
-     d06:	15 cf       	rjmp	.-470    	; 0xb32 <main+0x204>
+     d08:	88 e1       	ldi	r24, 0x18	; 24
+     d0a:	91 e0       	ldi	r25, 0x01	; 1
+     d0c:	1a dc       	rcall	.-1996   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:152
+
+            if (bus_V > 10) vrserial.println("{\"Result\":\"OK\"}");
+     d0e:	20 e0       	ldi	r18, 0x00	; 0
+     d10:	30 e0       	ldi	r19, 0x00	; 0
+     d12:	40 e2       	ldi	r20, 0x20	; 32
+     d14:	51 e4       	ldi	r21, 0x41	; 65
+     d16:	c5 01       	movw	r24, r10
+     d18:	b4 01       	movw	r22, r8
+     d1a:	4c d2       	rcall	.+1176   	; 0x11b4 <__gesf2>
+     d1c:	18 16       	cp	r1, r24
+     d1e:	0c f0       	brlt	.+2      	; 0xd22 <main+0x3f4>
+     d20:	b9 ce       	rjmp	.-654    	; 0xa94 <main+0x166>
+     d22:	87 cf       	rjmp	.-242    	; 0xc32 <main+0x304>
 readBytesUntil():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:246
 size_t Stream::readBytesUntil(char terminator, char *buffer, size_t length) {
@@ -3685,20 +3695,19 @@ size_t Stream::readBytesUntil(char terminator, char *buffer, size_t length) {
   while (index < length) {
     int c = timedRead();
     if (c < 0 || c == terminator) break;
-     d08:	8a 30       	cpi	r24, 0x0A	; 10
-     d0a:	91 05       	cpc	r25, r1
-     d0c:	09 f4       	brne	.+2      	; 0xd10 <main+0x3e2>
-     d0e:	08 cf       	rjmp	.-496    	; 0xb20 <main+0x1f2>
+     d24:	8a 30       	cpi	r24, 0x0A	; 10
+     d26:	91 05       	cpc	r25, r1
+     d28:	09 f4       	brne	.+2      	; 0xd2c <main+0x3fe>
+     d2a:	fb ce       	rjmp	.-522    	; 0xb22 <main+0x1f4>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:247
     *buffer++ = (char)c;
-     d10:	f5 01       	movw	r30, r10
-     d12:	81 93       	st	Z+, r24
-     d14:	5f 01       	movw	r10, r30
+     d2c:	f6 01       	movw	r30, r12
+     d2e:	81 93       	st	Z+, r24
+     d30:	6f 01       	movw	r12, r30
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:248
     index++;
-     d16:	ff ef       	ldi	r31, 0xFF	; 255
-     d18:	ef 1a       	sub	r14, r31
-     d1a:	ff 0a       	sbc	r15, r31
+     d32:	0f 5f       	subi	r16, 0xFF	; 255
+     d34:	1f 4f       	sbci	r17, 0xFF	; 255
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:244
 // returns the number of characters placed in the buffer (0 means no valid data found)
 
@@ -3706,34 +3715,33 @@ size_t Stream::readBytesUntil(char terminator, char *buffer, size_t length) {
   if (length < 1) return 0;
   size_t index = 0;
   while (index < length) {
-     d1c:	8e e0       	ldi	r24, 0x0E	; 14
-     d1e:	e8 16       	cp	r14, r24
-     d20:	f1 04       	cpc	r15, r1
-     d22:	09 f0       	breq	.+2      	; 0xd26 <main+0x3f8>
-     d24:	c1 ce       	rjmp	.-638    	; 0xaa8 <main+0x17a>
-     d26:	fc ce       	rjmp	.-520    	; 0xb20 <main+0x1f2>
+     d36:	0e 30       	cpi	r16, 0x0E	; 14
+     d38:	11 05       	cpc	r17, r1
+     d3a:	09 f0       	breq	.+2      	; 0xd3e <main+0x410>
+     d3c:	b6 ce       	rjmp	.-660    	; 0xaaa <main+0x17c>
+     d3e:	f1 ce       	rjmp	.-542    	; 0xb22 <main+0x1f4>
 loop():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:116
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:139
           float bus_V = -1.0;
 
           if (opc == 3)
             bus_V = readINA219BusVoltage(0x40);
           else if (opc == 4)
             bus_V = readINA219BusVoltage(0x41);
-     d28:	81 e4       	ldi	r24, 0x41	; 65
-     d2a:	91 cf       	rjmp	.-222    	; 0xc4e <main+0x320>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:118
+     d40:	81 e4       	ldi	r24, 0x41	; 65
+     d42:	84 cf       	rjmp	.-248    	; 0xc4c <main+0x31e>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:141
           else if (opc == 5)
             bus_V = readINA219BusVoltage(0x44);
-     d2c:	84 e4       	ldi	r24, 0x44	; 68
-     d2e:	8f cf       	rjmp	.-226    	; 0xc4e <main+0x320>
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:120
+     d44:	84 e4       	ldi	r24, 0x44	; 68
+     d46:	82 cf       	rjmp	.-252    	; 0xc4c <main+0x31e>
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:143
           else
             bus_V = readINA219BusVoltage(0x45);
-     d30:	85 e4       	ldi	r24, 0x45	; 69
-     d32:	8d cf       	rjmp	.-230    	; 0xc4e <main+0x320>
+     d48:	85 e4       	ldi	r24, 0x45	; 69
+     d4a:	80 cf       	rjmp	.-256    	; 0xc4c <main+0x31e>
 
-00000d34 <_GLOBAL__sub_I_vrserial>:
+00000d4c <_GLOBAL__sub_I_vrserial>:
 _ZN5PrintC2Ev():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.h:75
     size_t printNumber(unsigned long, uint8_t);
@@ -3742,8 +3750,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     void setWriteError(int err = 1) { write_error = err; }
   public:
     Print() : write_error(0) {}
-     d34:	10 92 a1 01 	sts	0x01A1, r1	; 0x8001a1 <vrserial+0x3>
-     d38:	10 92 a0 01 	sts	0x01A0, r1	; 0x8001a0 <vrserial+0x2>
+     d4c:	10 92 a1 01 	sts	0x01A1, r1	; 0x8001a1 <vrserial+0x3>
+     d50:	10 92 a0 01 	sts	0x01A0, r1	; 0x8001a0 <vrserial+0x2>
 _ZN6StreamC2Ev():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.h:64
     virtual int available() = 0;
@@ -3752,14 +3760,14 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     virtual void flush() = 0;
 
     Stream() {_timeout=1000;}
-     d3c:	88 ee       	ldi	r24, 0xE8	; 232
-     d3e:	93 e0       	ldi	r25, 0x03	; 3
-     d40:	a0 e0       	ldi	r26, 0x00	; 0
-     d42:	b0 e0       	ldi	r27, 0x00	; 0
-     d44:	80 93 a2 01 	sts	0x01A2, r24	; 0x8001a2 <vrserial+0x4>
-     d48:	90 93 a3 01 	sts	0x01A3, r25	; 0x8001a3 <vrserial+0x5>
-     d4c:	a0 93 a4 01 	sts	0x01A4, r26	; 0x8001a4 <vrserial+0x6>
-     d50:	b0 93 a5 01 	sts	0x01A5, r27	; 0x8001a5 <vrserial+0x7>
+     d54:	88 ee       	ldi	r24, 0xE8	; 232
+     d56:	93 e0       	ldi	r25, 0x03	; 3
+     d58:	a0 e0       	ldi	r26, 0x00	; 0
+     d5a:	b0 e0       	ldi	r27, 0x00	; 0
+     d5c:	80 93 a2 01 	sts	0x01A2, r24	; 0x8001a2 <vrserial+0x4>
+     d60:	90 93 a3 01 	sts	0x01A3, r25	; 0x8001a3 <vrserial+0x5>
+     d64:	a0 93 a4 01 	sts	0x01A4, r26	; 0x8001a4 <vrserial+0x6>
+     d68:	b0 93 a5 01 	sts	0x01A5, r27	; 0x8001a5 <vrserial+0x7>
 _GLOBAL__sub_I_vrserial():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:223
   _rx_delay_centering(0),
@@ -3768,22 +3776,22 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   _tx_delay(0),
   _buffer_overflow(false),
   _inverse_logic(inverse_logic) {
-     d54:	84 e6       	ldi	r24, 0x64	; 100
-     d56:	90 e0       	ldi	r25, 0x00	; 0
-     d58:	90 93 9f 01 	sts	0x019F, r25	; 0x80019f <vrserial+0x1>
-     d5c:	80 93 9e 01 	sts	0x019E, r24	; 0x80019e <vrserial>
-     d60:	10 92 b5 01 	sts	0x01B5, r1	; 0x8001b5 <vrserial+0x17>
-     d64:	10 92 b4 01 	sts	0x01B4, r1	; 0x8001b4 <vrserial+0x16>
-     d68:	10 92 b7 01 	sts	0x01B7, r1	; 0x8001b7 <vrserial+0x19>
-     d6c:	10 92 b6 01 	sts	0x01B6, r1	; 0x8001b6 <vrserial+0x18>
-     d70:	10 92 b9 01 	sts	0x01B9, r1	; 0x8001b9 <vrserial+0x1b>
-     d74:	10 92 b8 01 	sts	0x01B8, r1	; 0x8001b8 <vrserial+0x1a>
-     d78:	10 92 bb 01 	sts	0x01BB, r1	; 0x8001bb <vrserial+0x1d>
-     d7c:	10 92 ba 01 	sts	0x01BA, r1	; 0x8001ba <vrserial+0x1c>
-     d80:	60 91 bc 01 	lds	r22, 0x01BC	; 0x8001bc <vrserial+0x1e>
-     d84:	6e 7f       	andi	r22, 0xFE	; 254
-     d86:	6d 7f       	andi	r22, 0xFD	; 253
-     d88:	60 93 bc 01 	sts	0x01BC, r22	; 0x8001bc <vrserial+0x1e>
+     d6c:	84 e6       	ldi	r24, 0x64	; 100
+     d6e:	90 e0       	ldi	r25, 0x00	; 0
+     d70:	90 93 9f 01 	sts	0x019F, r25	; 0x80019f <vrserial+0x1>
+     d74:	80 93 9e 01 	sts	0x019E, r24	; 0x80019e <vrserial>
+     d78:	10 92 b5 01 	sts	0x01B5, r1	; 0x8001b5 <vrserial+0x17>
+     d7c:	10 92 b4 01 	sts	0x01B4, r1	; 0x8001b4 <vrserial+0x16>
+     d80:	10 92 b7 01 	sts	0x01B7, r1	; 0x8001b7 <vrserial+0x19>
+     d84:	10 92 b6 01 	sts	0x01B6, r1	; 0x8001b6 <vrserial+0x18>
+     d88:	10 92 b9 01 	sts	0x01B9, r1	; 0x8001b9 <vrserial+0x1b>
+     d8c:	10 92 b8 01 	sts	0x01B8, r1	; 0x8001b8 <vrserial+0x1a>
+     d90:	10 92 bb 01 	sts	0x01BB, r1	; 0x8001bb <vrserial+0x1d>
+     d94:	10 92 ba 01 	sts	0x01BA, r1	; 0x8001ba <vrserial+0x1c>
+     d98:	60 91 bc 01 	lds	r22, 0x01BC	; 0x8001bc <vrserial+0x1e>
+     d9c:	6e 7f       	andi	r22, 0xFE	; 254
+     d9e:	6d 7f       	andi	r22, 0xFD	; 253
+     da0:	60 93 bc 01 	sts	0x01BC, r22	; 0x8001bc <vrserial+0x1e>
 setTX():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:240
 void SoftwareSerial::setTX(uint8_t tx) {
@@ -3792,12 +3800,12 @@ void SoftwareSerial::setTX(uint8_t tx) {
   // output hihg. Now, it is input with pullup for a short while, which
   // is fine. With inverse logic, either order is fine.
   digitalWrite(tx, _inverse_logic ? LOW : HIGH);
-     d8c:	66 95       	lsr	r22
-     d8e:	61 70       	andi	r22, 0x01	; 1
-     d90:	81 e0       	ldi	r24, 0x01	; 1
-     d92:	68 27       	eor	r22, r24
-     d94:	84 e0       	ldi	r24, 0x04	; 4
-     d96:	90 dd       	rcall	.-1248   	; 0x8b8 <digitalWrite>
+     da4:	66 95       	lsr	r22
+     da6:	61 70       	andi	r22, 0x01	; 1
+     da8:	81 e0       	ldi	r24, 0x01	; 1
+     daa:	68 27       	eor	r22, r24
+     dac:	84 e0       	ldi	r24, 0x04	; 4
+     dae:	84 dd       	rcall	.-1272   	; 0x8b8 <digitalWrite>
 pinMode():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:45
                 cli();
@@ -3806,29 +3814,29 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     SREG = oldSREG;
   } else {
     uint8_t oldSREG = SREG;
-     d98:	8f b7       	in	r24, 0x3f	; 63
+     db0:	8f b7       	in	r24, 0x3f	; 63
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:46
                 cli();
-     d9a:	f8 94       	cli
+     db2:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:47
     *reg |= mask;
-     d9c:	bc 9a       	sbi	0x17, 4	; 23
+     db4:	bc 9a       	sbi	0x17, 4	; 23
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:48
     SREG = oldSREG;
-     d9e:	8f bf       	out	0x3f, r24	; 63
+     db6:	8f bf       	out	0x3f, r24	; 63
 setTX():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:242
   pinMode(tx, OUTPUT);
   _transmitBitMask = digitalPinToBitMask(tx);
-     da0:	80 e1       	ldi	r24, 0x10	; 16
-     da2:	80 93 ae 01 	sts	0x01AE, r24	; 0x8001ae <vrserial+0x10>
+     db8:	80 e1       	ldi	r24, 0x10	; 16
+     dba:	80 93 ae 01 	sts	0x01AE, r24	; 0x8001ae <vrserial+0x10>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:244
   uint8_t port = digitalPinToPort(tx);
   _transmitPortRegister = portOutputRegister(port);
-     da6:	88 e3       	ldi	r24, 0x38	; 56
-     da8:	90 e0       	ldi	r25, 0x00	; 0
-     daa:	90 93 b0 01 	sts	0x01B0, r25	; 0x8001b0 <vrserial+0x12>
-     dae:	80 93 af 01 	sts	0x01AF, r24	; 0x8001af <vrserial+0x11>
+     dbe:	88 e3       	ldi	r24, 0x38	; 56
+     dc0:	90 e0       	ldi	r25, 0x00	; 0
+     dc2:	90 93 b0 01 	sts	0x01B0, r25	; 0x8001b0 <vrserial+0x12>
+     dc6:	80 93 af 01 	sts	0x01AF, r24	; 0x8001af <vrserial+0x11>
 pinMode():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:33
 #else
@@ -3837,19 +3845,19 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   if (mode == INPUT) {
     uint8_t oldSREG = SREG;
-     db2:	8f b7       	in	r24, 0x3f	; 63
+     dca:	8f b7       	in	r24, 0x3f	; 63
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:34
                 cli();
-     db4:	f8 94       	cli
+     dcc:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:35
     *reg &= ~mask;
-     db6:	bb 98       	cbi	0x17, 3	; 23
+     dce:	bb 98       	cbi	0x17, 3	; 23
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:36
     *out &= ~mask;
-     db8:	c3 98       	cbi	0x18, 3	; 24
+     dd0:	c3 98       	cbi	0x18, 3	; 24
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:37
     SREG = oldSREG;
-     dba:	8f bf       	out	0x3f, r24	; 63
+     dd2:	8f bf       	out	0x3f, r24	; 63
 setRX():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:249
 }
@@ -3857,39 +3865,39 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 void SoftwareSerial::setRX(uint8_t rx) {
   pinMode(rx, INPUT);
   if (!_inverse_logic)
-     dbc:	80 91 bc 01 	lds	r24, 0x01BC	; 0x8001bc <vrserial+0x1e>
-     dc0:	81 fd       	sbrc	r24, 1
-     dc2:	03 c0       	rjmp	.+6      	; 0xdca <_GLOBAL__sub_I_vrserial+0x96>
+     dd4:	80 91 bc 01 	lds	r24, 0x01BC	; 0x8001bc <vrserial+0x1e>
+     dd8:	81 fd       	sbrc	r24, 1
+     dda:	03 c0       	rjmp	.+6      	; 0xde2 <_GLOBAL__sub_I_vrserial+0x96>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:250
     digitalWrite(rx, HIGH);  // pullup for normal logic!
-     dc4:	61 e0       	ldi	r22, 0x01	; 1
-     dc6:	83 e0       	ldi	r24, 0x03	; 3
-     dc8:	77 dd       	rcall	.-1298   	; 0x8b8 <digitalWrite>
+     ddc:	61 e0       	ldi	r22, 0x01	; 1
+     dde:	83 e0       	ldi	r24, 0x03	; 3
+     de0:	6b dd       	rcall	.-1322   	; 0x8b8 <digitalWrite>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:251
   _receivePin = rx;
-     dca:	83 e0       	ldi	r24, 0x03	; 3
-     dcc:	80 93 aa 01 	sts	0x01AA, r24	; 0x8001aa <vrserial+0xc>
+     de2:	83 e0       	ldi	r24, 0x03	; 3
+     de4:	80 93 aa 01 	sts	0x01AA, r24	; 0x8001aa <vrserial+0xc>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:252
   _receiveBitMask = digitalPinToBitMask(rx);
-     dd0:	88 e0       	ldi	r24, 0x08	; 8
-     dd2:	80 93 ab 01 	sts	0x01AB, r24	; 0x8001ab <vrserial+0xd>
+     de8:	88 e0       	ldi	r24, 0x08	; 8
+     dea:	80 93 ab 01 	sts	0x01AB, r24	; 0x8001ab <vrserial+0xd>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:254
   uint8_t port = digitalPinToPort(rx);
   _receivePortRegister = portInputRegister(port);
-     dd6:	86 e3       	ldi	r24, 0x36	; 54
-     dd8:	90 e0       	ldi	r25, 0x00	; 0
-     dda:	90 93 ad 01 	sts	0x01AD, r25	; 0x8001ad <vrserial+0xf>
-     dde:	80 93 ac 01 	sts	0x01AC, r24	; 0x8001ac <vrserial+0xe>
+     dee:	86 e3       	ldi	r24, 0x36	; 54
+     df0:	90 e0       	ldi	r25, 0x00	; 0
+     df2:	90 93 ad 01 	sts	0x01AD, r25	; 0x8001ad <vrserial+0xf>
+     df6:	80 93 ac 01 	sts	0x01AC, r24	; 0x8001ac <vrserial+0xe>
 _GLOBAL__sub_I_vrserial():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:140
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:165
         vrserial.print(input);
         vrserial.println("]");
         break;
     }
   }
-     de2:	08 95       	ret
+     dfa:	08 95       	ret
 
-00000de4 <_GLOBAL__sub_D_vrserial>:
+00000dfc <_GLOBAL__sub_D_vrserial>:
 _GLOBAL__sub_D_vrserial():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:231
 }
@@ -3898,10 +3906,10 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 // Destructor
 //
 SoftwareSerial::~SoftwareSerial() {
-     de4:	84 e6       	ldi	r24, 0x64	; 100
-     de6:	90 e0       	ldi	r25, 0x00	; 0
-     de8:	90 93 9f 01 	sts	0x019F, r25	; 0x80019f <vrserial+0x1>
-     dec:	80 93 9e 01 	sts	0x019E, r24	; 0x80019e <vrserial>
+     dfc:	84 e6       	ldi	r24, 0x64	; 100
+     dfe:	90 e0       	ldi	r25, 0x00	; 0
+     e00:	90 93 9f 01 	sts	0x019F, r25	; 0x80019f <vrserial+0x1>
+     e04:	80 93 9e 01 	sts	0x019E, r24	; 0x80019e <vrserial>
 stopListening():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:103
   return false;
@@ -3910,11 +3918,11 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 // Stop listening. Returns true if we were actually listening.
 bool SoftwareSerial::stopListening() {
   if (active_object == this) {
-     df0:	80 91 93 01 	lds	r24, 0x0193	; 0x800193 <SoftwareSerial::active_object>
-     df4:	90 91 94 01 	lds	r25, 0x0194	; 0x800194 <SoftwareSerial::active_object+0x1>
-     df8:	8e 59       	subi	r24, 0x9E	; 158
-     dfa:	91 40       	sbci	r25, 0x01	; 1
-     dfc:	71 f4       	brne	.+28     	; 0xe1a <_GLOBAL__sub_D_vrserial+0x36>
+     e08:	80 91 93 01 	lds	r24, 0x0193	; 0x800193 <SoftwareSerial::active_object>
+     e0c:	90 91 94 01 	lds	r25, 0x0194	; 0x800194 <SoftwareSerial::active_object+0x1>
+     e10:	8e 59       	subi	r24, 0x9E	; 158
+     e12:	91 40       	sbci	r25, 0x01	; 1
+     e14:	71 f4       	brne	.+28     	; 0xe32 <_GLOBAL__sub_D_vrserial+0x36>
 setRxIntMsk():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:344
 
@@ -3923,13 +3931,13 @@ void SoftwareSerial::setRxIntMsk(bool enable) {
       *_pcint_maskreg |= _pcint_maskvalue;
     else
       *_pcint_maskreg &= ~_pcint_maskvalue;
-     dfe:	e0 91 b1 01 	lds	r30, 0x01B1	; 0x8001b1 <vrserial+0x13>
-     e02:	f0 91 b2 01 	lds	r31, 0x01B2	; 0x8001b2 <vrserial+0x14>
-     e06:	90 81       	ld	r25, Z
-     e08:	80 91 b3 01 	lds	r24, 0x01B3	; 0x8001b3 <vrserial+0x15>
-     e0c:	80 95       	com	r24
-     e0e:	89 23       	and	r24, r25
-     e10:	80 83       	st	Z, r24
+     e16:	e0 91 b1 01 	lds	r30, 0x01B1	; 0x8001b1 <vrserial+0x13>
+     e1a:	f0 91 b2 01 	lds	r31, 0x01B2	; 0x8001b2 <vrserial+0x14>
+     e1e:	90 81       	ld	r25, Z
+     e20:	80 91 b3 01 	lds	r24, 0x01B3	; 0x8001b3 <vrserial+0x15>
+     e24:	80 95       	com	r24
+     e26:	89 23       	and	r24, r25
+     e28:	80 83       	st	Z, r24
 stopListening():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:105
 
@@ -3938,660 +3946,667 @@ bool SoftwareSerial::stopListening() {
   if (active_object == this) {
     setRxIntMsk(false);
     active_object = NULL;
-     e12:	10 92 94 01 	sts	0x0194, r1	; 0x800194 <SoftwareSerial::active_object+0x1>
-     e16:	10 92 93 01 	sts	0x0193, r1	; 0x800193 <SoftwareSerial::active_object>
+     e2a:	10 92 94 01 	sts	0x0194, r1	; 0x800194 <SoftwareSerial::active_object+0x1>
+     e2e:	10 92 93 01 	sts	0x0193, r1	; 0x800193 <SoftwareSerial::active_object>
 _GLOBAL__sub_D_vrserial():
-C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:140
-     e1a:	08 95       	ret
+C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:165
+     e32:	08 95       	ret
 
-00000e1c <__cmpsf2>:
+00000e34 <__cmpsf2>:
 __cmpsf2():
-     e1c:	40 d0       	rcall	.+128    	; 0xe9e <__fp_cmp>
-     e1e:	08 f4       	brcc	.+2      	; 0xe22 <__cmpsf2+0x6>
-     e20:	81 e0       	ldi	r24, 0x01	; 1
-     e22:	08 95       	ret
+     e34:	40 d0       	rcall	.+128    	; 0xeb6 <__fp_cmp>
+     e36:	08 f4       	brcc	.+2      	; 0xe3a <__cmpsf2+0x6>
+     e38:	81 e0       	ldi	r24, 0x01	; 1
+     e3a:	08 95       	ret
 
-00000e24 <__floatunsisf>:
+00000e3c <__floatunsisf>:
 __floatunsisf():
-     e24:	e8 94       	clt
-     e26:	09 c0       	rjmp	.+18     	; 0xe3a <__floatsisf+0x12>
+     e3c:	e8 94       	clt
+     e3e:	09 c0       	rjmp	.+18     	; 0xe52 <__floatsisf+0x12>
 
-00000e28 <__floatsisf>:
-     e28:	97 fb       	bst	r25, 7
-     e2a:	3e f4       	brtc	.+14     	; 0xe3a <__floatsisf+0x12>
-     e2c:	90 95       	com	r25
-     e2e:	80 95       	com	r24
-     e30:	70 95       	com	r23
-     e32:	61 95       	neg	r22
-     e34:	7f 4f       	sbci	r23, 0xFF	; 255
-     e36:	8f 4f       	sbci	r24, 0xFF	; 255
-     e38:	9f 4f       	sbci	r25, 0xFF	; 255
-     e3a:	99 23       	and	r25, r25
-     e3c:	a9 f0       	breq	.+42     	; 0xe68 <__floatsisf+0x40>
-     e3e:	f9 2f       	mov	r31, r25
-     e40:	96 e9       	ldi	r25, 0x96	; 150
-     e42:	bb 27       	eor	r27, r27
-     e44:	93 95       	inc	r25
-     e46:	f6 95       	lsr	r31
-     e48:	87 95       	ror	r24
-     e4a:	77 95       	ror	r23
-     e4c:	67 95       	ror	r22
-     e4e:	b7 95       	ror	r27
-     e50:	f1 11       	cpse	r31, r1
-     e52:	f8 cf       	rjmp	.-16     	; 0xe44 <__floatsisf+0x1c>
-     e54:	fa f4       	brpl	.+62     	; 0xe94 <__floatsisf+0x6c>
-     e56:	bb 0f       	add	r27, r27
-     e58:	11 f4       	brne	.+4      	; 0xe5e <__floatsisf+0x36>
-     e5a:	60 ff       	sbrs	r22, 0
-     e5c:	1b c0       	rjmp	.+54     	; 0xe94 <__floatsisf+0x6c>
-     e5e:	6f 5f       	subi	r22, 0xFF	; 255
-     e60:	7f 4f       	sbci	r23, 0xFF	; 255
-     e62:	8f 4f       	sbci	r24, 0xFF	; 255
-     e64:	9f 4f       	sbci	r25, 0xFF	; 255
-     e66:	16 c0       	rjmp	.+44     	; 0xe94 <__floatsisf+0x6c>
-     e68:	88 23       	and	r24, r24
-     e6a:	11 f0       	breq	.+4      	; 0xe70 <__floatsisf+0x48>
-     e6c:	96 e9       	ldi	r25, 0x96	; 150
-     e6e:	11 c0       	rjmp	.+34     	; 0xe92 <__floatsisf+0x6a>
-     e70:	77 23       	and	r23, r23
-     e72:	21 f0       	breq	.+8      	; 0xe7c <__floatsisf+0x54>
-     e74:	9e e8       	ldi	r25, 0x8E	; 142
-     e76:	87 2f       	mov	r24, r23
-     e78:	76 2f       	mov	r23, r22
-     e7a:	05 c0       	rjmp	.+10     	; 0xe86 <__floatsisf+0x5e>
-     e7c:	66 23       	and	r22, r22
-     e7e:	71 f0       	breq	.+28     	; 0xe9c <__floatsisf+0x74>
-     e80:	96 e8       	ldi	r25, 0x86	; 134
-     e82:	86 2f       	mov	r24, r22
-     e84:	70 e0       	ldi	r23, 0x00	; 0
-     e86:	60 e0       	ldi	r22, 0x00	; 0
-     e88:	2a f0       	brmi	.+10     	; 0xe94 <__floatsisf+0x6c>
-     e8a:	9a 95       	dec	r25
-     e8c:	66 0f       	add	r22, r22
-     e8e:	77 1f       	adc	r23, r23
-     e90:	88 1f       	adc	r24, r24
-     e92:	da f7       	brpl	.-10     	; 0xe8a <__floatsisf+0x62>
-     e94:	88 0f       	add	r24, r24
-     e96:	96 95       	lsr	r25
-     e98:	87 95       	ror	r24
-     e9a:	97 f9       	bld	r25, 7
-     e9c:	08 95       	ret
+00000e40 <__floatsisf>:
+     e40:	97 fb       	bst	r25, 7
+     e42:	3e f4       	brtc	.+14     	; 0xe52 <__floatsisf+0x12>
+     e44:	90 95       	com	r25
+     e46:	80 95       	com	r24
+     e48:	70 95       	com	r23
+     e4a:	61 95       	neg	r22
+     e4c:	7f 4f       	sbci	r23, 0xFF	; 255
+     e4e:	8f 4f       	sbci	r24, 0xFF	; 255
+     e50:	9f 4f       	sbci	r25, 0xFF	; 255
+     e52:	99 23       	and	r25, r25
+     e54:	a9 f0       	breq	.+42     	; 0xe80 <__floatsisf+0x40>
+     e56:	f9 2f       	mov	r31, r25
+     e58:	96 e9       	ldi	r25, 0x96	; 150
+     e5a:	bb 27       	eor	r27, r27
+     e5c:	93 95       	inc	r25
+     e5e:	f6 95       	lsr	r31
+     e60:	87 95       	ror	r24
+     e62:	77 95       	ror	r23
+     e64:	67 95       	ror	r22
+     e66:	b7 95       	ror	r27
+     e68:	f1 11       	cpse	r31, r1
+     e6a:	f8 cf       	rjmp	.-16     	; 0xe5c <__floatsisf+0x1c>
+     e6c:	fa f4       	brpl	.+62     	; 0xeac <__floatsisf+0x6c>
+     e6e:	bb 0f       	add	r27, r27
+     e70:	11 f4       	brne	.+4      	; 0xe76 <__floatsisf+0x36>
+     e72:	60 ff       	sbrs	r22, 0
+     e74:	1b c0       	rjmp	.+54     	; 0xeac <__floatsisf+0x6c>
+     e76:	6f 5f       	subi	r22, 0xFF	; 255
+     e78:	7f 4f       	sbci	r23, 0xFF	; 255
+     e7a:	8f 4f       	sbci	r24, 0xFF	; 255
+     e7c:	9f 4f       	sbci	r25, 0xFF	; 255
+     e7e:	16 c0       	rjmp	.+44     	; 0xeac <__floatsisf+0x6c>
+     e80:	88 23       	and	r24, r24
+     e82:	11 f0       	breq	.+4      	; 0xe88 <__floatsisf+0x48>
+     e84:	96 e9       	ldi	r25, 0x96	; 150
+     e86:	11 c0       	rjmp	.+34     	; 0xeaa <__floatsisf+0x6a>
+     e88:	77 23       	and	r23, r23
+     e8a:	21 f0       	breq	.+8      	; 0xe94 <__floatsisf+0x54>
+     e8c:	9e e8       	ldi	r25, 0x8E	; 142
+     e8e:	87 2f       	mov	r24, r23
+     e90:	76 2f       	mov	r23, r22
+     e92:	05 c0       	rjmp	.+10     	; 0xe9e <__floatsisf+0x5e>
+     e94:	66 23       	and	r22, r22
+     e96:	71 f0       	breq	.+28     	; 0xeb4 <__floatsisf+0x74>
+     e98:	96 e8       	ldi	r25, 0x86	; 134
+     e9a:	86 2f       	mov	r24, r22
+     e9c:	70 e0       	ldi	r23, 0x00	; 0
+     e9e:	60 e0       	ldi	r22, 0x00	; 0
+     ea0:	2a f0       	brmi	.+10     	; 0xeac <__floatsisf+0x6c>
+     ea2:	9a 95       	dec	r25
+     ea4:	66 0f       	add	r22, r22
+     ea6:	77 1f       	adc	r23, r23
+     ea8:	88 1f       	adc	r24, r24
+     eaa:	da f7       	brpl	.-10     	; 0xea2 <__floatsisf+0x62>
+     eac:	88 0f       	add	r24, r24
+     eae:	96 95       	lsr	r25
+     eb0:	87 95       	ror	r24
+     eb2:	97 f9       	bld	r25, 7
+     eb4:	08 95       	ret
 
-00000e9e <__fp_cmp>:
+00000eb6 <__fp_cmp>:
 __fp_cmp():
-     e9e:	99 0f       	add	r25, r25
-     ea0:	00 08       	sbc	r0, r0
-     ea2:	55 0f       	add	r21, r21
-     ea4:	aa 0b       	sbc	r26, r26
-     ea6:	e0 e8       	ldi	r30, 0x80	; 128
-     ea8:	fe ef       	ldi	r31, 0xFE	; 254
-     eaa:	16 16       	cp	r1, r22
-     eac:	17 06       	cpc	r1, r23
-     eae:	e8 07       	cpc	r30, r24
-     eb0:	f9 07       	cpc	r31, r25
-     eb2:	c0 f0       	brcs	.+48     	; 0xee4 <__fp_cmp+0x46>
-     eb4:	12 16       	cp	r1, r18
-     eb6:	13 06       	cpc	r1, r19
-     eb8:	e4 07       	cpc	r30, r20
-     eba:	f5 07       	cpc	r31, r21
-     ebc:	98 f0       	brcs	.+38     	; 0xee4 <__fp_cmp+0x46>
-     ebe:	62 1b       	sub	r22, r18
-     ec0:	73 0b       	sbc	r23, r19
-     ec2:	84 0b       	sbc	r24, r20
-     ec4:	95 0b       	sbc	r25, r21
-     ec6:	39 f4       	brne	.+14     	; 0xed6 <__fp_cmp+0x38>
-     ec8:	0a 26       	eor	r0, r26
-     eca:	61 f0       	breq	.+24     	; 0xee4 <__fp_cmp+0x46>
-     ecc:	23 2b       	or	r18, r19
-     ece:	24 2b       	or	r18, r20
-     ed0:	25 2b       	or	r18, r21
-     ed2:	21 f4       	brne	.+8      	; 0xedc <__fp_cmp+0x3e>
-     ed4:	08 95       	ret
-     ed6:	0a 26       	eor	r0, r26
-     ed8:	09 f4       	brne	.+2      	; 0xedc <__fp_cmp+0x3e>
-     eda:	a1 40       	sbci	r26, 0x01	; 1
-     edc:	a6 95       	lsr	r26
-     ede:	8f ef       	ldi	r24, 0xFF	; 255
-     ee0:	81 1d       	adc	r24, r1
-     ee2:	81 1d       	adc	r24, r1
-     ee4:	08 95       	ret
+     eb6:	99 0f       	add	r25, r25
+     eb8:	00 08       	sbc	r0, r0
+     eba:	55 0f       	add	r21, r21
+     ebc:	aa 0b       	sbc	r26, r26
+     ebe:	e0 e8       	ldi	r30, 0x80	; 128
+     ec0:	fe ef       	ldi	r31, 0xFE	; 254
+     ec2:	16 16       	cp	r1, r22
+     ec4:	17 06       	cpc	r1, r23
+     ec6:	e8 07       	cpc	r30, r24
+     ec8:	f9 07       	cpc	r31, r25
+     eca:	c0 f0       	brcs	.+48     	; 0xefc <__fp_cmp+0x46>
+     ecc:	12 16       	cp	r1, r18
+     ece:	13 06       	cpc	r1, r19
+     ed0:	e4 07       	cpc	r30, r20
+     ed2:	f5 07       	cpc	r31, r21
+     ed4:	98 f0       	brcs	.+38     	; 0xefc <__fp_cmp+0x46>
+     ed6:	62 1b       	sub	r22, r18
+     ed8:	73 0b       	sbc	r23, r19
+     eda:	84 0b       	sbc	r24, r20
+     edc:	95 0b       	sbc	r25, r21
+     ede:	39 f4       	brne	.+14     	; 0xeee <__fp_cmp+0x38>
+     ee0:	0a 26       	eor	r0, r26
+     ee2:	61 f0       	breq	.+24     	; 0xefc <__fp_cmp+0x46>
+     ee4:	23 2b       	or	r18, r19
+     ee6:	24 2b       	or	r18, r20
+     ee8:	25 2b       	or	r18, r21
+     eea:	21 f4       	brne	.+8      	; 0xef4 <__fp_cmp+0x3e>
+     eec:	08 95       	ret
+     eee:	0a 26       	eor	r0, r26
+     ef0:	09 f4       	brne	.+2      	; 0xef4 <__fp_cmp+0x3e>
+     ef2:	a1 40       	sbci	r26, 0x01	; 1
+     ef4:	a6 95       	lsr	r26
+     ef6:	8f ef       	ldi	r24, 0xFF	; 255
+     ef8:	81 1d       	adc	r24, r1
+     efa:	81 1d       	adc	r24, r1
+     efc:	08 95       	ret
 
-00000ee6 <__mulsf3>:
+00000efe <__mulsf3>:
 __mulsf3():
-     ee6:	0a d0       	rcall	.+20     	; 0xefc <__mulsf3x>
-     ee8:	80 c0       	rjmp	.+256    	; 0xfea <__fp_round>
-     eea:	71 d0       	rcall	.+226    	; 0xfce <__fp_pscA>
-     eec:	28 f0       	brcs	.+10     	; 0xef8 <__mulsf3+0x12>
-     eee:	76 d0       	rcall	.+236    	; 0xfdc <__fp_pscB>
-     ef0:	18 f0       	brcs	.+6      	; 0xef8 <__mulsf3+0x12>
-     ef2:	95 23       	and	r25, r21
-     ef4:	09 f0       	breq	.+2      	; 0xef8 <__mulsf3+0x12>
-     ef6:	62 c0       	rjmp	.+196    	; 0xfbc <__fp_inf>
-     ef8:	67 c0       	rjmp	.+206    	; 0xfc8 <__fp_nan>
-     efa:	ab c0       	rjmp	.+342    	; 0x1052 <__fp_szero>
+     efe:	0a d0       	rcall	.+20     	; 0xf14 <__mulsf3x>
+     f00:	80 c0       	rjmp	.+256    	; 0x1002 <__fp_round>
+     f02:	71 d0       	rcall	.+226    	; 0xfe6 <__fp_pscA>
+     f04:	28 f0       	brcs	.+10     	; 0xf10 <__mulsf3+0x12>
+     f06:	76 d0       	rcall	.+236    	; 0xff4 <__fp_pscB>
+     f08:	18 f0       	brcs	.+6      	; 0xf10 <__mulsf3+0x12>
+     f0a:	95 23       	and	r25, r21
+     f0c:	09 f0       	breq	.+2      	; 0xf10 <__mulsf3+0x12>
+     f0e:	62 c0       	rjmp	.+196    	; 0xfd4 <__fp_inf>
+     f10:	67 c0       	rjmp	.+206    	; 0xfe0 <__fp_nan>
+     f12:	ab c0       	rjmp	.+342    	; 0x106a <__fp_szero>
 
-00000efc <__mulsf3x>:
+00000f14 <__mulsf3x>:
 __mulsf3x():
-     efc:	87 d0       	rcall	.+270    	; 0x100c <__fp_split3>
-     efe:	a8 f3       	brcs	.-22     	; 0xeea <__mulsf3+0x4>
+     f14:	87 d0       	rcall	.+270    	; 0x1024 <__fp_split3>
+     f16:	a8 f3       	brcs	.-22     	; 0xf02 <__mulsf3+0x4>
 
-00000f00 <__mulsf3_pse>:
-     f00:	99 23       	and	r25, r25
-     f02:	d9 f3       	breq	.-10     	; 0xefa <__mulsf3+0x14>
-     f04:	55 23       	and	r21, r21
-     f06:	c9 f3       	breq	.-14     	; 0xefa <__mulsf3+0x14>
-     f08:	95 0f       	add	r25, r21
-     f0a:	50 e0       	ldi	r21, 0x00	; 0
-     f0c:	55 1f       	adc	r21, r21
-     f0e:	aa 27       	eor	r26, r26
-     f10:	ee 27       	eor	r30, r30
-     f12:	ff 27       	eor	r31, r31
-     f14:	bb 27       	eor	r27, r27
-     f16:	00 24       	eor	r0, r0
-     f18:	08 94       	sec
-     f1a:	67 95       	ror	r22
-     f1c:	20 f4       	brcc	.+8      	; 0xf26 <__mulsf3_pse+0x26>
-     f1e:	e2 0f       	add	r30, r18
-     f20:	f3 1f       	adc	r31, r19
-     f22:	b4 1f       	adc	r27, r20
-     f24:	0a 1e       	adc	r0, r26
-     f26:	22 0f       	add	r18, r18
-     f28:	33 1f       	adc	r19, r19
-     f2a:	44 1f       	adc	r20, r20
-     f2c:	aa 1f       	adc	r26, r26
-     f2e:	66 95       	lsr	r22
-     f30:	a9 f7       	brne	.-22     	; 0xf1c <__mulsf3_pse+0x1c>
-     f32:	77 95       	ror	r23
-     f34:	30 f4       	brcc	.+12     	; 0xf42 <__mulsf3_pse+0x42>
-     f36:	f3 0f       	add	r31, r19
-     f38:	b4 1f       	adc	r27, r20
-     f3a:	0a 1e       	adc	r0, r26
-     f3c:	12 1e       	adc	r1, r18
-     f3e:	08 f4       	brcc	.+2      	; 0xf42 <__mulsf3_pse+0x42>
-     f40:	63 95       	inc	r22
-     f42:	33 0f       	add	r19, r19
-     f44:	44 1f       	adc	r20, r20
-     f46:	aa 1f       	adc	r26, r26
-     f48:	22 1f       	adc	r18, r18
-     f4a:	76 95       	lsr	r23
-     f4c:	99 f7       	brne	.-26     	; 0xf34 <__mulsf3_pse+0x34>
-     f4e:	87 95       	ror	r24
-     f50:	20 f4       	brcc	.+8      	; 0xf5a <__mulsf3_pse+0x5a>
-     f52:	b4 0f       	add	r27, r20
-     f54:	0a 1e       	adc	r0, r26
-     f56:	12 1e       	adc	r1, r18
-     f58:	63 1f       	adc	r22, r19
-     f5a:	44 0f       	add	r20, r20
-     f5c:	aa 1f       	adc	r26, r26
-     f5e:	22 1f       	adc	r18, r18
-     f60:	33 1f       	adc	r19, r19
-     f62:	86 95       	lsr	r24
-     f64:	a9 f7       	brne	.-22     	; 0xf50 <__mulsf3_pse+0x50>
-     f66:	86 2f       	mov	r24, r22
-     f68:	71 2d       	mov	r23, r1
-     f6a:	60 2d       	mov	r22, r0
-     f6c:	11 24       	eor	r1, r1
-     f6e:	9f 57       	subi	r25, 0x7F	; 127
-     f70:	50 40       	sbci	r21, 0x00	; 0
-     f72:	8a f0       	brmi	.+34     	; 0xf96 <__mulsf3_pse+0x96>
-     f74:	e1 f0       	breq	.+56     	; 0xfae <__mulsf3_pse+0xae>
-     f76:	88 23       	and	r24, r24
-     f78:	4a f0       	brmi	.+18     	; 0xf8c <__mulsf3_pse+0x8c>
-     f7a:	ee 0f       	add	r30, r30
-     f7c:	ff 1f       	adc	r31, r31
-     f7e:	bb 1f       	adc	r27, r27
-     f80:	66 1f       	adc	r22, r22
-     f82:	77 1f       	adc	r23, r23
-     f84:	88 1f       	adc	r24, r24
-     f86:	91 50       	subi	r25, 0x01	; 1
+00000f18 <__mulsf3_pse>:
+     f18:	99 23       	and	r25, r25
+     f1a:	d9 f3       	breq	.-10     	; 0xf12 <__mulsf3+0x14>
+     f1c:	55 23       	and	r21, r21
+     f1e:	c9 f3       	breq	.-14     	; 0xf12 <__mulsf3+0x14>
+     f20:	95 0f       	add	r25, r21
+     f22:	50 e0       	ldi	r21, 0x00	; 0
+     f24:	55 1f       	adc	r21, r21
+     f26:	aa 27       	eor	r26, r26
+     f28:	ee 27       	eor	r30, r30
+     f2a:	ff 27       	eor	r31, r31
+     f2c:	bb 27       	eor	r27, r27
+     f2e:	00 24       	eor	r0, r0
+     f30:	08 94       	sec
+     f32:	67 95       	ror	r22
+     f34:	20 f4       	brcc	.+8      	; 0xf3e <__mulsf3_pse+0x26>
+     f36:	e2 0f       	add	r30, r18
+     f38:	f3 1f       	adc	r31, r19
+     f3a:	b4 1f       	adc	r27, r20
+     f3c:	0a 1e       	adc	r0, r26
+     f3e:	22 0f       	add	r18, r18
+     f40:	33 1f       	adc	r19, r19
+     f42:	44 1f       	adc	r20, r20
+     f44:	aa 1f       	adc	r26, r26
+     f46:	66 95       	lsr	r22
+     f48:	a9 f7       	brne	.-22     	; 0xf34 <__mulsf3_pse+0x1c>
+     f4a:	77 95       	ror	r23
+     f4c:	30 f4       	brcc	.+12     	; 0xf5a <__mulsf3_pse+0x42>
+     f4e:	f3 0f       	add	r31, r19
+     f50:	b4 1f       	adc	r27, r20
+     f52:	0a 1e       	adc	r0, r26
+     f54:	12 1e       	adc	r1, r18
+     f56:	08 f4       	brcc	.+2      	; 0xf5a <__mulsf3_pse+0x42>
+     f58:	63 95       	inc	r22
+     f5a:	33 0f       	add	r19, r19
+     f5c:	44 1f       	adc	r20, r20
+     f5e:	aa 1f       	adc	r26, r26
+     f60:	22 1f       	adc	r18, r18
+     f62:	76 95       	lsr	r23
+     f64:	99 f7       	brne	.-26     	; 0xf4c <__mulsf3_pse+0x34>
+     f66:	87 95       	ror	r24
+     f68:	20 f4       	brcc	.+8      	; 0xf72 <__mulsf3_pse+0x5a>
+     f6a:	b4 0f       	add	r27, r20
+     f6c:	0a 1e       	adc	r0, r26
+     f6e:	12 1e       	adc	r1, r18
+     f70:	63 1f       	adc	r22, r19
+     f72:	44 0f       	add	r20, r20
+     f74:	aa 1f       	adc	r26, r26
+     f76:	22 1f       	adc	r18, r18
+     f78:	33 1f       	adc	r19, r19
+     f7a:	86 95       	lsr	r24
+     f7c:	a9 f7       	brne	.-22     	; 0xf68 <__mulsf3_pse+0x50>
+     f7e:	86 2f       	mov	r24, r22
+     f80:	71 2d       	mov	r23, r1
+     f82:	60 2d       	mov	r22, r0
+     f84:	11 24       	eor	r1, r1
+     f86:	9f 57       	subi	r25, 0x7F	; 127
      f88:	50 40       	sbci	r21, 0x00	; 0
-     f8a:	a9 f7       	brne	.-22     	; 0xf76 <__mulsf3_pse+0x76>
-     f8c:	9e 3f       	cpi	r25, 0xFE	; 254
-     f8e:	51 05       	cpc	r21, r1
-     f90:	70 f0       	brcs	.+28     	; 0xfae <__mulsf3_pse+0xae>
-     f92:	14 c0       	rjmp	.+40     	; 0xfbc <__fp_inf>
-     f94:	5e c0       	rjmp	.+188    	; 0x1052 <__fp_szero>
-     f96:	5f 3f       	cpi	r21, 0xFF	; 255
-     f98:	ec f3       	brlt	.-6      	; 0xf94 <__mulsf3_pse+0x94>
-     f9a:	98 3e       	cpi	r25, 0xE8	; 232
-     f9c:	dc f3       	brlt	.-10     	; 0xf94 <__mulsf3_pse+0x94>
-     f9e:	86 95       	lsr	r24
-     fa0:	77 95       	ror	r23
-     fa2:	67 95       	ror	r22
-     fa4:	b7 95       	ror	r27
-     fa6:	f7 95       	ror	r31
-     fa8:	e7 95       	ror	r30
-     faa:	9f 5f       	subi	r25, 0xFF	; 255
-     fac:	c1 f7       	brne	.-16     	; 0xf9e <__mulsf3_pse+0x9e>
-     fae:	fe 2b       	or	r31, r30
-     fb0:	88 0f       	add	r24, r24
-     fb2:	91 1d       	adc	r25, r1
-     fb4:	96 95       	lsr	r25
-     fb6:	87 95       	ror	r24
-     fb8:	97 f9       	bld	r25, 7
-     fba:	08 95       	ret
+     f8a:	8a f0       	brmi	.+34     	; 0xfae <__mulsf3_pse+0x96>
+     f8c:	e1 f0       	breq	.+56     	; 0xfc6 <__mulsf3_pse+0xae>
+     f8e:	88 23       	and	r24, r24
+     f90:	4a f0       	brmi	.+18     	; 0xfa4 <__mulsf3_pse+0x8c>
+     f92:	ee 0f       	add	r30, r30
+     f94:	ff 1f       	adc	r31, r31
+     f96:	bb 1f       	adc	r27, r27
+     f98:	66 1f       	adc	r22, r22
+     f9a:	77 1f       	adc	r23, r23
+     f9c:	88 1f       	adc	r24, r24
+     f9e:	91 50       	subi	r25, 0x01	; 1
+     fa0:	50 40       	sbci	r21, 0x00	; 0
+     fa2:	a9 f7       	brne	.-22     	; 0xf8e <__mulsf3_pse+0x76>
+     fa4:	9e 3f       	cpi	r25, 0xFE	; 254
+     fa6:	51 05       	cpc	r21, r1
+     fa8:	70 f0       	brcs	.+28     	; 0xfc6 <__mulsf3_pse+0xae>
+     faa:	14 c0       	rjmp	.+40     	; 0xfd4 <__fp_inf>
+     fac:	5e c0       	rjmp	.+188    	; 0x106a <__fp_szero>
+     fae:	5f 3f       	cpi	r21, 0xFF	; 255
+     fb0:	ec f3       	brlt	.-6      	; 0xfac <__mulsf3_pse+0x94>
+     fb2:	98 3e       	cpi	r25, 0xE8	; 232
+     fb4:	dc f3       	brlt	.-10     	; 0xfac <__mulsf3_pse+0x94>
+     fb6:	86 95       	lsr	r24
+     fb8:	77 95       	ror	r23
+     fba:	67 95       	ror	r22
+     fbc:	b7 95       	ror	r27
+     fbe:	f7 95       	ror	r31
+     fc0:	e7 95       	ror	r30
+     fc2:	9f 5f       	subi	r25, 0xFF	; 255
+     fc4:	c1 f7       	brne	.-16     	; 0xfb6 <__mulsf3_pse+0x9e>
+     fc6:	fe 2b       	or	r31, r30
+     fc8:	88 0f       	add	r24, r24
+     fca:	91 1d       	adc	r25, r1
+     fcc:	96 95       	lsr	r25
+     fce:	87 95       	ror	r24
+     fd0:	97 f9       	bld	r25, 7
+     fd2:	08 95       	ret
 
-00000fbc <__fp_inf>:
-     fbc:	97 f9       	bld	r25, 7
-     fbe:	9f 67       	ori	r25, 0x7F	; 127
-     fc0:	80 e8       	ldi	r24, 0x80	; 128
-     fc2:	70 e0       	ldi	r23, 0x00	; 0
-     fc4:	60 e0       	ldi	r22, 0x00	; 0
-     fc6:	08 95       	ret
+00000fd4 <__fp_inf>:
+     fd4:	97 f9       	bld	r25, 7
+     fd6:	9f 67       	ori	r25, 0x7F	; 127
+     fd8:	80 e8       	ldi	r24, 0x80	; 128
+     fda:	70 e0       	ldi	r23, 0x00	; 0
+     fdc:	60 e0       	ldi	r22, 0x00	; 0
+     fde:	08 95       	ret
 
-00000fc8 <__fp_nan>:
-     fc8:	9f ef       	ldi	r25, 0xFF	; 255
-     fca:	80 ec       	ldi	r24, 0xC0	; 192
-     fcc:	08 95       	ret
+00000fe0 <__fp_nan>:
+     fe0:	9f ef       	ldi	r25, 0xFF	; 255
+     fe2:	80 ec       	ldi	r24, 0xC0	; 192
+     fe4:	08 95       	ret
 
-00000fce <__fp_pscA>:
+00000fe6 <__fp_pscA>:
 __fp_pscA():
-     fce:	00 24       	eor	r0, r0
-     fd0:	0a 94       	dec	r0
-     fd2:	16 16       	cp	r1, r22
-     fd4:	17 06       	cpc	r1, r23
-     fd6:	18 06       	cpc	r1, r24
-     fd8:	09 06       	cpc	r0, r25
-     fda:	08 95       	ret
+     fe6:	00 24       	eor	r0, r0
+     fe8:	0a 94       	dec	r0
+     fea:	16 16       	cp	r1, r22
+     fec:	17 06       	cpc	r1, r23
+     fee:	18 06       	cpc	r1, r24
+     ff0:	09 06       	cpc	r0, r25
+     ff2:	08 95       	ret
 
-00000fdc <__fp_pscB>:
+00000ff4 <__fp_pscB>:
 __fp_pscB():
-     fdc:	00 24       	eor	r0, r0
-     fde:	0a 94       	dec	r0
-     fe0:	12 16       	cp	r1, r18
-     fe2:	13 06       	cpc	r1, r19
-     fe4:	14 06       	cpc	r1, r20
-     fe6:	05 06       	cpc	r0, r21
-     fe8:	08 95       	ret
+     ff4:	00 24       	eor	r0, r0
+     ff6:	0a 94       	dec	r0
+     ff8:	12 16       	cp	r1, r18
+     ffa:	13 06       	cpc	r1, r19
+     ffc:	14 06       	cpc	r1, r20
+     ffe:	05 06       	cpc	r0, r21
+    1000:	08 95       	ret
 
-00000fea <__fp_round>:
+00001002 <__fp_round>:
 __fp_round():
-     fea:	09 2e       	mov	r0, r25
-     fec:	03 94       	inc	r0
-     fee:	00 0c       	add	r0, r0
-     ff0:	11 f4       	brne	.+4      	; 0xff6 <__fp_round+0xc>
-     ff2:	88 23       	and	r24, r24
-     ff4:	52 f0       	brmi	.+20     	; 0x100a <__fp_round+0x20>
-     ff6:	bb 0f       	add	r27, r27
-     ff8:	40 f4       	brcc	.+16     	; 0x100a <__fp_round+0x20>
-     ffa:	bf 2b       	or	r27, r31
-     ffc:	11 f4       	brne	.+4      	; 0x1002 <__fp_round+0x18>
-     ffe:	60 ff       	sbrs	r22, 0
-    1000:	04 c0       	rjmp	.+8      	; 0x100a <__fp_round+0x20>
-    1002:	6f 5f       	subi	r22, 0xFF	; 255
-    1004:	7f 4f       	sbci	r23, 0xFF	; 255
-    1006:	8f 4f       	sbci	r24, 0xFF	; 255
-    1008:	9f 4f       	sbci	r25, 0xFF	; 255
-    100a:	08 95       	ret
+    1002:	09 2e       	mov	r0, r25
+    1004:	03 94       	inc	r0
+    1006:	00 0c       	add	r0, r0
+    1008:	11 f4       	brne	.+4      	; 0x100e <__fp_round+0xc>
+    100a:	88 23       	and	r24, r24
+    100c:	52 f0       	brmi	.+20     	; 0x1022 <__fp_round+0x20>
+    100e:	bb 0f       	add	r27, r27
+    1010:	40 f4       	brcc	.+16     	; 0x1022 <__fp_round+0x20>
+    1012:	bf 2b       	or	r27, r31
+    1014:	11 f4       	brne	.+4      	; 0x101a <__fp_round+0x18>
+    1016:	60 ff       	sbrs	r22, 0
+    1018:	04 c0       	rjmp	.+8      	; 0x1022 <__fp_round+0x20>
+    101a:	6f 5f       	subi	r22, 0xFF	; 255
+    101c:	7f 4f       	sbci	r23, 0xFF	; 255
+    101e:	8f 4f       	sbci	r24, 0xFF	; 255
+    1020:	9f 4f       	sbci	r25, 0xFF	; 255
+    1022:	08 95       	ret
 
-0000100c <__fp_split3>:
+00001024 <__fp_split3>:
 __fp_split3():
-    100c:	57 fd       	sbrc	r21, 7
-    100e:	90 58       	subi	r25, 0x80	; 128
-    1010:	44 0f       	add	r20, r20
-    1012:	55 1f       	adc	r21, r21
-    1014:	59 f0       	breq	.+22     	; 0x102c <__fp_splitA+0x10>
-    1016:	5f 3f       	cpi	r21, 0xFF	; 255
-    1018:	71 f0       	breq	.+28     	; 0x1036 <__fp_splitA+0x1a>
-    101a:	47 95       	ror	r20
+    1024:	57 fd       	sbrc	r21, 7
+    1026:	90 58       	subi	r25, 0x80	; 128
+    1028:	44 0f       	add	r20, r20
+    102a:	55 1f       	adc	r21, r21
+    102c:	59 f0       	breq	.+22     	; 0x1044 <__fp_splitA+0x10>
+    102e:	5f 3f       	cpi	r21, 0xFF	; 255
+    1030:	71 f0       	breq	.+28     	; 0x104e <__fp_splitA+0x1a>
+    1032:	47 95       	ror	r20
 
-0000101c <__fp_splitA>:
-    101c:	88 0f       	add	r24, r24
-    101e:	97 fb       	bst	r25, 7
-    1020:	99 1f       	adc	r25, r25
-    1022:	61 f0       	breq	.+24     	; 0x103c <__fp_splitA+0x20>
-    1024:	9f 3f       	cpi	r25, 0xFF	; 255
-    1026:	79 f0       	breq	.+30     	; 0x1046 <__fp_splitA+0x2a>
-    1028:	87 95       	ror	r24
-    102a:	08 95       	ret
-    102c:	12 16       	cp	r1, r18
-    102e:	13 06       	cpc	r1, r19
-    1030:	14 06       	cpc	r1, r20
-    1032:	55 1f       	adc	r21, r21
-    1034:	f2 cf       	rjmp	.-28     	; 0x101a <__fp_split3+0xe>
-    1036:	46 95       	lsr	r20
-    1038:	f1 df       	rcall	.-30     	; 0x101c <__fp_splitA>
-    103a:	08 c0       	rjmp	.+16     	; 0x104c <__fp_splitA+0x30>
-    103c:	16 16       	cp	r1, r22
-    103e:	17 06       	cpc	r1, r23
-    1040:	18 06       	cpc	r1, r24
-    1042:	99 1f       	adc	r25, r25
-    1044:	f1 cf       	rjmp	.-30     	; 0x1028 <__fp_splitA+0xc>
-    1046:	86 95       	lsr	r24
-    1048:	71 05       	cpc	r23, r1
-    104a:	61 05       	cpc	r22, r1
-    104c:	08 94       	sec
-    104e:	08 95       	ret
+00001034 <__fp_splitA>:
+    1034:	88 0f       	add	r24, r24
+    1036:	97 fb       	bst	r25, 7
+    1038:	99 1f       	adc	r25, r25
+    103a:	61 f0       	breq	.+24     	; 0x1054 <__fp_splitA+0x20>
+    103c:	9f 3f       	cpi	r25, 0xFF	; 255
+    103e:	79 f0       	breq	.+30     	; 0x105e <__fp_splitA+0x2a>
+    1040:	87 95       	ror	r24
+    1042:	08 95       	ret
+    1044:	12 16       	cp	r1, r18
+    1046:	13 06       	cpc	r1, r19
+    1048:	14 06       	cpc	r1, r20
+    104a:	55 1f       	adc	r21, r21
+    104c:	f2 cf       	rjmp	.-28     	; 0x1032 <__fp_split3+0xe>
+    104e:	46 95       	lsr	r20
+    1050:	f1 df       	rcall	.-30     	; 0x1034 <__fp_splitA>
+    1052:	08 c0       	rjmp	.+16     	; 0x1064 <__fp_splitA+0x30>
+    1054:	16 16       	cp	r1, r22
+    1056:	17 06       	cpc	r1, r23
+    1058:	18 06       	cpc	r1, r24
+    105a:	99 1f       	adc	r25, r25
+    105c:	f1 cf       	rjmp	.-30     	; 0x1040 <__fp_splitA+0xc>
+    105e:	86 95       	lsr	r24
+    1060:	71 05       	cpc	r23, r1
+    1062:	61 05       	cpc	r22, r1
+    1064:	08 94       	sec
+    1066:	08 95       	ret
 
-00001050 <__fp_zero>:
+00001068 <__fp_zero>:
 __fp_zero():
-    1050:	e8 94       	clt
+    1068:	e8 94       	clt
 
-00001052 <__fp_szero>:
-    1052:	bb 27       	eor	r27, r27
-    1054:	66 27       	eor	r22, r22
-    1056:	77 27       	eor	r23, r23
-    1058:	cb 01       	movw	r24, r22
-    105a:	97 f9       	bld	r25, 7
-    105c:	08 95       	ret
+0000106a <__fp_szero>:
+    106a:	bb 27       	eor	r27, r27
+    106c:	66 27       	eor	r22, r22
+    106e:	77 27       	eor	r23, r23
+    1070:	cb 01       	movw	r24, r22
+    1072:	97 f9       	bld	r25, 7
+    1074:	08 95       	ret
 
-0000105e <__mulqi3>:
+00001076 <__mulqi3>:
 __mulqi3():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:224
-    105e:	00 24       	eor	r0, r0
+    1076:	00 24       	eor	r0, r0
 
-00001060 <__mulqi3_loop>:
+00001078 <__mulqi3_loop>:
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:226
-    1060:	80 fd       	sbrc	r24, 0
+    1078:	80 fd       	sbrc	r24, 0
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:227
-    1062:	06 0e       	add	r0, r22
+    107a:	06 0e       	add	r0, r22
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:228
-    1064:	66 0f       	add	r22, r22
+    107c:	66 0f       	add	r22, r22
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:229
-    1066:	11 f0       	breq	.+4      	; 0x106c <__mulqi3_exit>
+    107e:	11 f0       	breq	.+4      	; 0x1084 <__mulqi3_exit>
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:230
-    1068:	86 95       	lsr	r24
+    1080:	86 95       	lsr	r24
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:231
-    106a:	d1 f7       	brne	.-12     	; 0x1060 <__mulqi3_loop>
+    1082:	d1 f7       	brne	.-12     	; 0x1078 <__mulqi3_loop>
 
-0000106c <__mulqi3_exit>:
+00001084 <__mulqi3_exit>:
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:233
-    106c:	80 2d       	mov	r24, r0
+    1084:	80 2d       	mov	r24, r0
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:234
-    106e:	08 95       	ret
+    1086:	08 95       	ret
 
-00001070 <__subsf3>:
+00001088 <__subsf3>:
 __subsf3():
-    1070:	50 58       	subi	r21, 0x80	; 128
+    1088:	50 58       	subi	r21, 0x80	; 128
 
-00001072 <__addsf3>:
-    1072:	bb 27       	eor	r27, r27
-    1074:	aa 27       	eor	r26, r26
-    1076:	0e d0       	rcall	.+28     	; 0x1094 <__addsf3x>
-    1078:	b8 cf       	rjmp	.-144    	; 0xfea <__fp_round>
+0000108a <__addsf3>:
+    108a:	bb 27       	eor	r27, r27
+    108c:	aa 27       	eor	r26, r26
+    108e:	0e d0       	rcall	.+28     	; 0x10ac <__addsf3x>
+    1090:	b8 cf       	rjmp	.-144    	; 0x1002 <__fp_round>
 __addsf3():
-    107a:	a9 df       	rcall	.-174    	; 0xfce <__fp_pscA>
-    107c:	30 f0       	brcs	.+12     	; 0x108a <__addsf3+0x18>
-    107e:	ae df       	rcall	.-164    	; 0xfdc <__fp_pscB>
-    1080:	20 f0       	brcs	.+8      	; 0x108a <__addsf3+0x18>
-    1082:	31 f4       	brne	.+12     	; 0x1090 <__addsf3+0x1e>
-    1084:	9f 3f       	cpi	r25, 0xFF	; 255
-    1086:	11 f4       	brne	.+4      	; 0x108c <__addsf3+0x1a>
-    1088:	1e f4       	brtc	.+6      	; 0x1090 <__addsf3+0x1e>
-    108a:	9e cf       	rjmp	.-196    	; 0xfc8 <__fp_nan>
-    108c:	0e f4       	brtc	.+2      	; 0x1090 <__addsf3+0x1e>
-    108e:	e0 95       	com	r30
-    1090:	e7 fb       	bst	r30, 7
-    1092:	94 cf       	rjmp	.-216    	; 0xfbc <__fp_inf>
+    1092:	a9 df       	rcall	.-174    	; 0xfe6 <__fp_pscA>
+    1094:	30 f0       	brcs	.+12     	; 0x10a2 <__addsf3+0x18>
+    1096:	ae df       	rcall	.-164    	; 0xff4 <__fp_pscB>
+    1098:	20 f0       	brcs	.+8      	; 0x10a2 <__addsf3+0x18>
+    109a:	31 f4       	brne	.+12     	; 0x10a8 <__addsf3+0x1e>
+    109c:	9f 3f       	cpi	r25, 0xFF	; 255
+    109e:	11 f4       	brne	.+4      	; 0x10a4 <__addsf3+0x1a>
+    10a0:	1e f4       	brtc	.+6      	; 0x10a8 <__addsf3+0x1e>
+    10a2:	9e cf       	rjmp	.-196    	; 0xfe0 <__fp_nan>
+    10a4:	0e f4       	brtc	.+2      	; 0x10a8 <__addsf3+0x1e>
+    10a6:	e0 95       	com	r30
+    10a8:	e7 fb       	bst	r30, 7
+    10aa:	94 cf       	rjmp	.-216    	; 0xfd4 <__fp_inf>
 
-00001094 <__addsf3x>:
+000010ac <__addsf3x>:
 __addsf3x():
-    1094:	e9 2f       	mov	r30, r25
-    1096:	ba df       	rcall	.-140    	; 0x100c <__fp_split3>
-    1098:	80 f3       	brcs	.-32     	; 0x107a <__addsf3+0x8>
-    109a:	ba 17       	cp	r27, r26
-    109c:	62 07       	cpc	r22, r18
-    109e:	73 07       	cpc	r23, r19
-    10a0:	84 07       	cpc	r24, r20
-    10a2:	95 07       	cpc	r25, r21
-    10a4:	18 f0       	brcs	.+6      	; 0x10ac <__addsf3x+0x18>
-    10a6:	71 f4       	brne	.+28     	; 0x10c4 <__addsf3x+0x30>
-    10a8:	9e f5       	brtc	.+102    	; 0x1110 <__addsf3x+0x7c>
-    10aa:	d2 cf       	rjmp	.-92     	; 0x1050 <__fp_zero>
-    10ac:	0e f4       	brtc	.+2      	; 0x10b0 <__addsf3x+0x1c>
-    10ae:	e0 95       	com	r30
-    10b0:	0b 2e       	mov	r0, r27
-    10b2:	ba 2f       	mov	r27, r26
-    10b4:	a0 2d       	mov	r26, r0
-    10b6:	0b 01       	movw	r0, r22
-    10b8:	b9 01       	movw	r22, r18
-    10ba:	90 01       	movw	r18, r0
-    10bc:	0c 01       	movw	r0, r24
-    10be:	ca 01       	movw	r24, r20
-    10c0:	a0 01       	movw	r20, r0
-    10c2:	11 24       	eor	r1, r1
-    10c4:	ff 27       	eor	r31, r31
-    10c6:	59 1b       	sub	r21, r25
-    10c8:	99 f0       	breq	.+38     	; 0x10f0 <__addsf3x+0x5c>
-    10ca:	59 3f       	cpi	r21, 0xF9	; 249
-    10cc:	50 f4       	brcc	.+20     	; 0x10e2 <__addsf3x+0x4e>
-    10ce:	50 3e       	cpi	r21, 0xE0	; 224
-    10d0:	68 f1       	brcs	.+90     	; 0x112c <__addsf3x+0x98>
-    10d2:	1a 16       	cp	r1, r26
-    10d4:	f0 40       	sbci	r31, 0x00	; 0
-    10d6:	a2 2f       	mov	r26, r18
-    10d8:	23 2f       	mov	r18, r19
-    10da:	34 2f       	mov	r19, r20
-    10dc:	44 27       	eor	r20, r20
-    10de:	58 5f       	subi	r21, 0xF8	; 248
-    10e0:	f3 cf       	rjmp	.-26     	; 0x10c8 <__addsf3x+0x34>
-    10e2:	46 95       	lsr	r20
-    10e4:	37 95       	ror	r19
-    10e6:	27 95       	ror	r18
-    10e8:	a7 95       	ror	r26
-    10ea:	f0 40       	sbci	r31, 0x00	; 0
-    10ec:	53 95       	inc	r21
-    10ee:	c9 f7       	brne	.-14     	; 0x10e2 <__addsf3x+0x4e>
-    10f0:	7e f4       	brtc	.+30     	; 0x1110 <__addsf3x+0x7c>
-    10f2:	1f 16       	cp	r1, r31
-    10f4:	ba 0b       	sbc	r27, r26
-    10f6:	62 0b       	sbc	r22, r18
-    10f8:	73 0b       	sbc	r23, r19
-    10fa:	84 0b       	sbc	r24, r20
-    10fc:	ba f0       	brmi	.+46     	; 0x112c <__addsf3x+0x98>
-    10fe:	91 50       	subi	r25, 0x01	; 1
-    1100:	a1 f0       	breq	.+40     	; 0x112a <__addsf3x+0x96>
-    1102:	ff 0f       	add	r31, r31
-    1104:	bb 1f       	adc	r27, r27
-    1106:	66 1f       	adc	r22, r22
-    1108:	77 1f       	adc	r23, r23
-    110a:	88 1f       	adc	r24, r24
-    110c:	c2 f7       	brpl	.-16     	; 0x10fe <__addsf3x+0x6a>
-    110e:	0e c0       	rjmp	.+28     	; 0x112c <__addsf3x+0x98>
-    1110:	ba 0f       	add	r27, r26
-    1112:	62 1f       	adc	r22, r18
-    1114:	73 1f       	adc	r23, r19
-    1116:	84 1f       	adc	r24, r20
-    1118:	48 f4       	brcc	.+18     	; 0x112c <__addsf3x+0x98>
-    111a:	87 95       	ror	r24
-    111c:	77 95       	ror	r23
-    111e:	67 95       	ror	r22
-    1120:	b7 95       	ror	r27
-    1122:	f7 95       	ror	r31
-    1124:	9e 3f       	cpi	r25, 0xFE	; 254
-    1126:	08 f0       	brcs	.+2      	; 0x112a <__addsf3x+0x96>
-    1128:	b3 cf       	rjmp	.-154    	; 0x1090 <__addsf3+0x1e>
-    112a:	93 95       	inc	r25
-    112c:	88 0f       	add	r24, r24
-    112e:	08 f0       	brcs	.+2      	; 0x1132 <__addsf3x+0x9e>
-    1130:	99 27       	eor	r25, r25
-    1132:	ee 0f       	add	r30, r30
-    1134:	97 95       	ror	r25
-    1136:	87 95       	ror	r24
-    1138:	08 95       	ret
+    10ac:	e9 2f       	mov	r30, r25
+    10ae:	ba df       	rcall	.-140    	; 0x1024 <__fp_split3>
+    10b0:	80 f3       	brcs	.-32     	; 0x1092 <__addsf3+0x8>
+    10b2:	ba 17       	cp	r27, r26
+    10b4:	62 07       	cpc	r22, r18
+    10b6:	73 07       	cpc	r23, r19
+    10b8:	84 07       	cpc	r24, r20
+    10ba:	95 07       	cpc	r25, r21
+    10bc:	18 f0       	brcs	.+6      	; 0x10c4 <__addsf3x+0x18>
+    10be:	71 f4       	brne	.+28     	; 0x10dc <__addsf3x+0x30>
+    10c0:	9e f5       	brtc	.+102    	; 0x1128 <__addsf3x+0x7c>
+    10c2:	d2 cf       	rjmp	.-92     	; 0x1068 <__fp_zero>
+    10c4:	0e f4       	brtc	.+2      	; 0x10c8 <__addsf3x+0x1c>
+    10c6:	e0 95       	com	r30
+    10c8:	0b 2e       	mov	r0, r27
+    10ca:	ba 2f       	mov	r27, r26
+    10cc:	a0 2d       	mov	r26, r0
+    10ce:	0b 01       	movw	r0, r22
+    10d0:	b9 01       	movw	r22, r18
+    10d2:	90 01       	movw	r18, r0
+    10d4:	0c 01       	movw	r0, r24
+    10d6:	ca 01       	movw	r24, r20
+    10d8:	a0 01       	movw	r20, r0
+    10da:	11 24       	eor	r1, r1
+    10dc:	ff 27       	eor	r31, r31
+    10de:	59 1b       	sub	r21, r25
+    10e0:	99 f0       	breq	.+38     	; 0x1108 <__addsf3x+0x5c>
+    10e2:	59 3f       	cpi	r21, 0xF9	; 249
+    10e4:	50 f4       	brcc	.+20     	; 0x10fa <__addsf3x+0x4e>
+    10e6:	50 3e       	cpi	r21, 0xE0	; 224
+    10e8:	68 f1       	brcs	.+90     	; 0x1144 <__addsf3x+0x98>
+    10ea:	1a 16       	cp	r1, r26
+    10ec:	f0 40       	sbci	r31, 0x00	; 0
+    10ee:	a2 2f       	mov	r26, r18
+    10f0:	23 2f       	mov	r18, r19
+    10f2:	34 2f       	mov	r19, r20
+    10f4:	44 27       	eor	r20, r20
+    10f6:	58 5f       	subi	r21, 0xF8	; 248
+    10f8:	f3 cf       	rjmp	.-26     	; 0x10e0 <__addsf3x+0x34>
+    10fa:	46 95       	lsr	r20
+    10fc:	37 95       	ror	r19
+    10fe:	27 95       	ror	r18
+    1100:	a7 95       	ror	r26
+    1102:	f0 40       	sbci	r31, 0x00	; 0
+    1104:	53 95       	inc	r21
+    1106:	c9 f7       	brne	.-14     	; 0x10fa <__addsf3x+0x4e>
+    1108:	7e f4       	brtc	.+30     	; 0x1128 <__addsf3x+0x7c>
+    110a:	1f 16       	cp	r1, r31
+    110c:	ba 0b       	sbc	r27, r26
+    110e:	62 0b       	sbc	r22, r18
+    1110:	73 0b       	sbc	r23, r19
+    1112:	84 0b       	sbc	r24, r20
+    1114:	ba f0       	brmi	.+46     	; 0x1144 <__addsf3x+0x98>
+    1116:	91 50       	subi	r25, 0x01	; 1
+    1118:	a1 f0       	breq	.+40     	; 0x1142 <__addsf3x+0x96>
+    111a:	ff 0f       	add	r31, r31
+    111c:	bb 1f       	adc	r27, r27
+    111e:	66 1f       	adc	r22, r22
+    1120:	77 1f       	adc	r23, r23
+    1122:	88 1f       	adc	r24, r24
+    1124:	c2 f7       	brpl	.-16     	; 0x1116 <__addsf3x+0x6a>
+    1126:	0e c0       	rjmp	.+28     	; 0x1144 <__addsf3x+0x98>
+    1128:	ba 0f       	add	r27, r26
+    112a:	62 1f       	adc	r22, r18
+    112c:	73 1f       	adc	r23, r19
+    112e:	84 1f       	adc	r24, r20
+    1130:	48 f4       	brcc	.+18     	; 0x1144 <__addsf3x+0x98>
+    1132:	87 95       	ror	r24
+    1134:	77 95       	ror	r23
+    1136:	67 95       	ror	r22
+    1138:	b7 95       	ror	r27
+    113a:	f7 95       	ror	r31
+    113c:	9e 3f       	cpi	r25, 0xFE	; 254
+    113e:	08 f0       	brcs	.+2      	; 0x1142 <__addsf3x+0x96>
+    1140:	b3 cf       	rjmp	.-154    	; 0x10a8 <__addsf3+0x1e>
+    1142:	93 95       	inc	r25
+    1144:	88 0f       	add	r24, r24
+    1146:	08 f0       	brcs	.+2      	; 0x114a <__addsf3x+0x9e>
+    1148:	99 27       	eor	r25, r25
+    114a:	ee 0f       	add	r30, r30
+    114c:	97 95       	ror	r25
+    114e:	87 95       	ror	r24
+    1150:	08 95       	ret
 
-0000113a <__fixsfsi>:
-    113a:	04 d0       	rcall	.+8      	; 0x1144 <__fixunssfsi>
-    113c:	68 94       	set
-    113e:	b1 11       	cpse	r27, r1
-    1140:	88 cf       	rjmp	.-240    	; 0x1052 <__fp_szero>
-    1142:	08 95       	ret
+00001152 <__fixsfsi>:
+    1152:	04 d0       	rcall	.+8      	; 0x115c <__fixunssfsi>
+    1154:	68 94       	set
+    1156:	b1 11       	cpse	r27, r1
+    1158:	88 cf       	rjmp	.-240    	; 0x106a <__fp_szero>
+    115a:	08 95       	ret
 
-00001144 <__fixunssfsi>:
-    1144:	6b df       	rcall	.-298    	; 0x101c <__fp_splitA>
-    1146:	88 f0       	brcs	.+34     	; 0x116a <__fixunssfsi+0x26>
-    1148:	9f 57       	subi	r25, 0x7F	; 127
-    114a:	90 f0       	brcs	.+36     	; 0x1170 <__fixunssfsi+0x2c>
-    114c:	b9 2f       	mov	r27, r25
-    114e:	99 27       	eor	r25, r25
-    1150:	b7 51       	subi	r27, 0x17	; 23
-    1152:	a0 f0       	brcs	.+40     	; 0x117c <__fixunssfsi+0x38>
+0000115c <__fixunssfsi>:
+    115c:	6b df       	rcall	.-298    	; 0x1034 <__fp_splitA>
+    115e:	88 f0       	brcs	.+34     	; 0x1182 <__fixunssfsi+0x26>
+    1160:	9f 57       	subi	r25, 0x7F	; 127
+    1162:	90 f0       	brcs	.+36     	; 0x1188 <__fixunssfsi+0x2c>
+    1164:	b9 2f       	mov	r27, r25
+    1166:	99 27       	eor	r25, r25
+    1168:	b7 51       	subi	r27, 0x17	; 23
+    116a:	a0 f0       	brcs	.+40     	; 0x1194 <__fixunssfsi+0x38>
 __fixunssfsi():
-    1154:	d1 f0       	breq	.+52     	; 0x118a <__fixunssfsi+0x46>
-    1156:	66 0f       	add	r22, r22
-    1158:	77 1f       	adc	r23, r23
-    115a:	88 1f       	adc	r24, r24
-    115c:	99 1f       	adc	r25, r25
-    115e:	1a f0       	brmi	.+6      	; 0x1166 <__fixunssfsi+0x22>
-    1160:	ba 95       	dec	r27
-    1162:	c9 f7       	brne	.-14     	; 0x1156 <__fixunssfsi+0x12>
-    1164:	12 c0       	rjmp	.+36     	; 0x118a <__fixunssfsi+0x46>
-    1166:	b1 30       	cpi	r27, 0x01	; 1
-    1168:	81 f0       	breq	.+32     	; 0x118a <__fixunssfsi+0x46>
-    116a:	72 df       	rcall	.-284    	; 0x1050 <__fp_zero>
-    116c:	b1 e0       	ldi	r27, 0x01	; 1
-    116e:	08 95       	ret
-    1170:	6f cf       	rjmp	.-290    	; 0x1050 <__fp_zero>
-    1172:	67 2f       	mov	r22, r23
-    1174:	78 2f       	mov	r23, r24
-    1176:	88 27       	eor	r24, r24
-    1178:	b8 5f       	subi	r27, 0xF8	; 248
-    117a:	39 f0       	breq	.+14     	; 0x118a <__fixunssfsi+0x46>
-    117c:	b9 3f       	cpi	r27, 0xF9	; 249
-    117e:	cc f3       	brlt	.-14     	; 0x1172 <__fixunssfsi+0x2e>
-    1180:	86 95       	lsr	r24
-    1182:	77 95       	ror	r23
-    1184:	67 95       	ror	r22
-    1186:	b3 95       	inc	r27
-    1188:	d9 f7       	brne	.-10     	; 0x1180 <__fixunssfsi+0x3c>
-    118a:	3e f4       	brtc	.+14     	; 0x119a <__fixunssfsi+0x56>
-    118c:	90 95       	com	r25
-    118e:	80 95       	com	r24
-    1190:	70 95       	com	r23
-    1192:	61 95       	neg	r22
-    1194:	7f 4f       	sbci	r23, 0xFF	; 255
-    1196:	8f 4f       	sbci	r24, 0xFF	; 255
-    1198:	9f 4f       	sbci	r25, 0xFF	; 255
-    119a:	08 95       	ret
+    116c:	d1 f0       	breq	.+52     	; 0x11a2 <__fixunssfsi+0x46>
+    116e:	66 0f       	add	r22, r22
+    1170:	77 1f       	adc	r23, r23
+    1172:	88 1f       	adc	r24, r24
+    1174:	99 1f       	adc	r25, r25
+    1176:	1a f0       	brmi	.+6      	; 0x117e <__fixunssfsi+0x22>
+    1178:	ba 95       	dec	r27
+    117a:	c9 f7       	brne	.-14     	; 0x116e <__fixunssfsi+0x12>
+    117c:	12 c0       	rjmp	.+36     	; 0x11a2 <__fixunssfsi+0x46>
+    117e:	b1 30       	cpi	r27, 0x01	; 1
+    1180:	81 f0       	breq	.+32     	; 0x11a2 <__fixunssfsi+0x46>
+    1182:	72 df       	rcall	.-284    	; 0x1068 <__fp_zero>
+    1184:	b1 e0       	ldi	r27, 0x01	; 1
+    1186:	08 95       	ret
+    1188:	6f cf       	rjmp	.-290    	; 0x1068 <__fp_zero>
+    118a:	67 2f       	mov	r22, r23
+    118c:	78 2f       	mov	r23, r24
+    118e:	88 27       	eor	r24, r24
+    1190:	b8 5f       	subi	r27, 0xF8	; 248
+    1192:	39 f0       	breq	.+14     	; 0x11a2 <__fixunssfsi+0x46>
+    1194:	b9 3f       	cpi	r27, 0xF9	; 249
+    1196:	cc f3       	brlt	.-14     	; 0x118a <__fixunssfsi+0x2e>
+    1198:	86 95       	lsr	r24
+    119a:	77 95       	ror	r23
+    119c:	67 95       	ror	r22
+    119e:	b3 95       	inc	r27
+    11a0:	d9 f7       	brne	.-10     	; 0x1198 <__fixunssfsi+0x3c>
+    11a2:	3e f4       	brtc	.+14     	; 0x11b2 <__fixunssfsi+0x56>
+    11a4:	90 95       	com	r25
+    11a6:	80 95       	com	r24
+    11a8:	70 95       	com	r23
+    11aa:	61 95       	neg	r22
+    11ac:	7f 4f       	sbci	r23, 0xFF	; 255
+    11ae:	8f 4f       	sbci	r24, 0xFF	; 255
+    11b0:	9f 4f       	sbci	r25, 0xFF	; 255
+    11b2:	08 95       	ret
 
-0000119c <__udivmodsi4>:
+000011b4 <__gesf2>:
+__gesf2():
+    11b4:	80 de       	rcall	.-768    	; 0xeb6 <__fp_cmp>
+    11b6:	08 f4       	brcc	.+2      	; 0x11ba <__gesf2+0x6>
+    11b8:	8f ef       	ldi	r24, 0xFF	; 255
+    11ba:	08 95       	ret
+
+000011bc <__udivmodsi4>:
 __udivmodsi4():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1638
-    119c:	a1 e2       	ldi	r26, 0x21	; 33
+    11bc:	a1 e2       	ldi	r26, 0x21	; 33
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1639
-    119e:	1a 2e       	mov	r1, r26
+    11be:	1a 2e       	mov	r1, r26
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1640
-    11a0:	aa 1b       	sub	r26, r26
+    11c0:	aa 1b       	sub	r26, r26
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1641
-    11a2:	bb 1b       	sub	r27, r27
+    11c2:	bb 1b       	sub	r27, r27
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1642
-    11a4:	fd 01       	movw	r30, r26
+    11c4:	fd 01       	movw	r30, r26
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1644
-    11a6:	0d c0       	rjmp	.+26     	; 0x11c2 <__udivmodsi4_ep>
+    11c6:	0d c0       	rjmp	.+26     	; 0x11e2 <__udivmodsi4_ep>
 
-000011a8 <__udivmodsi4_loop>:
+000011c8 <__udivmodsi4_loop>:
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1646
-    11a8:	aa 1f       	adc	r26, r26
+    11c8:	aa 1f       	adc	r26, r26
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1647
-    11aa:	bb 1f       	adc	r27, r27
+    11ca:	bb 1f       	adc	r27, r27
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1648
-    11ac:	ee 1f       	adc	r30, r30
+    11cc:	ee 1f       	adc	r30, r30
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1649
-    11ae:	ff 1f       	adc	r31, r31
+    11ce:	ff 1f       	adc	r31, r31
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1650
-    11b0:	a2 17       	cp	r26, r18
+    11d0:	a2 17       	cp	r26, r18
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1651
-    11b2:	b3 07       	cpc	r27, r19
+    11d2:	b3 07       	cpc	r27, r19
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1652
-    11b4:	e4 07       	cpc	r30, r20
+    11d4:	e4 07       	cpc	r30, r20
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1653
-    11b6:	f5 07       	cpc	r31, r21
+    11d6:	f5 07       	cpc	r31, r21
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1654
-    11b8:	20 f0       	brcs	.+8      	; 0x11c2 <__udivmodsi4_ep>
+    11d8:	20 f0       	brcs	.+8      	; 0x11e2 <__udivmodsi4_ep>
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1655
-    11ba:	a2 1b       	sub	r26, r18
+    11da:	a2 1b       	sub	r26, r18
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1656
-    11bc:	b3 0b       	sbc	r27, r19
+    11dc:	b3 0b       	sbc	r27, r19
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1657
-    11be:	e4 0b       	sbc	r30, r20
+    11de:	e4 0b       	sbc	r30, r20
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1658
-    11c0:	f5 0b       	sbc	r31, r21
+    11e0:	f5 0b       	sbc	r31, r21
 
-000011c2 <__udivmodsi4_ep>:
+000011e2 <__udivmodsi4_ep>:
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1660
-    11c2:	66 1f       	adc	r22, r22
+    11e2:	66 1f       	adc	r22, r22
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1661
-    11c4:	77 1f       	adc	r23, r23
+    11e4:	77 1f       	adc	r23, r23
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1662
-    11c6:	88 1f       	adc	r24, r24
+    11e6:	88 1f       	adc	r24, r24
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1663
-    11c8:	99 1f       	adc	r25, r25
+    11e8:	99 1f       	adc	r25, r25
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1664
-    11ca:	1a 94       	dec	r1
+    11ea:	1a 94       	dec	r1
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1665
-    11cc:	69 f7       	brne	.-38     	; 0x11a8 <__udivmodsi4_loop>
+    11ec:	69 f7       	brne	.-38     	; 0x11c8 <__udivmodsi4_loop>
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1667
-    11ce:	60 95       	com	r22
+    11ee:	60 95       	com	r22
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1668
-    11d0:	70 95       	com	r23
+    11f0:	70 95       	com	r23
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1669
-    11d2:	80 95       	com	r24
+    11f2:	80 95       	com	r24
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1670
-    11d4:	90 95       	com	r25
+    11f4:	90 95       	com	r25
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1672
-    11d6:	9b 01       	movw	r18, r22
+    11f6:	9b 01       	movw	r18, r22
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1674
-    11d8:	ac 01       	movw	r20, r24
+    11f8:	ac 01       	movw	r20, r24
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1676
-    11da:	bd 01       	movw	r22, r26
+    11fa:	bd 01       	movw	r22, r26
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1678
-    11dc:	cf 01       	movw	r24, r30
+    11fc:	cf 01       	movw	r24, r30
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1680
-    11de:	08 95       	ret
+    11fe:	08 95       	ret
 
-000011e0 <__tablejump2__>:
+00001200 <__tablejump2__>:
 __tablejump2__():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2296
-    11e0:	ee 0f       	add	r30, r30
+    1200:	ee 0f       	add	r30, r30
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2297
-    11e2:	ff 1f       	adc	r31, r31
+    1202:	ff 1f       	adc	r31, r31
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2328
-    11e4:	05 90       	lpm	r0, Z+
+    1204:	05 90       	lpm	r0, Z+
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2329
-    11e6:	f4 91       	lpm	r31, Z
+    1206:	f4 91       	lpm	r31, Z
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2330
-    11e8:	e0 2d       	mov	r30, r0
+    1208:	e0 2d       	mov	r30, r0
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2331
-    11ea:	09 94       	ijmp
+    120a:	09 94       	ijmp
 
-000011ec <strcmp>:
+0000120c <strcmp>:
 strcmp():
-    11ec:	fb 01       	movw	r30, r22
-    11ee:	dc 01       	movw	r26, r24
-    11f0:	8d 91       	ld	r24, X+
-    11f2:	01 90       	ld	r0, Z+
-    11f4:	80 19       	sub	r24, r0
-    11f6:	01 10       	cpse	r0, r1
-    11f8:	d9 f3       	breq	.-10     	; 0x11f0 <strcmp+0x4>
-    11fa:	99 0b       	sbc	r25, r25
-    11fc:	08 95       	ret
+    120c:	fb 01       	movw	r30, r22
+    120e:	dc 01       	movw	r26, r24
+    1210:	8d 91       	ld	r24, X+
+    1212:	01 90       	ld	r0, Z+
+    1214:	80 19       	sub	r24, r0
+    1216:	01 10       	cpse	r0, r1
+    1218:	d9 f3       	breq	.-10     	; 0x1210 <strcmp+0x4>
+    121a:	99 0b       	sbc	r25, r25
+    121c:	08 95       	ret
 
-000011fe <__do_global_dtors>:
+0000121e <__do_global_dtors>:
 __do_global_dtors():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2496
-    11fe:	10 e0       	ldi	r17, 0x00	; 0
+    121e:	10 e0       	ldi	r17, 0x00	; 0
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2497
-    1200:	cb e1       	ldi	r28, 0x1B	; 27
+    1220:	cb e1       	ldi	r28, 0x1B	; 27
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2498
-    1202:	d0 e0       	ldi	r29, 0x00	; 0
+    1222:	d0 e0       	ldi	r29, 0x00	; 0
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2502
-    1204:	03 c0       	rjmp	.+6      	; 0x120c <__do_global_dtors+0xe>
+    1224:	03 c0       	rjmp	.+6      	; 0x122c <__do_global_dtors+0xe>
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2508
-    1206:	fe 01       	movw	r30, r28
+    1226:	fe 01       	movw	r30, r28
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2509
-    1208:	eb df       	rcall	.-42     	; 0x11e0 <__tablejump2__>
+    1228:	eb df       	rcall	.-42     	; 0x1200 <__tablejump2__>
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2510
-    120a:	21 96       	adiw	r28, 0x01	; 1
+    122a:	21 96       	adiw	r28, 0x01	; 1
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2515
-    120c:	cc 31       	cpi	r28, 0x1C	; 28
+    122c:	cc 31       	cpi	r28, 0x1C	; 28
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2516
-    120e:	d1 07       	cpc	r29, r17
+    122e:	d1 07       	cpc	r29, r17
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2521
-    1210:	d1 f7       	brne	.-12     	; 0x1206 <__do_global_dtors+0x8>
+    1230:	d1 f7       	brne	.-12     	; 0x1226 <__do_global_dtors+0x8>
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2278
-    1212:	f8 94       	cli
+    1232:	f8 94       	cli
 
-00001214 <__stop_program>:
+00001234 <__stop_program>:
 __stop_program():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2280
-    1214:	ff cf       	rjmp	.-2      	; 0x1214 <__stop_program>
+    1234:	ff cf       	rjmp	.-2      	; 0x1234 <__stop_program>
