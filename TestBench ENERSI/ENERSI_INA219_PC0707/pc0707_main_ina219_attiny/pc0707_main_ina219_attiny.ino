@@ -108,17 +108,25 @@ void loop() {
       case 5:
       case 6:
         {
-          float bus_V = -1;
-          if (opc == 3) bus_V = readINA219BusVoltage(0x40);
-          else if (opc == 4) bus_V = readINA219BusVoltage(0x41);
-          else if (opc == 5) bus_V = readINA219BusVoltage(0x44);
-          else bus_V = readINA219BusVoltage(0x45);
+          float bus_V = -1.0;
+
+          if (opc == 3)
+            bus_V = readINA219BusVoltage(0x40);
+          else if (opc == 4)
+            bus_V = readINA219BusVoltage(0x41);
+          else if (opc == 5)
+            bus_V = readINA219BusVoltage(0x44);
+          else
+            bus_V = readINA219BusVoltage(0x45);
 
           if (bus_V < 0) {
-            vrserial.println("Error de lectura");
+            vrserial.println("E");
           } else {
-            vrserial.print("{\"v\":\"" + String(bus_V) + "\"}");
+            vrserial.print("{\"v\":\"");
+            vrserial.print(bus_V, 3);
+            vrserial.println("\"}");
           }
+
           break;
         }
 
