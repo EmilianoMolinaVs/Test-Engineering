@@ -12,15 +12,16 @@ void setup() {
   vrserial.begin(9600);
   delay(200);
 
+  Wire.begin();
+
   // Limpieza de buffer
   while (vrserial.available() > 0) {
     vrserial.read();
   }
 
-  vrserial.println("Hola Mundo");
-
-  Wire.begin();
-  delay(100);
+  //vrserial.println("{\"SYSTEM\":\"Ready\", \"test\":\"ina219\"}");
+  // vrserial.println("{\"Hola\":\"Mundo\"}");
+  vrserial.println("Hi World...");
 }
 
 void loop() {
@@ -30,14 +31,14 @@ void loop() {
     input.trim();
 
     // Filtro extra: ignorar si quedó vacío o si son caracteres invisibles/basura
-    if (input.length() == 0) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+    if (input.length() == 0) {
       vrserial.println("mensaje vaciooOooooo");
       return;  // Aborta este ciclo y vuelve a empezar
     }
 
     int opc = 0;
-    if (input == "ping") opc = 1;
-    else if (input == "scan") opc = 2;
+    if (input == "ping") opc = 1;       // ping
+    else if (input == "scan") opc = 2;  // scan
 
     switch (opc) {
       case 1:
