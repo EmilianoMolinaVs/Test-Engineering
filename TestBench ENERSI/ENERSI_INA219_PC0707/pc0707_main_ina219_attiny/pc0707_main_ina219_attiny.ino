@@ -10,28 +10,6 @@ ina219 sensados por un attiny85
 // ==== CREACIÓN DE OBJETOS ====
 SoftwareSerial vrserial(3, 4);  // PINES RX y TX
 
-/*
-Adafruit_INA219 ina219_u1(0x40);  // Sensor de corriente INA219 U1
-Adafruit_INA219 ina219_u2(0x41);  // Sensor de corriente INA219 U2
-Adafruit_INA219 ina219_u3(0x44);  // Sensor de corriente INA219 U3
-Adafruit_INA219 ina219_u4(0x45);  // Sensor de corriente INA219 U4
-*/
-
-
-// ==== FUNCIONES DE UTILIDAD ====
-/*
-float voltageSensor() {
-  // float shunt_mV = ina219_u1.getShuntVoltage_mV();
-  float bus_V = ina219_u1.getBusVoltage_V();
-
-  // shunt_mV -= shuntOffset_mV;
-  // float shunt_V = shunt_mV / 1000.0;
-  // float current_A = shunt_V / R_SHUNT;  // Corriente de interés
-  // float load_V = bus_V + shunt_V;
-  // float power_W = load_V * current_A;
-  return bus_V;
-}
-*/
 
 float readINA219BusVoltage(uint8_t i2c_addr) {
   Wire.beginTransmission(i2c_addr);
@@ -71,8 +49,7 @@ void setup() {
 void loop() {
   if (vrserial.available()) {
 
-    char input[15];  // Buffer pequeño para el comando
-    // Leer hasta el salto de línea o hasta llenar el buffer
+    char input[15];
     int len = vrserial.readBytesUntil('\n', input, sizeof(input) - 1);
     input[len] = '\0';  // Terminar el string de C
 
@@ -89,10 +66,12 @@ void loop() {
     }
 
     int opc = 0;
-    // Uso de strcmp para comparar arreglos de caracteres
-    if (strcmp(input, "ping") == 0) opc = 1;
-    else if (strcmp(input, "scan") == 0) opc = 2;
-    else if (strcmp(input, "u1") == 0) opc = 3;
+    if (strcmp(input, "ping") == 0) opc = 1;       // ping
+    else if (strcmp(input, "scan") == 0) opc = 2;  // scan
+    else if (strcmp(input, "u1") == 0) opc = 3;    // u1
+    else if (strcmp(input, "u2") == 0) opc = 4;    // u2
+    else if (strcmp(input, "u3") == 0) opc = 5;    // u3
+    else if (strcmp(input, "u4") == 0) opc = 6;    // u4
 
     switch (opc) {
       case 1:
@@ -125,14 +104,20 @@ void loop() {
         }
 
       case 3:
+      case 4:
+      case 5:
+      case 6:
         {
-          float bus_V = readINA219BusVoltage(0x40);  // Leer directo de la dirección u1
+          float bus_V = -1;
+          if (opc == 3) bus_V = readINA219BusVoltage(0x40);
+          else if (opc == 4) bus_V = readINA219BusVoltage(0x41);
+          else if (opc == 5) bus_V = readINA219BusVoltage(0x44);
+          else bus_V = readINA219BusVoltage(0x45);
 
           if (bus_V < 0) {
-            vrserial.println("Error I2C en 0x40");
+            vrserial.println("Error de lectura");
           } else {
-            vrserial.print("Voltaje: ");
-            vrserial.println(bus_V);
+            vrserial.print("{\"v\":\"" + String(bus_V) + "\"}");
           }
           break;
         }
