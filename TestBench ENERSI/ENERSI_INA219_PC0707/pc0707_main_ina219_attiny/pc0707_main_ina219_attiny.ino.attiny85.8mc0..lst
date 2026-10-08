@@ -59,7 +59,7 @@ __do_clear_bss():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2441
       44:	21 e0       	ldi	r18, 0x01	; 1
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2442
-      46:	a4 e2       	ldi	r26, 0x24	; 36
+      46:	ae e2       	ldi	r26, 0x2E	; 46
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2443
       48:	b1 e0       	ldi	r27, 0x01	; 1
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2444
@@ -71,7 +71,7 @@ __do_clear_bss():
 
 0000004e <.do_clear_bss_start>:
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2448
-      4e:	a9 3b       	cpi	r26, 0xB9	; 185
+      4e:	a3 3c       	cpi	r26, 0xC3	; 195
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2449
       50:	b2 07       	cpc	r27, r18
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2450
@@ -96,7 +96,7 @@ __do_copy_data():
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2422
       62:	0d 92       	st	X+, r0
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2424
-      64:	a4 32       	cpi	r26, 0x24	; 36
+      64:	ae 32       	cpi	r26, 0x2E	; 46
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2425
       66:	b1 07       	cpc	r27, r17
 /home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2426
@@ -151,10 +151,10 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     f = millis_timer_fract;
 #else
     m = millis_timer_overflow_count;
-      88:	80 91 90 01 	lds	r24, 0x0190	; 0x800190 <millis_timer_overflow_count>
-      8c:	90 91 91 01 	lds	r25, 0x0191	; 0x800191 <millis_timer_overflow_count+0x1>
-      90:	a0 91 92 01 	lds	r26, 0x0192	; 0x800192 <millis_timer_overflow_count+0x2>
-      94:	b0 91 93 01 	lds	r27, 0x0193	; 0x800193 <millis_timer_overflow_count+0x3>
+      88:	80 91 9a 01 	lds	r24, 0x019A	; 0x80019a <millis_timer_overflow_count>
+      8c:	90 91 9b 01 	lds	r25, 0x019B	; 0x80019b <millis_timer_overflow_count+0x1>
+      90:	a0 91 9c 01 	lds	r26, 0x019C	; 0x80019c <millis_timer_overflow_count+0x2>
+      94:	b0 91 9d 01 	lds	r27, 0x019D	; 0x80019d <millis_timer_overflow_count+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:266
 #endif
   #if defined(TCNT0) && (TIMER_TO_USE_FOR_MILLIS == 0) && !defined(TCW0)
@@ -367,10 +367,10 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 unsigned char USI_TWI_Data_In_Receive_Buffer(void) {
   unsigned char tmpRxTail;                              // Temporary variable to store volatile
   tmpRxTail = TWI_RxTail;                               // Not necessary, but prevents warnings
-     174:	90 91 b6 01 	lds	r25, 0x01B6	; 0x8001b6 <TWI_RxTail>
+     174:	90 91 c0 01 	lds	r25, 0x01C0	; 0x8001c0 <TWI_RxTail>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:124
   return (TWI_RxHead - tmpRxTail) & TWI_RX_BUFFER_MASK; // Return 0 (FALSE) if the receive buffer is empty.
-     178:	80 91 b5 01 	lds	r24, 0x01B5	; 0x8001b5 <TWI_RxHead>
+     178:	80 91 bf 01 	lds	r24, 0x01BF	; 0x8001bf <TWI_RxHead>
      17c:	89 1b       	sub	r24, r25
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:125
 }
@@ -386,12 +386,12 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   // or after requestFrom(address, numBytes)
   int TwoWire::available(void) {
     if (BufferLength) {
-     182:	80 91 b8 01 	lds	r24, 0x01B8	; 0x8001b8 <TwoWire::BufferLength>
+     182:	80 91 c2 01 	lds	r24, 0x01C2	; 0x8001c2 <TwoWire::BufferLength>
      186:	88 23       	and	r24, r24
      188:	39 f0       	breq	.+14     	; 0x198 <TwoWire::read() [clone .constprop.27]+0x16>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:549
       return BufferLength - BufferIndex;
-     18a:	20 91 b7 01 	lds	r18, 0x01B7	; 0x8001b7 <TwoWire::BufferIndex>
+     18a:	20 91 c1 01 	lds	r18, 0x01C1	; 0x8001c1 <TwoWire::BufferIndex>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:562
   // or after requestFrom(address, numBytes)
   int TwoWire::read(void) {
@@ -436,25 +436,25 @@ unsigned char USI_TWI_Receive_Byte(void) {
   unsigned char tmptail;
   unsigned char tmpRxTail; // Temporary variable to store volatile
   tmpRxTail = TWI_RxTail;  // Not necessary, but prevents warnings
-     19e:	90 91 b6 01 	lds	r25, 0x01B6	; 0x8001b6 <TWI_RxTail>
+     19e:	90 91 c0 01 	lds	r25, 0x01C0	; 0x8001c0 <TWI_RxTail>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:102
   while (TWI_RxHead == tmpRxTail)
-     1a2:	80 91 b5 01 	lds	r24, 0x01B5	; 0x8001b5 <TWI_RxHead>
+     1a2:	80 91 bf 01 	lds	r24, 0x01BF	; 0x8001bf <TWI_RxHead>
      1a6:	98 17       	cp	r25, r24
      1a8:	e1 f3       	breq	.-8      	; 0x1a2 <TwoWire::read() [clone .constprop.27]+0x20>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:104
     ;
   tmptail    = (TWI_RxTail + 1) & TWI_RX_BUFFER_MASK; // Calculate buffer index
-     1aa:	e0 91 b6 01 	lds	r30, 0x01B6	; 0x8001b6 <TWI_RxTail>
+     1aa:	e0 91 c0 01 	lds	r30, 0x01C0	; 0x8001c0 <TWI_RxTail>
      1ae:	ef 5f       	subi	r30, 0xFF	; 255
      1b0:	ef 70       	andi	r30, 0x0F	; 15
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:105
   TWI_RxTail = tmptail;                               // Store new index
-     1b2:	e0 93 b6 01 	sts	0x01B6, r30	; 0x8001b6 <TWI_RxTail>
+     1b2:	e0 93 c0 01 	sts	0x01C0, r30	; 0x8001c0 <TWI_RxTail>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:106
   return TWI_RxBuf[tmptail];                          // Return data from the buffer.
      1b6:	f0 e0       	ldi	r31, 0x00	; 0
-     1b8:	ec 5d       	subi	r30, 0xDC	; 220
+     1b8:	e2 5d       	subi	r30, 0xD2	; 210
      1ba:	fe 4f       	sbci	r31, 0xFE	; 254
 _ZN7TwoWire4readEv.constprop.27():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:567
@@ -481,14 +481,14 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
         value = Buffer[BufferIndex];
      1c2:	e2 2f       	mov	r30, r18
      1c4:	f0 e0       	ldi	r31, 0x00	; 0
-     1c6:	ec 5d       	subi	r30, 0xDC	; 220
+     1c6:	e2 5d       	subi	r30, 0xD2	; 210
      1c8:	fe 4f       	sbci	r31, 0xFE	; 254
      1ca:	80 81       	ld	r24, Z
      1cc:	90 e0       	ldi	r25, 0x00	; 0
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:565
         ++BufferIndex;
      1ce:	2f 5f       	subi	r18, 0xFF	; 255
-     1d0:	20 93 b7 01 	sts	0x01B7, r18	; 0x8001b7 <TwoWire::BufferIndex>
+     1d0:	20 93 c1 01 	sts	0x01C1, r18	; 0x8001c1 <TwoWire::BufferIndex>
      1d4:	08 95       	ret
 
 000001d6 <USI_TWI_Master_Transfer>:
@@ -594,7 +594,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   USI_TWI_state.errorState  = 0;
   USI_TWI_state.addressMode = TRUE;
      214:	21 e0       	ldi	r18, 0x01	; 1
-     216:	20 93 b3 01 	sts	0x01B3, r18	; 0x8001b3 <USI_TWI_state>
+     216:	20 93 bd 01 	sts	0x01BD, r18	; 0x8001bd <USI_TWI_state>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:150
     USI_TWI_state.errorState = USI_TWI_UE_DATA_COL;
     return (FALSE);
@@ -610,7 +610,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   {
     USI_TWI_state.masterWriteDataMode = TRUE;
      222:	23 e0       	ldi	r18, 0x03	; 3
-     224:	20 93 b3 01 	sts	0x01B3, r18	; 0x8001b3 <USI_TWI_state>
+     224:	20 93 bd 01 	sts	0x01BD, r18	; 0x8001bd <USI_TWI_state>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:155
   }
   /* Release SCL to ensure that (repeated) Start can be performed */
@@ -659,7 +659,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
       if (USI_TWI_Master_Transfer(tempUSISR_1bit) & (1 << TWI_NACK_BIT)) {
         if (USI_TWI_state.addressMode) {
           USI_TWI_state.errorState = USI_TWI_NO_ACK_ON_ADDRESS;
-     246:	80 93 b3 01 	sts	0x01B3, r24	; 0x8001b3 <USI_TWI_state>
+     246:	80 93 bd 01 	sts	0x01BD, r24	; 0x8001bd <USI_TWI_state>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:186
         } else {
           USI_TWI_state.errorState = USI_TWI_NO_ACK_ON_DATA;
@@ -697,7 +697,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   do {
     /* If masterWrite cycle (or initial address transmission)*/
     if (USI_TWI_state.addressMode || USI_TWI_state.masterWriteDataMode) {
-     260:	80 91 b3 01 	lds	r24, 0x01B3	; 0x8001b3 <USI_TWI_state>
+     260:	80 91 bd 01 	lds	r24, 0x01BD	; 0x8001bd <USI_TWI_state>
      264:	83 70       	andi	r24, 0x03	; 3
      266:	19 f1       	breq	.+70     	; 0x2ae <__stack+0x4f>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:175
@@ -724,7 +724,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      27a:	0c c0       	rjmp	.+24     	; 0x294 <__stack+0x35>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:181
         if (USI_TWI_state.addressMode) {
-     27c:	80 91 b3 01 	lds	r24, 0x01B3	; 0x8001b3 <USI_TWI_state>
+     27c:	80 91 bd 01 	lds	r24, 0x01BD	; 0x8001bd <USI_TWI_state>
      280:	18 2f       	mov	r17, r24
      282:	11 70       	andi	r17, 0x01	; 1
      284:	80 ff       	sbrs	r24, 0
@@ -745,7 +745,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 #ifdef SIGNAL_VERIFY
   if (!(USISR & (1 << USIPF))) {
     USI_TWI_state.errorState = USI_TWI_MISSING_STOP_CON;
-     28e:	80 93 b3 01 	sts	0x01B3, r24	; 0x8001b3 <USI_TWI_state>
+     28e:	80 93 bd 01 	sts	0x01BD, r24	; 0x8001bd <USI_TWI_state>
      292:	dc cf       	rjmp	.-72     	; 0x24c <USI_TWI_Start_Transceiver_With_Data_Stop+0x46>
 USI_TWI_Start_Transceiver_With_Data_Stop():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:188
@@ -755,9 +755,9 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
         return (FALSE);
       }
       USI_TWI_state.addressMode = FALSE; // Only perform address transmission once.
-     294:	80 91 b3 01 	lds	r24, 0x01B3	; 0x8001b3 <USI_TWI_state>
+     294:	80 91 bd 01 	lds	r24, 0x01BD	; 0x8001bd <USI_TWI_state>
      298:	8e 7f       	andi	r24, 0xFE	; 254
-     29a:	80 93 b3 01 	sts	0x01B3, r24	; 0x8001b3 <USI_TWI_state>
+     29a:	80 93 bd 01 	sts	0x01BD, r24	; 0x8001bd <USI_TWI_state>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:200
       } else {
         USIDR = 0x00;       // Load ACK. Set data register bit 7 (output for SDA) low.
@@ -872,21 +872,21 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
                                                            BufferLength,
                                                            sendStop);
      2e4:	48 2f       	mov	r20, r24
-     2e6:	60 91 b8 01 	lds	r22, 0x01B8	; 0x8001b8 <TwoWire::BufferLength>
-     2ea:	84 e2       	ldi	r24, 0x24	; 36
+     2e6:	60 91 c2 01 	lds	r22, 0x01C2	; 0x8001c2 <TwoWire::BufferLength>
+     2ea:	8e e2       	ldi	r24, 0x2E	; 46
      2ec:	91 e0       	ldi	r25, 0x01	; 1
      2ee:	8b df       	rcall	.-234    	; 0x206 <USI_TWI_Start_Transceiver_With_Data_Stop>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:477
     // reset tx buffer iterator vars
     BufferIndex = 0;
-     2f0:	10 92 b7 01 	sts	0x01B7, r1	; 0x8001b7 <TwoWire::BufferIndex>
+     2f0:	10 92 c1 01 	sts	0x01C1, r1	; 0x8001c1 <TwoWire::BufferIndex>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:478
     BufferLength = 0;
-     2f4:	10 92 b8 01 	sts	0x01B8, r1	; 0x8001b8 <TwoWire::BufferLength>
+     2f4:	10 92 c2 01 	sts	0x01C2, r1	; 0x8001c2 <TwoWire::BufferLength>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:480
     // indicate that we are done transmitting
     transmitting = 0;
-     2f8:	10 92 b4 01 	sts	0x01B4, r1	; 0x8001b4 <TwoWire::transmitting>
+     2f8:	10 92 be 01 	sts	0x01BE, r1	; 0x8001be <TwoWire::transmitting>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:482
     // check for error
     if (ret == FALSE) {
@@ -894,7 +894,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      2fe:	10 c0       	rjmp	.+32     	; 0x320 <TwoWire::endTransmission(unsigned char) [clone .constprop.24]+0x3c>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:483
       switch (USI_TWI_Get_State_Info()) {
-     300:	80 91 b3 01 	lds	r24, 0x01B3	; 0x8001b3 <USI_TWI_state>
+     300:	80 91 bd 01 	lds	r24, 0x01BD	; 0x8001bd <USI_TWI_state>
      304:	85 30       	cpi	r24, 0x05	; 5
      306:	41 f0       	breq	.+16     	; 0x318 <TwoWire::endTransmission(unsigned char) [clone .constprop.24]+0x34>
      308:	86 30       	cpi	r24, 0x06	; 6
@@ -947,8 +947,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
 int SoftwareSerial::peek() {
   if (!isListening())
-     324:	20 91 89 01 	lds	r18, 0x0189	; 0x800189 <SoftwareSerial::active_object>
-     328:	30 91 8a 01 	lds	r19, 0x018A	; 0x80018a <SoftwareSerial::active_object+0x1>
+     324:	20 91 93 01 	lds	r18, 0x0193	; 0x800193 <SoftwareSerial::active_object>
+     328:	30 91 94 01 	lds	r19, 0x0194	; 0x800194 <SoftwareSerial::active_object+0x1>
      32c:	28 17       	cp	r18, r24
      32e:	39 07       	cpc	r19, r25
      330:	81 f4       	brne	.+32     	; 0x352 <SoftwareSerial::peek()+0x2e>
@@ -957,8 +957,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   // Empty buffer?
   if (_receive_buffer_head == _receive_buffer_tail)
-     332:	90 91 87 01 	lds	r25, 0x0187	; 0x800187 <SoftwareSerial::_receive_buffer_head>
-     336:	80 91 88 01 	lds	r24, 0x0188	; 0x800188 <SoftwareSerial::_receive_buffer_tail>
+     332:	90 91 91 01 	lds	r25, 0x0191	; 0x800191 <SoftwareSerial::_receive_buffer_head>
+     336:	80 91 92 01 	lds	r24, 0x0192	; 0x800192 <SoftwareSerial::_receive_buffer_tail>
      33a:	98 17       	cp	r25, r24
      33c:	51 f0       	breq	.+20     	; 0x352 <SoftwareSerial::peek()+0x2e>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:450
@@ -966,9 +966,9 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   // Read from "head"
   return _receive_buffer[_receive_buffer_head];
-     33e:	e0 91 87 01 	lds	r30, 0x0187	; 0x800187 <SoftwareSerial::_receive_buffer_head>
+     33e:	e0 91 91 01 	lds	r30, 0x0191	; 0x800191 <SoftwareSerial::_receive_buffer_head>
      342:	f0 e0       	ldi	r31, 0x00	; 0
-     344:	ec 5b       	subi	r30, 0xBC	; 188
+     344:	e2 5b       	subi	r30, 0xB2	; 178
      346:	fe 4f       	sbci	r31, 0xFE	; 254
      348:	80 81       	ld	r24, Z
      34a:	08 2e       	mov	r0, r24
@@ -1002,8 +1002,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
 void SoftwareSerial::flush() {
   if (!isListening())
-     358:	20 91 89 01 	lds	r18, 0x0189	; 0x800189 <SoftwareSerial::active_object>
-     35c:	30 91 8a 01 	lds	r19, 0x018A	; 0x80018a <SoftwareSerial::active_object+0x1>
+     358:	20 91 93 01 	lds	r18, 0x0193	; 0x800193 <SoftwareSerial::active_object>
+     35c:	30 91 94 01 	lds	r19, 0x0194	; 0x800194 <SoftwareSerial::active_object+0x1>
      360:	28 17       	cp	r18, r24
      362:	39 07       	cpc	r19, r25
      364:	39 f4       	brne	.+14     	; 0x374 <SoftwareSerial::flush()+0x1c>
@@ -1017,8 +1017,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      368:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:437
   _receive_buffer_head = _receive_buffer_tail = 0;
-     36a:	10 92 88 01 	sts	0x0188, r1	; 0x800188 <SoftwareSerial::_receive_buffer_tail>
-     36e:	10 92 87 01 	sts	0x0187, r1	; 0x800187 <SoftwareSerial::_receive_buffer_head>
+     36a:	10 92 92 01 	sts	0x0192, r1	; 0x800192 <SoftwareSerial::_receive_buffer_tail>
+     36e:	10 92 91 01 	sts	0x0191, r1	; 0x800191 <SoftwareSerial::_receive_buffer_head>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:438
   SREG = oldSREG;
      372:	8f bf       	out	0x3f, r24	; 63
@@ -1286,8 +1286,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
 int SoftwareSerial::available() {
   if (!isListening()) {
-     42e:	20 91 89 01 	lds	r18, 0x0189	; 0x800189 <SoftwareSerial::active_object>
-     432:	30 91 8a 01 	lds	r19, 0x018A	; 0x80018a <SoftwareSerial::active_object+0x1>
+     42e:	20 91 93 01 	lds	r18, 0x0193	; 0x800193 <SoftwareSerial::active_object>
+     432:	30 91 94 01 	lds	r19, 0x0194	; 0x800194 <SoftwareSerial::active_object+0x1>
      436:	28 17       	cp	r18, r24
      438:	39 07       	cpc	r19, r25
      43a:	41 f4       	brne	.+16     	; 0x44c <SoftwareSerial::available()+0x1e>
@@ -1296,8 +1296,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   }
 
   return (uint8_t)(_receive_buffer_tail + _SS_MAX_RX_BUFF - _receive_buffer_head) % _SS_MAX_RX_BUFF;
-     43c:	80 91 88 01 	lds	r24, 0x0188	; 0x800188 <SoftwareSerial::_receive_buffer_tail>
-     440:	90 91 87 01 	lds	r25, 0x0187	; 0x800187 <SoftwareSerial::_receive_buffer_head>
+     43c:	80 91 92 01 	lds	r24, 0x0192	; 0x800192 <SoftwareSerial::_receive_buffer_tail>
+     440:	90 91 91 01 	lds	r25, 0x0191	; 0x800191 <SoftwareSerial::_receive_buffer_head>
      444:	89 1b       	sub	r24, r25
      446:	8f 73       	andi	r24, 0x3F	; 63
      448:	90 e0       	ldi	r25, 0x00	; 0
@@ -1329,8 +1329,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 // Read data from buffer
 int SoftwareSerial::read() {
   if (!isListening())
-     452:	20 91 89 01 	lds	r18, 0x0189	; 0x800189 <SoftwareSerial::active_object>
-     456:	30 91 8a 01 	lds	r19, 0x018A	; 0x80018a <SoftwareSerial::active_object+0x1>
+     452:	20 91 93 01 	lds	r18, 0x0193	; 0x800193 <SoftwareSerial::active_object>
+     456:	30 91 94 01 	lds	r19, 0x0194	; 0x800194 <SoftwareSerial::active_object+0x1>
      45a:	28 17       	cp	r18, r24
      45c:	39 07       	cpc	r19, r25
      45e:	a1 f4       	brne	.+40     	; 0x488 <SoftwareSerial::read()+0x36>
@@ -1339,8 +1339,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   // Empty buffer?
   if (_receive_buffer_head == _receive_buffer_tail)
-     460:	90 91 87 01 	lds	r25, 0x0187	; 0x800187 <SoftwareSerial::_receive_buffer_head>
-     464:	80 91 88 01 	lds	r24, 0x0188	; 0x800188 <SoftwareSerial::_receive_buffer_tail>
+     460:	90 91 91 01 	lds	r25, 0x0191	; 0x800191 <SoftwareSerial::_receive_buffer_head>
+     464:	80 91 92 01 	lds	r24, 0x0192	; 0x800192 <SoftwareSerial::_receive_buffer_tail>
      468:	98 17       	cp	r25, r24
      46a:	71 f0       	breq	.+28     	; 0x488 <SoftwareSerial::read()+0x36>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:362
@@ -1348,17 +1348,17 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   // Read from "head"
   uint8_t d = _receive_buffer[_receive_buffer_head]; // grab next byte
-     46c:	e0 91 87 01 	lds	r30, 0x0187	; 0x800187 <SoftwareSerial::_receive_buffer_head>
+     46c:	e0 91 91 01 	lds	r30, 0x0191	; 0x800191 <SoftwareSerial::_receive_buffer_head>
      470:	f0 e0       	ldi	r31, 0x00	; 0
-     472:	ec 5b       	subi	r30, 0xBC	; 188
+     472:	e2 5b       	subi	r30, 0xB2	; 178
      474:	fe 4f       	sbci	r31, 0xFE	; 254
      476:	80 81       	ld	r24, Z
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:363
   _receive_buffer_head = (uint8_t)(_receive_buffer_head + 1) % _SS_MAX_RX_BUFF; // this cast saves 6 bytes
-     478:	90 91 87 01 	lds	r25, 0x0187	; 0x800187 <SoftwareSerial::_receive_buffer_head>
+     478:	90 91 91 01 	lds	r25, 0x0191	; 0x800191 <SoftwareSerial::_receive_buffer_head>
      47c:	9f 5f       	subi	r25, 0xFF	; 255
      47e:	9f 73       	andi	r25, 0x3F	; 63
-     480:	90 93 87 01 	sts	0x0187, r25	; 0x800187 <SoftwareSerial::_receive_buffer_head>
+     480:	90 93 91 01 	sts	0x0191, r25	; 0x800191 <SoftwareSerial::_receive_buffer_head>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:364
   return d;
      484:	90 e0       	ldi	r25, 0x00	; 0
@@ -1399,7 +1399,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      49a:	48 1b       	sub	r20, r24
      49c:	59 0b       	sbc	r21, r25
      49e:	bc 01       	movw	r22, r24
-     4a0:	84 e9       	ldi	r24, 0x94	; 148
+     4a0:	8e e9       	ldi	r24, 0x9E	; 158
      4a2:	91 e0       	ldi	r25, 0x01	; 1
      4a4:	3f ce       	rjmp	.-898    	; 0x124 <Print::write(unsigned char const*, unsigned int)>
 
@@ -1556,12 +1556,12 @@ size_t Print::print(const char str[]) {
 size_t Print::print(char c) {
   return write(c);
      54e:	6d e0       	ldi	r22, 0x0D	; 13
-     550:	84 e9       	ldi	r24, 0x94	; 148
+     550:	8e e9       	ldi	r24, 0x9E	; 158
      552:	91 e0       	ldi	r25, 0x01	; 1
      554:	10 df       	rcall	.-480    	; 0x376 <SoftwareSerial::write(unsigned char)>
      556:	8c 01       	movw	r16, r24
      558:	6a e0       	ldi	r22, 0x0A	; 10
-     55a:	84 e9       	ldi	r24, 0x94	; 148
+     55a:	8e e9       	ldi	r24, 0x9E	; 158
      55c:	91 e0       	ldi	r25, 0x01	; 1
      55e:	0b df       	rcall	.-490    	; 0x376 <SoftwareSerial::write(unsigned char)>
 _ZN5Print7printlnEPKc.constprop.12():
@@ -1606,12 +1606,12 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     // indicate that we are transmitting
     transmitting = 1;
      578:	d1 e0       	ldi	r29, 0x01	; 1
-     57a:	d0 93 b4 01 	sts	0x01B4, r29	; 0x8001b4 <TwoWire::transmitting>
+     57a:	d0 93 be 01 	sts	0x01BE, r29	; 0x8001be <TwoWire::transmitting>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:461
     // set address of targeted slave and write mode
     Buffer[0] = (address << TWI_ADR_BITS) | (0 << TWI_READ_BIT);
      57e:	88 0f       	add	r24, r24
-     580:	80 93 24 01 	sts	0x0124, r24	; 0x800124 <__data_end>
+     580:	80 93 2e 01 	sts	0x012E, r24	; 0x80012e <__data_end>
 write():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:510
       // don't bother if buffer is full
@@ -1621,14 +1621,14 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
       // put byte in tx buffer
       Buffer[BufferIndex] = data;
      584:	82 e0       	ldi	r24, 0x02	; 2
-     586:	80 93 25 01 	sts	0x0125, r24	; 0x800125 <__data_end+0x1>
+     586:	80 93 2f 01 	sts	0x012F, r24	; 0x80012f <__data_end+0x1>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:511
       ++BufferIndex;
-     58a:	80 93 b7 01 	sts	0x01B7, r24	; 0x8001b7 <TwoWire::BufferIndex>
+     58a:	80 93 c1 01 	sts	0x01C1, r24	; 0x8001c1 <TwoWire::BufferIndex>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:513
       // update amount in buffer
       BufferLength = BufferIndex;
-     58e:	80 93 b8 01 	sts	0x01B8, r24	; 0x8001b8 <TwoWire::BufferLength>
+     58e:	80 93 c2 01 	sts	0x01C2, r24	; 0x8001c2 <TwoWire::BufferLength>
 _Z20readINA219BusVoltageh():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:19
   Wire.beginTransmission(i2c_addr);
@@ -1666,19 +1666,19 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     Buffer[0] = (address << TWI_ADR_BITS) | (1 << TWI_READ_BIT);
      5a8:	cc 0f       	add	r28, r28
      5aa:	c1 60       	ori	r28, 0x01	; 1
-     5ac:	c0 93 24 01 	sts	0x0124, r28	; 0x800124 <__data_end>
+     5ac:	c0 93 2e 01 	sts	0x012E, r28	; 0x80012e <__data_end>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:427
     // perform blocking read into buffer
     uint8_t ret = USI_TWI_Start_Transceiver_With_Data_Stop(Buffer, quantity, sendStop);
      5b0:	41 e0       	ldi	r20, 0x01	; 1
      5b2:	63 e0       	ldi	r22, 0x03	; 3
-     5b4:	84 e2       	ldi	r24, 0x24	; 36
+     5b4:	8e e2       	ldi	r24, 0x2E	; 46
      5b6:	91 e0       	ldi	r25, 0x01	; 1
      5b8:	26 de       	rcall	.-948    	; 0x206 <USI_TWI_Start_Transceiver_With_Data_Stop>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:429
     // set rx buffer iterator vars
     BufferIndex = 1; // ignore slave address
-     5ba:	d0 93 b7 01 	sts	0x01B7, r29	; 0x8001b7 <TwoWire::BufferIndex>
+     5ba:	d0 93 c1 01 	sts	0x01C1, r29	; 0x8001c1 <TwoWire::BufferIndex>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:431
     // check for error
     if (ret == FALSE) {
@@ -1686,7 +1686,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      5c0:	1f c0       	rjmp	.+62     	; 0x600 <readINA219BusVoltage(unsigned char)+0x8e>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:432
       BufferLength = BufferIndex;
-     5c2:	d0 93 b8 01 	sts	0x01B8, r29	; 0x8001b8 <TwoWire::BufferLength>
+     5c2:	d0 93 c2 01 	sts	0x01C2, r29	; 0x8001c2 <TwoWire::BufferLength>
 available():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:548
 
@@ -1695,7 +1695,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   // or after requestFrom(address, numBytes)
   int TwoWire::available(void) {
     if (BufferLength) {
-     5c6:	80 91 b8 01 	lds	r24, 0x01B8	; 0x8001b8 <TwoWire::BufferLength>
+     5c6:	80 91 c2 01 	lds	r24, 0x01C2	; 0x8001c2 <TwoWire::BufferLength>
      5ca:	88 23       	and	r24, r24
      5cc:	e9 f0       	breq	.+58     	; 0x608 <readINA219BusVoltage(unsigned char)+0x96>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:549
@@ -1748,7 +1748,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     }
     BufferLength = quantity;
      600:	83 e0       	ldi	r24, 0x03	; 3
-     602:	80 93 b8 01 	sts	0x01B8, r24	; 0x8001b8 <TwoWire::BufferLength>
+     602:	80 93 c2 01 	sts	0x01C2, r24	; 0x8001c2 <TwoWire::BufferLength>
      606:	df cf       	rjmp	.-66     	; 0x5c6 <readINA219BusVoltage(unsigned char)+0x54>
 available():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:551
@@ -1786,13 +1786,13 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     // copy these to local variables so they can be stored in registers
     // (volatile variables must be read from memory on every access)
     unsigned long m = millis_timer_millis;
-     624:	80 91 8c 01 	lds	r24, 0x018C	; 0x80018c <millis_timer_millis>
-     628:	90 91 8d 01 	lds	r25, 0x018D	; 0x80018d <millis_timer_millis+0x1>
-     62c:	a0 91 8e 01 	lds	r26, 0x018E	; 0x80018e <millis_timer_millis+0x2>
-     630:	b0 91 8f 01 	lds	r27, 0x018F	; 0x80018f <millis_timer_millis+0x3>
+     624:	80 91 96 01 	lds	r24, 0x0196	; 0x800196 <millis_timer_millis>
+     628:	90 91 97 01 	lds	r25, 0x0197	; 0x800197 <millis_timer_millis+0x1>
+     62c:	a0 91 98 01 	lds	r26, 0x0198	; 0x800198 <millis_timer_millis+0x2>
+     630:	b0 91 99 01 	lds	r27, 0x0199	; 0x800199 <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:205
     unsigned char f = millis_timer_fract;
-     634:	30 91 8b 01 	lds	r19, 0x018B	; 0x80018b <millis_timer_fract>
+     634:	30 91 95 01 	lds	r19, 0x0195	; 0x800195 <millis_timer_fract>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:212
     static unsigned char correct_exact = 0;     // rollover intended
     if (++correct_exact < CORRECT_EXACT_MANY) {
@@ -1824,27 +1824,27 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     }
 
     millis_timer_fract = f;
-     64a:	20 93 8b 01 	sts	0x018B, r18	; 0x80018b <millis_timer_fract>
+     64a:	20 93 95 01 	sts	0x0195, r18	; 0x800195 <millis_timer_fract>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:225
     millis_timer_millis = m;
-     64e:	80 93 8c 01 	sts	0x018C, r24	; 0x80018c <millis_timer_millis>
-     652:	90 93 8d 01 	sts	0x018D, r25	; 0x80018d <millis_timer_millis+0x1>
-     656:	a0 93 8e 01 	sts	0x018E, r26	; 0x80018e <millis_timer_millis+0x2>
-     65a:	b0 93 8f 01 	sts	0x018F, r27	; 0x80018f <millis_timer_millis+0x3>
+     64e:	80 93 96 01 	sts	0x0196, r24	; 0x800196 <millis_timer_millis>
+     652:	90 93 97 01 	sts	0x0197, r25	; 0x800197 <millis_timer_millis+0x1>
+     656:	a0 93 98 01 	sts	0x0198, r26	; 0x800198 <millis_timer_millis+0x2>
+     65a:	b0 93 99 01 	sts	0x0199, r27	; 0x800199 <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:227
 #ifndef CORRECT_EXACT_MICROS
     millis_timer_overflow_count++;
-     65e:	80 91 90 01 	lds	r24, 0x0190	; 0x800190 <millis_timer_overflow_count>
-     662:	90 91 91 01 	lds	r25, 0x0191	; 0x800191 <millis_timer_overflow_count+0x1>
-     666:	a0 91 92 01 	lds	r26, 0x0192	; 0x800192 <millis_timer_overflow_count+0x2>
-     66a:	b0 91 93 01 	lds	r27, 0x0193	; 0x800193 <millis_timer_overflow_count+0x3>
+     65e:	80 91 9a 01 	lds	r24, 0x019A	; 0x80019a <millis_timer_overflow_count>
+     662:	90 91 9b 01 	lds	r25, 0x019B	; 0x80019b <millis_timer_overflow_count+0x1>
+     666:	a0 91 9c 01 	lds	r26, 0x019C	; 0x80019c <millis_timer_overflow_count+0x2>
+     66a:	b0 91 9d 01 	lds	r27, 0x019D	; 0x80019d <millis_timer_overflow_count+0x3>
      66e:	01 96       	adiw	r24, 0x01	; 1
      670:	a1 1d       	adc	r26, r1
      672:	b1 1d       	adc	r27, r1
-     674:	80 93 90 01 	sts	0x0190, r24	; 0x800190 <millis_timer_overflow_count>
-     678:	90 93 91 01 	sts	0x0191, r25	; 0x800191 <millis_timer_overflow_count+0x1>
-     67c:	a0 93 92 01 	sts	0x0192, r26	; 0x800192 <millis_timer_overflow_count+0x2>
-     680:	b0 93 93 01 	sts	0x0193, r27	; 0x800193 <millis_timer_overflow_count+0x3>
+     674:	80 93 9a 01 	sts	0x019A, r24	; 0x80019a <millis_timer_overflow_count>
+     678:	90 93 9b 01 	sts	0x019B, r25	; 0x80019b <millis_timer_overflow_count+0x1>
+     67c:	a0 93 9c 01 	sts	0x019C, r26	; 0x80019c <millis_timer_overflow_count+0x2>
+     680:	b0 93 9d 01 	sts	0x019D, r27	; 0x80019d <millis_timer_overflow_count+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:229
 #endif
   }
@@ -1896,7 +1896,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   unsigned char tmpUSIDR;
 
   switch (USI_TWI_Overflow_State) {
-     6b6:	80 91 86 01 	lds	r24, 0x0186	; 0x800186 <USI_TWI_Overflow_State>
+     6b6:	80 91 90 01 	lds	r24, 0x0190	; 0x800190 <USI_TWI_Overflow_State>
      6ba:	82 30       	cpi	r24, 0x02	; 2
      6bc:	09 f4       	brne	.+2      	; 0x6c0 <__vector_14+0x1e>
      6be:	5e c0       	rjmp	.+188    	; 0x77c <__vector_14+0xda>
@@ -1944,29 +1944,29 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     // Put data into Buffer
     USI_TWI_Overflow_State = USI_SLAVE_REQUEST_DATA;
      6ec:	84 e0       	ldi	r24, 0x04	; 4
-     6ee:	80 93 86 01 	sts	0x0186, r24	; 0x800186 <USI_TWI_Overflow_State>
+     6ee:	80 93 90 01 	sts	0x0190, r24	; 0x800190 <USI_TWI_Overflow_State>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:269
     tmpUSIDR              = USIDR; // Not necessary, but prevents warnings
      6f2:	9f b1       	in	r25, 0x0f	; 15
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:270
     tmpRxHead = (TWI_RxHead + 1) & TWI_RX_BUFFER_MASK;
-     6f4:	80 91 b5 01 	lds	r24, 0x01B5	; 0x8001b5 <TWI_RxHead>
+     6f4:	80 91 bf 01 	lds	r24, 0x01BF	; 0x8001bf <TWI_RxHead>
      6f8:	8f 5f       	subi	r24, 0xFF	; 255
      6fa:	8f 70       	andi	r24, 0x0F	; 15
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:271
     if (TWI_RxTail != tmpRxHead) {
-     6fc:	20 91 b6 01 	lds	r18, 0x01B6	; 0x8001b6 <TWI_RxTail>
+     6fc:	20 91 c0 01 	lds	r18, 0x01C0	; 0x8001c0 <TWI_RxTail>
      700:	28 17       	cp	r18, r24
      702:	09 f4       	brne	.+2      	; 0x706 <__vector_14+0x64>
      704:	46 c0       	rjmp	.+140    	; 0x792 <__vector_14+0xf0>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:272
       TWI_RxHead            = tmpRxHead;
-     706:	80 93 b5 01 	sts	0x01B5, r24	; 0x8001b5 <TWI_RxHead>
+     706:	80 93 bf 01 	sts	0x01BF, r24	; 0x8001bf <TWI_RxHead>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:273
       TWI_RxBuf[TWI_RxHead] = tmpUSIDR;
-     70a:	e0 91 b5 01 	lds	r30, 0x01B5	; 0x8001b5 <TWI_RxHead>
+     70a:	e0 91 bf 01 	lds	r30, 0x01BF	; 0x8001bf <TWI_RxHead>
      70e:	f0 e0       	ldi	r31, 0x00	; 0
-     710:	ec 5d       	subi	r30, 0xDC	; 220
+     710:	e2 5d       	subi	r30, 0xD2	; 210
      712:	fe 4f       	sbci	r31, 0xFE	; 254
      714:	90 83       	st	Z, r25
      716:	0b c0       	rjmp	.+22     	; 0x72e <__vector_14+0x8c>
@@ -1998,7 +1998,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:202
       } else {
         USI_TWI_Overflow_State = USI_SLAVE_REQUEST_DATA;
-     72a:	80 93 86 01 	sts	0x0186, r24	; 0x800186 <USI_TWI_Overflow_State>
+     72a:	80 93 90 01 	sts	0x0190, r24	; 0x800190 <USI_TWI_Overflow_State>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:204
       }
       SET_USI_TO_SEND_ACK();
@@ -2050,23 +2050,23 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
     // Get data from Buffer
     tmpTxTail = TWI_TxTail; // Not necessary, but prevents warnings
-     748:	80 91 84 01 	lds	r24, 0x0184	; 0x800184 <TWI_TxTail>
+     748:	80 91 8e 01 	lds	r24, 0x018E	; 0x80018e <TWI_TxTail>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:225
     if (TWI_TxHead != tmpTxTail) {
-     74c:	90 91 85 01 	lds	r25, 0x0185	; 0x800185 <TWI_TxHead>
+     74c:	90 91 8f 01 	lds	r25, 0x018F	; 0x80018f <TWI_TxHead>
      750:	98 17       	cp	r25, r24
      752:	b1 f3       	breq	.-20     	; 0x740 <__vector_14+0x9e>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:226
       TWI_TxTail = (TWI_TxTail + 1) & TWI_TX_BUFFER_MASK;
-     754:	80 91 84 01 	lds	r24, 0x0184	; 0x800184 <TWI_TxTail>
+     754:	80 91 8e 01 	lds	r24, 0x018E	; 0x80018e <TWI_TxTail>
      758:	8f 5f       	subi	r24, 0xFF	; 255
      75a:	8f 70       	andi	r24, 0x0F	; 15
-     75c:	80 93 84 01 	sts	0x0184, r24	; 0x800184 <TWI_TxTail>
+     75c:	80 93 8e 01 	sts	0x018E, r24	; 0x80018e <TWI_TxTail>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:227
       USIDR      = TWI_TxBuf[TWI_TxTail];
-     760:	e0 91 84 01 	lds	r30, 0x0184	; 0x800184 <TWI_TxTail>
+     760:	e0 91 8e 01 	lds	r30, 0x018E	; 0x80018e <TWI_TxTail>
      764:	f0 e0       	ldi	r31, 0x00	; 0
-     766:	ec 5c       	subi	r30, 0xCC	; 204
+     766:	e2 5c       	subi	r30, 0xC2	; 194
      768:	fe 4f       	sbci	r31, 0xFE	; 254
      76a:	80 81       	ld	r24, Z
      76c:	8f b9       	out	0x0f, r24	; 15
@@ -2078,7 +2078,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     }
     USI_TWI_Overflow_State = USI_SLAVE_REQUEST_REPLY_FROM_SEND_DATA;
      76e:	82 e0       	ldi	r24, 0x02	; 2
-     770:	80 93 86 01 	sts	0x0186, r24	; 0x800186 <USI_TWI_Overflow_State>
+     770:	80 93 90 01 	sts	0x0190, r24	; 0x800190 <USI_TWI_Overflow_State>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:234
     SET_USI_TO_SEND_DATA();
      774:	b8 9a       	sbi	0x17, 0	; 23
@@ -2107,7 +2107,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   case USI_SLAVE_REQUEST_REPLY_FROM_SEND_DATA:
     USI_TWI_Overflow_State = USI_SLAVE_CHECK_REPLY_FROM_SEND_DATA;
      77c:	83 e0       	ldi	r24, 0x03	; 3
-     77e:	80 93 86 01 	sts	0x0186, r24	; 0x800186 <USI_TWI_Overflow_State>
+     77e:	80 93 90 01 	sts	0x0190, r24	; 0x800190 <USI_TWI_Overflow_State>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:240
     SET_USI_TO_READ_ACK();
      782:	b8 98       	cbi	0x17, 0	; 23
@@ -2121,7 +2121,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   case USI_SLAVE_REQUEST_DATA:
     USI_TWI_Overflow_State = USI_SLAVE_GET_DATA_AND_SEND_ACK;
      788:	85 e0       	ldi	r24, 0x05	; 5
-     78a:	80 93 86 01 	sts	0x0186, r24	; 0x800186 <USI_TWI_Overflow_State>
+     78a:	80 93 90 01 	sts	0x0190, r24	; 0x800190 <USI_TWI_Overflow_State>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:247
     SET_USI_TO_READ_DATA();
      78e:	b8 98       	cbi	0x17, 0	; 23
@@ -2158,7 +2158,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   }
 
   USI_TWI_Overflow_State = USI_SLAVE_CHECK_ADDRESS;
-     7a2:	10 92 86 01 	sts	0x0186, r1	; 0x800186 <USI_TWI_Overflow_State>
+     7a2:	10 92 90 01 	sts	0x0190, r1	; 0x800190 <USI_TWI_Overflow_State>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:158
   USI_DDR &= ~(1 << USI_DI_BIT);            // Set SDA as input
      7a6:	b8 98       	cbi	0x17, 0	; 23
@@ -2244,8 +2244,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 /* static */
 inline void SoftwareSerial::handle_interrupt() {
   if (active_object) {
-     7ea:	e0 91 89 01 	lds	r30, 0x0189	; 0x800189 <SoftwareSerial::active_object>
-     7ee:	f0 91 8a 01 	lds	r31, 0x018A	; 0x80018a <SoftwareSerial::active_object+0x1>
+     7ea:	e0 91 93 01 	lds	r30, 0x0193	; 0x800193 <SoftwareSerial::active_object>
+     7ee:	f0 91 94 01 	lds	r31, 0x0194	; 0x800194 <SoftwareSerial::active_object+0x1>
      7f2:	30 97       	sbiw	r30, 0x00	; 0
      7f4:	49 f0       	breq	.+18     	; 0x808 <__vector_2+0x40>
      7f6:	a6 85       	ldd	r26, Z+14	; 0x0e
@@ -2442,27 +2442,27 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
     // if buffer full, set the overflow flag and return
     uint8_t next = (_receive_buffer_tail + 1) % _SS_MAX_RX_BUFF;
-     876:	80 91 88 01 	lds	r24, 0x0188	; 0x800188 <SoftwareSerial::_receive_buffer_tail>
+     876:	80 91 92 01 	lds	r24, 0x0192	; 0x800192 <SoftwareSerial::_receive_buffer_tail>
      87a:	90 e0       	ldi	r25, 0x00	; 0
      87c:	01 96       	adiw	r24, 0x01	; 1
      87e:	8f 73       	andi	r24, 0x3F	; 63
      880:	99 27       	eor	r25, r25
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:148
     if (next != _receive_buffer_head) {
-     882:	30 91 87 01 	lds	r19, 0x0187	; 0x800187 <SoftwareSerial::_receive_buffer_head>
+     882:	30 91 91 01 	lds	r19, 0x0191	; 0x800191 <SoftwareSerial::_receive_buffer_head>
      886:	38 17       	cp	r19, r24
      888:	99 f0       	breq	.+38     	; 0x8b0 <__vector_2+0xe8>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:150
       // save new data in buffer: tail points to where byte goes
       _receive_buffer[_receive_buffer_tail] = d; // save new byte
-     88a:	a0 91 88 01 	lds	r26, 0x0188	; 0x800188 <SoftwareSerial::_receive_buffer_tail>
+     88a:	a0 91 92 01 	lds	r26, 0x0192	; 0x800192 <SoftwareSerial::_receive_buffer_tail>
      88e:	b0 e0       	ldi	r27, 0x00	; 0
-     890:	ac 5b       	subi	r26, 0xBC	; 188
+     890:	a2 5b       	subi	r26, 0xB2	; 178
      892:	be 4f       	sbci	r27, 0xFE	; 254
      894:	2c 93       	st	X, r18
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:151
       _receive_buffer_tail = next;
-     896:	80 93 88 01 	sts	0x0188, r24	; 0x800188 <SoftwareSerial::_receive_buffer_tail>
+     896:	80 93 92 01 	sts	0x0192, r24	; 0x800192 <SoftwareSerial::_receive_buffer_tail>
 _delay_loop_2():
 c:\users\emiliano\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\avr\include\util/delay_basic.h:110
      89a:	82 8d       	ldd	r24, Z+26	; 0x1a
@@ -2792,12 +2792,12 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
 void SoftwareSerial::begin(long speed) {
   _rx_delay_centering = _rx_delay_intrabit = _rx_delay_stopbit = _tx_delay = 0;
-     972:	10 92 af 01 	sts	0x01AF, r1	; 0x8001af <vrserial+0x1b>
-     976:	10 92 ae 01 	sts	0x01AE, r1	; 0x8001ae <vrserial+0x1a>
-     97a:	10 92 ad 01 	sts	0x01AD, r1	; 0x8001ad <vrserial+0x19>
-     97e:	10 92 ac 01 	sts	0x01AC, r1	; 0x8001ac <vrserial+0x18>
-     982:	10 92 ab 01 	sts	0x01AB, r1	; 0x8001ab <vrserial+0x17>
-     986:	10 92 aa 01 	sts	0x01AA, r1	; 0x8001aa <vrserial+0x16>
+     972:	10 92 b9 01 	sts	0x01B9, r1	; 0x8001b9 <vrserial+0x1b>
+     976:	10 92 b8 01 	sts	0x01B8, r1	; 0x8001b8 <vrserial+0x1a>
+     97a:	10 92 b7 01 	sts	0x01B7, r1	; 0x8001b7 <vrserial+0x19>
+     97e:	10 92 b6 01 	sts	0x01B6, r1	; 0x8001b6 <vrserial+0x18>
+     982:	10 92 b5 01 	sts	0x01B5, r1	; 0x8001b5 <vrserial+0x17>
+     986:	10 92 b4 01 	sts	0x01B4, r1	; 0x8001b4 <vrserial+0x16>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:279
   // 12 (gcc 4.8.2) or 13 (gcc 4.3.2) cycles from start bit to first bit,
   // 15 (gcc 4.8.2) or 16 (gcc 4.3.2) cycles between bits,
@@ -2807,13 +2807,13 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   _tx_delay = subtract_cap(bit_delay, 15 / 4);
      98a:	8d ec       	ldi	r24, 0xCD	; 205
      98c:	90 e0       	ldi	r25, 0x00	; 0
-     98e:	90 93 b1 01 	sts	0x01B1, r25	; 0x8001b1 <vrserial+0x1d>
-     992:	80 93 b0 01 	sts	0x01B0, r24	; 0x8001b0 <vrserial+0x1c>
+     98e:	90 93 bb 01 	sts	0x01BB, r25	; 0x8001bb <vrserial+0x1d>
+     992:	80 93 ba 01 	sts	0x01BA, r24	; 0x8001ba <vrserial+0x1c>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:282
 
   // Only setup rx when we have a valid PCINT for this pin
   if (digitalPinToPCICR(_receivePin)) {
-     996:	30 91 a0 01 	lds	r19, 0x01A0	; 0x8001a0 <vrserial+0xc>
+     996:	30 91 aa 01 	lds	r19, 0x01AA	; 0x8001aa <vrserial+0xc>
      99a:	36 30       	cpi	r19, 0x06	; 6
      99c:	18 f5       	brcc	.+70     	; 0x9e4 <main+0xb6>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:297
@@ -2825,16 +2825,16 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     _rx_delay_centering = subtract_cap(bit_delay / 2, (4 + 4 + 75 + 17 - 23) / 4);
      99e:	45 e5       	ldi	r20, 0x55	; 85
      9a0:	50 e0       	ldi	r21, 0x00	; 0
-     9a2:	50 93 ab 01 	sts	0x01AB, r21	; 0x8001ab <vrserial+0x17>
-     9a6:	40 93 aa 01 	sts	0x01AA, r20	; 0x8001aa <vrserial+0x16>
+     9a2:	50 93 b5 01 	sts	0x01B5, r21	; 0x8001b5 <vrserial+0x17>
+     9a6:	40 93 b4 01 	sts	0x01B4, r20	; 0x8001b4 <vrserial+0x16>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:300
 
     // There are 23 cycles in each loop iteration (excluding the delay)
     _rx_delay_intrabit = subtract_cap(bit_delay, 23 / 4);
      9aa:	4b ec       	ldi	r20, 0xCB	; 203
      9ac:	50 e0       	ldi	r21, 0x00	; 0
-     9ae:	50 93 ad 01 	sts	0x01AD, r21	; 0x8001ad <vrserial+0x19>
-     9b2:	40 93 ac 01 	sts	0x01AC, r20	; 0x8001ac <vrserial+0x18>
+     9ae:	50 93 b7 01 	sts	0x01B7, r21	; 0x8001b7 <vrserial+0x19>
+     9b2:	40 93 b6 01 	sts	0x01B6, r20	; 0x8001b6 <vrserial+0x18>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:309
     // mask is enabled again (which _must_ happen during the stopbit).
     // This delay aims at 3/4 of a bit time, meaning the end of the
@@ -2844,8 +2844,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     _rx_delay_stopbit = subtract_cap(bit_delay * 3 / 4, (37 + 11) / 4);
      9b6:	40 e9       	ldi	r20, 0x90	; 144
      9b8:	50 e0       	ldi	r21, 0x00	; 0
-     9ba:	50 93 af 01 	sts	0x01AF, r21	; 0x8001af <vrserial+0x1b>
-     9be:	40 93 ae 01 	sts	0x01AE, r20	; 0x8001ae <vrserial+0x1a>
+     9ba:	50 93 b9 01 	sts	0x01B9, r21	; 0x8001b9 <vrserial+0x1b>
+     9be:	40 93 b8 01 	sts	0x01B8, r20	; 0x8001b8 <vrserial+0x1a>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:323
 
 
@@ -2864,15 +2864,15 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      9c8:	45 e3       	ldi	r20, 0x35	; 53
      9ca:	50 e0       	ldi	r21, 0x00	; 0
 begin():
-     9cc:	50 93 a8 01 	sts	0x01A8, r21	; 0x8001a8 <vrserial+0x14>
-     9d0:	40 93 a7 01 	sts	0x01A7, r20	; 0x8001a7 <vrserial+0x13>
+     9cc:	50 93 b2 01 	sts	0x01B2, r21	; 0x8001b2 <vrserial+0x14>
+     9d0:	40 93 b1 01 	sts	0x01B1, r20	; 0x8001b1 <vrserial+0x13>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:327
     _pcint_maskvalue = _BV(digitalPinToPCMSKbit(_receivePin));
      9d4:	01 c0       	rjmp	.+2      	; 0x9d8 <main+0xaa>
      9d6:	ee 0f       	add	r30, r30
      9d8:	3a 95       	dec	r19
      9da:	ea f7       	brpl	.-6      	; 0x9d6 <main+0xa8>
-     9dc:	e0 93 a9 01 	sts	0x01A9, r30	; 0x8001a9 <vrserial+0x15>
+     9dc:	e0 93 b3 01 	sts	0x01B3, r30	; 0x8001b3 <vrserial+0x15>
 _delay_loop_2():
 c:\users\emiliano\appdata\local\arduino15\packages\arduino\tools\avr-gcc\7.3.0-atmel3.6.1-arduino7\avr\include\util/delay_basic.h:110
      9e0:	01 97       	sbiw	r24, 0x01	; 1
@@ -2885,18 +2885,18 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 // one and returns true if it replaces another
 bool SoftwareSerial::listen() {
   if (!_rx_delay_stopbit)
-     9e4:	80 91 ae 01 	lds	r24, 0x01AE	; 0x8001ae <vrserial+0x1a>
-     9e8:	90 91 af 01 	lds	r25, 0x01AF	; 0x8001af <vrserial+0x1b>
+     9e4:	80 91 b8 01 	lds	r24, 0x01B8	; 0x8001b8 <vrserial+0x1a>
+     9e8:	90 91 b9 01 	lds	r25, 0x01B9	; 0x8001b9 <vrserial+0x1b>
      9ec:	89 2b       	or	r24, r25
      9ee:	49 f1       	breq	.+82     	; 0xa42 <main+0x114>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:86
     return false;
 
   if (active_object != this) {
-     9f0:	e0 91 89 01 	lds	r30, 0x0189	; 0x800189 <SoftwareSerial::active_object>
-     9f4:	f0 91 8a 01 	lds	r31, 0x018A	; 0x80018a <SoftwareSerial::active_object+0x1>
+     9f0:	e0 91 93 01 	lds	r30, 0x0193	; 0x800193 <SoftwareSerial::active_object>
+     9f4:	f0 91 94 01 	lds	r31, 0x0194	; 0x800194 <SoftwareSerial::active_object+0x1>
      9f8:	81 e0       	ldi	r24, 0x01	; 1
-     9fa:	e4 39       	cpi	r30, 0x94	; 148
+     9fa:	ee 39       	cpi	r30, 0x9E	; 158
      9fc:	f8 07       	cpc	r31, r24
      9fe:	09 f1       	breq	.+66     	; 0xa42 <main+0x114>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:87
@@ -2926,19 +2926,19 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
       active_object->stopListening();
 
     _buffer_overflow = false;
-     a12:	80 91 b2 01 	lds	r24, 0x01B2	; 0x8001b2 <vrserial+0x1e>
+     a12:	80 91 bc 01 	lds	r24, 0x01BC	; 0x8001bc <vrserial+0x1e>
      a16:	8e 7f       	andi	r24, 0xFE	; 254
-     a18:	80 93 b2 01 	sts	0x01B2, r24	; 0x8001b2 <vrserial+0x1e>
+     a18:	80 93 bc 01 	sts	0x01BC, r24	; 0x8001bc <vrserial+0x1e>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:91
     _receive_buffer_head = _receive_buffer_tail = 0;
-     a1c:	10 92 88 01 	sts	0x0188, r1	; 0x800188 <SoftwareSerial::_receive_buffer_tail>
-     a20:	10 92 87 01 	sts	0x0187, r1	; 0x800187 <SoftwareSerial::_receive_buffer_head>
+     a1c:	10 92 92 01 	sts	0x0192, r1	; 0x800192 <SoftwareSerial::_receive_buffer_tail>
+     a20:	10 92 91 01 	sts	0x0191, r1	; 0x800191 <SoftwareSerial::_receive_buffer_head>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:92
     active_object = this;
-     a24:	84 e9       	ldi	r24, 0x94	; 148
+     a24:	8e e9       	ldi	r24, 0x9E	; 158
      a26:	91 e0       	ldi	r25, 0x01	; 1
-     a28:	90 93 8a 01 	sts	0x018A, r25	; 0x80018a <SoftwareSerial::active_object+0x1>
-     a2c:	80 93 89 01 	sts	0x0189, r24	; 0x800189 <SoftwareSerial::active_object>
+     a28:	90 93 94 01 	sts	0x0194, r25	; 0x800194 <SoftwareSerial::active_object+0x1>
+     a2c:	80 93 93 01 	sts	0x0193, r24	; 0x800193 <SoftwareSerial::active_object>
 setRxIntMsk():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:342
   listen();
@@ -2947,10 +2947,10 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 void SoftwareSerial::setRxIntMsk(bool enable) {
     if (enable)
       *_pcint_maskreg |= _pcint_maskvalue;
-     a30:	e0 91 a7 01 	lds	r30, 0x01A7	; 0x8001a7 <vrserial+0x13>
-     a34:	f0 91 a8 01 	lds	r31, 0x01A8	; 0x8001a8 <vrserial+0x14>
+     a30:	e0 91 b1 01 	lds	r30, 0x01B1	; 0x8001b1 <vrserial+0x13>
+     a34:	f0 91 b2 01 	lds	r31, 0x01B2	; 0x8001b2 <vrserial+0x14>
      a38:	80 81       	ld	r24, Z
-     a3a:	90 91 a9 01 	lds	r25, 0x01A9	; 0x8001a9 <vrserial+0x15>
+     a3a:	90 91 b3 01 	lds	r25, 0x01B3	; 0x8001b3 <vrserial+0x15>
      a3e:	89 2b       	or	r24, r25
      a40:	80 83       	st	Z, r24
 setup():
@@ -2969,7 +2969,7 @@ void setup() {
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:38
 
   while (vrserial.available() > 0) {  // Limpieza de buffer
-     a4c:	84 e9       	ldi	r24, 0x94	; 148
+     a4c:	8e e9       	ldi	r24, 0x9E	; 158
      a4e:	91 e0       	ldi	r25, 0x01	; 1
      a50:	ee dc       	rcall	.-1572   	; 0x42e <SoftwareSerial::available()>
      a52:	18 16       	cp	r1, r24
@@ -2977,7 +2977,7 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
      a56:	24 f4       	brge	.+8      	; 0xa60 <main+0x132>
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:39
     vrserial.read();
-     a58:	84 e9       	ldi	r24, 0x94	; 148
+     a58:	8e e9       	ldi	r24, 0x9E	; 158
      a5a:	91 e0       	ldi	r25, 0x01	; 1
      a5c:	fa dc       	rcall	.-1548   	; 0x452 <SoftwareSerial::read()>
      a5e:	f6 cf       	rjmp	.-20     	; 0xa4c <main+0x11e>
@@ -2989,14 +2989,14 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 
   void TwoWire::begin(void) {
     BufferIndex = 0;
-     a60:	10 92 b7 01 	sts	0x01B7, r1	; 0x8001b7 <TwoWire::BufferIndex>
+     a60:	10 92 c1 01 	sts	0x01C1, r1	; 0x8001c1 <TwoWire::BufferIndex>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:360
     BufferLength = 0;
-     a64:	10 92 b8 01 	sts	0x01B8, r1	; 0x8001b8 <TwoWire::BufferLength>
+     a64:	10 92 c2 01 	sts	0x01C2, r1	; 0x8001c2 <TwoWire::BufferLength>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:362
 
     transmitting = 0;
-     a68:	10 92 b4 01 	sts	0x01B4, r1	; 0x8001b4 <TwoWire::transmitting>
+     a68:	10 92 be 01 	sts	0x01BE, r1	; 0x8001be <TwoWire::transmitting>
 USI_TWI_Master_Initialise():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:67
 void USI_TWI_Master_Initialise(void) {
@@ -3065,7 +3065,7 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
 }
 void loop() {
   if (vrserial.available()) {
-     a92:	84 e9       	ldi	r24, 0x94	; 148
+     a92:	8e e9       	ldi	r24, 0x9E	; 158
      a94:	91 e0       	ldi	r25, 0x01	; 1
      a96:	cb dc       	rcall	.-1642   	; 0x42e <SoftwareSerial::available()>
      a98:	89 2b       	or	r24, r25
@@ -3101,10 +3101,10 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      aaa:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:238
     m = millis_timer_millis;
-     aac:	80 91 8c 01 	lds	r24, 0x018C	; 0x80018c <millis_timer_millis>
-     ab0:	90 91 8d 01 	lds	r25, 0x018D	; 0x80018d <millis_timer_millis+0x1>
-     ab4:	a0 91 8e 01 	lds	r26, 0x018E	; 0x80018e <millis_timer_millis+0x2>
-     ab8:	b0 91 8f 01 	lds	r27, 0x018F	; 0x80018f <millis_timer_millis+0x3>
+     aac:	80 91 96 01 	lds	r24, 0x0196	; 0x800196 <millis_timer_millis>
+     ab0:	90 91 97 01 	lds	r25, 0x0197	; 0x800197 <millis_timer_millis+0x1>
+     ab4:	a0 91 98 01 	lds	r26, 0x0198	; 0x800198 <millis_timer_millis+0x2>
+     ab8:	b0 91 99 01 	lds	r27, 0x0199	; 0x800199 <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:239
     SREG = oldSREG;
      abc:	2f bf       	out	0x3f, r18	; 63
@@ -3116,14 +3116,14 @@ int Stream::timedRead() {
   #if !defined(DISABLEMILLIS)
   int c;
   _startMillis = millis();
-     abe:	80 93 9c 01 	sts	0x019C, r24	; 0x80019c <vrserial+0x8>
-     ac2:	90 93 9d 01 	sts	0x019D, r25	; 0x80019d <vrserial+0x9>
-     ac6:	a0 93 9e 01 	sts	0x019E, r26	; 0x80019e <vrserial+0xa>
-     aca:	b0 93 9f 01 	sts	0x019F, r27	; 0x80019f <vrserial+0xb>
+     abe:	80 93 a6 01 	sts	0x01A6, r24	; 0x8001a6 <vrserial+0x8>
+     ac2:	90 93 a7 01 	sts	0x01A7, r25	; 0x8001a7 <vrserial+0x9>
+     ac6:	a0 93 a8 01 	sts	0x01A8, r26	; 0x8001a8 <vrserial+0xa>
+     aca:	b0 93 a9 01 	sts	0x01A9, r27	; 0x8001a9 <vrserial+0xb>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:36
   do {
     c = read();
-     ace:	84 e9       	ldi	r24, 0x94	; 148
+     ace:	8e e9       	ldi	r24, 0x9E	; 158
      ad0:	91 e0       	ldi	r25, 0x01	; 1
      ad2:	bf dc       	rcall	.-1666   	; 0x452 <SoftwareSerial::read()>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:37
@@ -3147,28 +3147,28 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      ada:	f8 94       	cli
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:238
     m = millis_timer_millis;
-     adc:	80 91 8c 01 	lds	r24, 0x018C	; 0x80018c <millis_timer_millis>
-     ae0:	90 91 8d 01 	lds	r25, 0x018D	; 0x80018d <millis_timer_millis+0x1>
-     ae4:	a0 91 8e 01 	lds	r26, 0x018E	; 0x80018e <millis_timer_millis+0x2>
-     ae8:	b0 91 8f 01 	lds	r27, 0x018F	; 0x80018f <millis_timer_millis+0x3>
+     adc:	80 91 96 01 	lds	r24, 0x0196	; 0x800196 <millis_timer_millis>
+     ae0:	90 91 97 01 	lds	r25, 0x0197	; 0x800197 <millis_timer_millis+0x1>
+     ae4:	a0 91 98 01 	lds	r26, 0x0198	; 0x800198 <millis_timer_millis+0x2>
+     ae8:	b0 91 99 01 	lds	r27, 0x0199	; 0x800199 <millis_timer_millis+0x3>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:239
     SREG = oldSREG;
      aec:	2f bf       	out	0x3f, r18	; 63
 timedRead():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.cpp:38
   } while(millis() - _startMillis < _timeout);
-     aee:	40 91 9c 01 	lds	r20, 0x019C	; 0x80019c <vrserial+0x8>
-     af2:	50 91 9d 01 	lds	r21, 0x019D	; 0x80019d <vrserial+0x9>
-     af6:	60 91 9e 01 	lds	r22, 0x019E	; 0x80019e <vrserial+0xa>
-     afa:	70 91 9f 01 	lds	r23, 0x019F	; 0x80019f <vrserial+0xb>
+     aee:	40 91 a6 01 	lds	r20, 0x01A6	; 0x8001a6 <vrserial+0x8>
+     af2:	50 91 a7 01 	lds	r21, 0x01A7	; 0x8001a7 <vrserial+0x9>
+     af6:	60 91 a8 01 	lds	r22, 0x01A8	; 0x8001a8 <vrserial+0xa>
+     afa:	70 91 a9 01 	lds	r23, 0x01A9	; 0x8001a9 <vrserial+0xb>
      afe:	84 1b       	sub	r24, r20
      b00:	95 0b       	sbc	r25, r21
      b02:	a6 0b       	sbc	r26, r22
      b04:	b7 0b       	sbc	r27, r23
-     b06:	40 91 98 01 	lds	r20, 0x0198	; 0x800198 <vrserial+0x4>
-     b0a:	50 91 99 01 	lds	r21, 0x0199	; 0x800199 <vrserial+0x5>
-     b0e:	60 91 9a 01 	lds	r22, 0x019A	; 0x80019a <vrserial+0x6>
-     b12:	70 91 9b 01 	lds	r23, 0x019B	; 0x80019b <vrserial+0x7>
+     b06:	40 91 a2 01 	lds	r20, 0x01A2	; 0x8001a2 <vrserial+0x4>
+     b0a:	50 91 a3 01 	lds	r21, 0x01A3	; 0x8001a3 <vrserial+0x5>
+     b0e:	60 91 a4 01 	lds	r22, 0x01A4	; 0x8001a4 <vrserial+0x6>
+     b12:	70 91 a5 01 	lds	r23, 0x01A5	; 0x8001a5 <vrserial+0x7>
      b16:	84 17       	cp	r24, r20
      b18:	95 07       	cpc	r25, r21
      b1a:	a6 07       	cpc	r26, r22
@@ -3202,9 +3202,9 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
      b30:	90 e0       	ldi	r25, 0x00	; 0
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:127
           if (bus_V < 0) {
-            vrserial.println("E");
+            vrserial.println("error");
           } else {
-            vrserial.print("{\"v\":\"");
+            vrserial.print("{\"voltage\":\"");
             vrserial.print(bus_V, 3);
             vrserial.println("\"}");
      b32:	07 dd       	rcall	.-1522   	; 0x542 <Print::println(char const*) [clone .constprop.12]>
@@ -3343,20 +3343,20 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
      bbc:	11 e0       	ldi	r17, 0x01	; 1
 beginTransmission():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:459
-     bbe:	00 93 b4 01 	sts	0x01B4, r16	; 0x8001b4 <TwoWire::transmitting>
+     bbe:	00 93 be 01 	sts	0x01BE, r16	; 0x8001be <TwoWire::transmitting>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:461
     // set address of targeted slave and write mode
     Buffer[0] = (address << TWI_ADR_BITS) | (0 << TWI_READ_BIT);
      bc2:	81 2f       	mov	r24, r17
      bc4:	88 0f       	add	r24, r24
-     bc6:	80 93 24 01 	sts	0x0124, r24	; 0x800124 <__data_end>
+     bc6:	80 93 2e 01 	sts	0x012E, r24	; 0x80012e <__data_end>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:463
     // reset tx buffer iterator vars
     BufferIndex = 1; // reserved by slave address
-     bca:	00 93 b7 01 	sts	0x01B7, r16	; 0x8001b7 <TwoWire::BufferIndex>
+     bca:	00 93 c1 01 	sts	0x01C1, r16	; 0x8001c1 <TwoWire::BufferIndex>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:464
     BufferLength = BufferIndex;
-     bce:	00 93 b8 01 	sts	0x01B8, r16	; 0x8001b8 <TwoWire::BufferLength>
+     bce:	00 93 c2 01 	sts	0x01C2, r16	; 0x8001c2 <TwoWire::BufferLength>
 endTransmission():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:497
     }
@@ -3510,12 +3510,12 @@ C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc
      c5c:	87 ff       	sbrs	r24, 7
      c5e:	03 c0       	rjmp	.+6      	; 0xc66 <main+0x338>
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:123
-            vrserial.println("E");
+            vrserial.println("error");
      c60:	8b e1       	ldi	r24, 0x1B	; 27
      c62:	91 e0       	ldi	r25, 0x01	; 1
      c64:	66 cf       	rjmp	.-308    	; 0xb32 <main+0x204>
 write():
-     c66:	8d e1       	ldi	r24, 0x1D	; 29
+     c66:	81 e2       	ldi	r24, 0x21	; 33
      c68:	91 e0       	ldi	r25, 0x01	; 1
      c6a:	11 dc       	rcall	.-2014   	; 0x48e <Print::write(char const*) [clone .part.1] [clone .constprop.14]>
 printFloat():
@@ -3624,7 +3624,7 @@ size_t Print::print(const char str[]) {
 size_t Print::print(char c) {
   return write(c);
      ccc:	6d e2       	ldi	r22, 0x2D	; 45
-     cce:	84 e9       	ldi	r24, 0x94	; 148
+     cce:	8e e9       	ldi	r24, 0x9E	; 158
      cd0:	91 e0       	ldi	r25, 0x01	; 1
      cd2:	51 db       	rcall	.-2398   	; 0x376 <SoftwareSerial::write(unsigned char)>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:76
@@ -3671,7 +3671,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 loop():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:127
           } else {
-            vrserial.print("{\"v\":\"");
+            vrserial.print("{\"voltage\":\"");
             vrserial.print(bus_V, 3);
             vrserial.println("\"}");
      d02:	88 e1       	ldi	r24, 0x18	; 24
@@ -3742,8 +3742,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
     void setWriteError(int err = 1) { write_error = err; }
   public:
     Print() : write_error(0) {}
-     d34:	10 92 97 01 	sts	0x0197, r1	; 0x800197 <vrserial+0x3>
-     d38:	10 92 96 01 	sts	0x0196, r1	; 0x800196 <vrserial+0x2>
+     d34:	10 92 a1 01 	sts	0x01A1, r1	; 0x8001a1 <vrserial+0x3>
+     d38:	10 92 a0 01 	sts	0x01A0, r1	; 0x8001a0 <vrserial+0x2>
 _ZN6StreamC2Ev():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Stream.h:64
     virtual int available() = 0;
@@ -3756,10 +3756,10 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
      d3e:	93 e0       	ldi	r25, 0x03	; 3
      d40:	a0 e0       	ldi	r26, 0x00	; 0
      d42:	b0 e0       	ldi	r27, 0x00	; 0
-     d44:	80 93 98 01 	sts	0x0198, r24	; 0x800198 <vrserial+0x4>
-     d48:	90 93 99 01 	sts	0x0199, r25	; 0x800199 <vrserial+0x5>
-     d4c:	a0 93 9a 01 	sts	0x019A, r26	; 0x80019a <vrserial+0x6>
-     d50:	b0 93 9b 01 	sts	0x019B, r27	; 0x80019b <vrserial+0x7>
+     d44:	80 93 a2 01 	sts	0x01A2, r24	; 0x8001a2 <vrserial+0x4>
+     d48:	90 93 a3 01 	sts	0x01A3, r25	; 0x8001a3 <vrserial+0x5>
+     d4c:	a0 93 a4 01 	sts	0x01A4, r26	; 0x8001a4 <vrserial+0x6>
+     d50:	b0 93 a5 01 	sts	0x01A5, r27	; 0x8001a5 <vrserial+0x7>
 _GLOBAL__sub_I_vrserial():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:223
   _rx_delay_centering(0),
@@ -3770,20 +3770,20 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   _inverse_logic(inverse_logic) {
      d54:	84 e6       	ldi	r24, 0x64	; 100
      d56:	90 e0       	ldi	r25, 0x00	; 0
-     d58:	90 93 95 01 	sts	0x0195, r25	; 0x800195 <vrserial+0x1>
-     d5c:	80 93 94 01 	sts	0x0194, r24	; 0x800194 <vrserial>
-     d60:	10 92 ab 01 	sts	0x01AB, r1	; 0x8001ab <vrserial+0x17>
-     d64:	10 92 aa 01 	sts	0x01AA, r1	; 0x8001aa <vrserial+0x16>
-     d68:	10 92 ad 01 	sts	0x01AD, r1	; 0x8001ad <vrserial+0x19>
-     d6c:	10 92 ac 01 	sts	0x01AC, r1	; 0x8001ac <vrserial+0x18>
-     d70:	10 92 af 01 	sts	0x01AF, r1	; 0x8001af <vrserial+0x1b>
-     d74:	10 92 ae 01 	sts	0x01AE, r1	; 0x8001ae <vrserial+0x1a>
-     d78:	10 92 b1 01 	sts	0x01B1, r1	; 0x8001b1 <vrserial+0x1d>
-     d7c:	10 92 b0 01 	sts	0x01B0, r1	; 0x8001b0 <vrserial+0x1c>
-     d80:	60 91 b2 01 	lds	r22, 0x01B2	; 0x8001b2 <vrserial+0x1e>
+     d58:	90 93 9f 01 	sts	0x019F, r25	; 0x80019f <vrserial+0x1>
+     d5c:	80 93 9e 01 	sts	0x019E, r24	; 0x80019e <vrserial>
+     d60:	10 92 b5 01 	sts	0x01B5, r1	; 0x8001b5 <vrserial+0x17>
+     d64:	10 92 b4 01 	sts	0x01B4, r1	; 0x8001b4 <vrserial+0x16>
+     d68:	10 92 b7 01 	sts	0x01B7, r1	; 0x8001b7 <vrserial+0x19>
+     d6c:	10 92 b6 01 	sts	0x01B6, r1	; 0x8001b6 <vrserial+0x18>
+     d70:	10 92 b9 01 	sts	0x01B9, r1	; 0x8001b9 <vrserial+0x1b>
+     d74:	10 92 b8 01 	sts	0x01B8, r1	; 0x8001b8 <vrserial+0x1a>
+     d78:	10 92 bb 01 	sts	0x01BB, r1	; 0x8001bb <vrserial+0x1d>
+     d7c:	10 92 ba 01 	sts	0x01BA, r1	; 0x8001ba <vrserial+0x1c>
+     d80:	60 91 bc 01 	lds	r22, 0x01BC	; 0x8001bc <vrserial+0x1e>
      d84:	6e 7f       	andi	r22, 0xFE	; 254
      d86:	6d 7f       	andi	r22, 0xFD	; 253
-     d88:	60 93 b2 01 	sts	0x01B2, r22	; 0x8001b2 <vrserial+0x1e>
+     d88:	60 93 bc 01 	sts	0x01BC, r22	; 0x8001bc <vrserial+0x1e>
 setTX():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:240
 void SoftwareSerial::setTX(uint8_t tx) {
@@ -3821,14 +3821,14 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
   pinMode(tx, OUTPUT);
   _transmitBitMask = digitalPinToBitMask(tx);
      da0:	80 e1       	ldi	r24, 0x10	; 16
-     da2:	80 93 a4 01 	sts	0x01A4, r24	; 0x8001a4 <vrserial+0x10>
+     da2:	80 93 ae 01 	sts	0x01AE, r24	; 0x8001ae <vrserial+0x10>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:244
   uint8_t port = digitalPinToPort(tx);
   _transmitPortRegister = portOutputRegister(port);
      da6:	88 e3       	ldi	r24, 0x38	; 56
      da8:	90 e0       	ldi	r25, 0x00	; 0
-     daa:	90 93 a6 01 	sts	0x01A6, r25	; 0x8001a6 <vrserial+0x12>
-     dae:	80 93 a5 01 	sts	0x01A5, r24	; 0x8001a5 <vrserial+0x11>
+     daa:	90 93 b0 01 	sts	0x01B0, r25	; 0x8001b0 <vrserial+0x12>
+     dae:	80 93 af 01 	sts	0x01AF, r24	; 0x8001af <vrserial+0x11>
 pinMode():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:33
 #else
@@ -3857,7 +3857,7 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 void SoftwareSerial::setRX(uint8_t rx) {
   pinMode(rx, INPUT);
   if (!_inverse_logic)
-     dbc:	80 91 b2 01 	lds	r24, 0x01B2	; 0x8001b2 <vrserial+0x1e>
+     dbc:	80 91 bc 01 	lds	r24, 0x01BC	; 0x8001bc <vrserial+0x1e>
      dc0:	81 fd       	sbrc	r24, 1
      dc2:	03 c0       	rjmp	.+6      	; 0xdca <_GLOBAL__sub_I_vrserial+0x96>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:250
@@ -3868,18 +3868,18 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:251
   _receivePin = rx;
      dca:	83 e0       	ldi	r24, 0x03	; 3
-     dcc:	80 93 a0 01 	sts	0x01A0, r24	; 0x8001a0 <vrserial+0xc>
+     dcc:	80 93 aa 01 	sts	0x01AA, r24	; 0x8001aa <vrserial+0xc>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:252
   _receiveBitMask = digitalPinToBitMask(rx);
      dd0:	88 e0       	ldi	r24, 0x08	; 8
-     dd2:	80 93 a1 01 	sts	0x01A1, r24	; 0x8001a1 <vrserial+0xd>
+     dd2:	80 93 ab 01 	sts	0x01AB, r24	; 0x8001ab <vrserial+0xd>
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:254
   uint8_t port = digitalPinToPort(rx);
   _receivePortRegister = portInputRegister(port);
      dd6:	86 e3       	ldi	r24, 0x36	; 54
      dd8:	90 e0       	ldi	r25, 0x00	; 0
-     dda:	90 93 a3 01 	sts	0x01A3, r25	; 0x8001a3 <vrserial+0xf>
-     dde:	80 93 a2 01 	sts	0x01A2, r24	; 0x8001a2 <vrserial+0xe>
+     dda:	90 93 ad 01 	sts	0x01AD, r25	; 0x8001ad <vrserial+0xf>
+     dde:	80 93 ac 01 	sts	0x01AC, r24	; 0x8001ac <vrserial+0xe>
 _GLOBAL__sub_I_vrserial():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:140
         vrserial.print(input);
@@ -3900,8 +3900,8 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 SoftwareSerial::~SoftwareSerial() {
      de4:	84 e6       	ldi	r24, 0x64	; 100
      de6:	90 e0       	ldi	r25, 0x00	; 0
-     de8:	90 93 95 01 	sts	0x0195, r25	; 0x800195 <vrserial+0x1>
-     dec:	80 93 94 01 	sts	0x0194, r24	; 0x800194 <vrserial>
+     de8:	90 93 9f 01 	sts	0x019F, r25	; 0x80019f <vrserial+0x1>
+     dec:	80 93 9e 01 	sts	0x019E, r24	; 0x80019e <vrserial>
 stopListening():
 C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:103
   return false;
@@ -3910,9 +3910,9 @@ C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\h
 // Stop listening. Returns true if we were actually listening.
 bool SoftwareSerial::stopListening() {
   if (active_object == this) {
-     df0:	80 91 89 01 	lds	r24, 0x0189	; 0x800189 <SoftwareSerial::active_object>
-     df4:	90 91 8a 01 	lds	r25, 0x018A	; 0x80018a <SoftwareSerial::active_object+0x1>
-     df8:	84 59       	subi	r24, 0x94	; 148
+     df0:	80 91 93 01 	lds	r24, 0x0193	; 0x800193 <SoftwareSerial::active_object>
+     df4:	90 91 94 01 	lds	r25, 0x0194	; 0x800194 <SoftwareSerial::active_object+0x1>
+     df8:	8e 59       	subi	r24, 0x9E	; 158
      dfa:	91 40       	sbci	r25, 0x01	; 1
      dfc:	71 f4       	brne	.+28     	; 0xe1a <_GLOBAL__sub_D_vrserial+0x36>
 setRxIntMsk():
@@ -3923,10 +3923,10 @@ void SoftwareSerial::setRxIntMsk(bool enable) {
       *_pcint_maskreg |= _pcint_maskvalue;
     else
       *_pcint_maskreg &= ~_pcint_maskvalue;
-     dfe:	e0 91 a7 01 	lds	r30, 0x01A7	; 0x8001a7 <vrserial+0x13>
-     e02:	f0 91 a8 01 	lds	r31, 0x01A8	; 0x8001a8 <vrserial+0x14>
+     dfe:	e0 91 b1 01 	lds	r30, 0x01B1	; 0x8001b1 <vrserial+0x13>
+     e02:	f0 91 b2 01 	lds	r31, 0x01B2	; 0x8001b2 <vrserial+0x14>
      e06:	90 81       	ld	r25, Z
-     e08:	80 91 a9 01 	lds	r24, 0x01A9	; 0x8001a9 <vrserial+0x15>
+     e08:	80 91 b3 01 	lds	r24, 0x01B3	; 0x8001b3 <vrserial+0x15>
      e0c:	80 95       	com	r24
      e0e:	89 23       	and	r24, r25
      e10:	80 83       	st	Z, r24
@@ -3938,8 +3938,8 @@ bool SoftwareSerial::stopListening() {
   if (active_object == this) {
     setRxIntMsk(false);
     active_object = NULL;
-     e12:	10 92 8a 01 	sts	0x018A, r1	; 0x80018a <SoftwareSerial::active_object+0x1>
-     e16:	10 92 89 01 	sts	0x0189, r1	; 0x800189 <SoftwareSerial::active_object>
+     e12:	10 92 94 01 	sts	0x0194, r1	; 0x800194 <SoftwareSerial::active_object+0x1>
+     e16:	10 92 93 01 	sts	0x0193, r1	; 0x800193 <SoftwareSerial::active_object>
 _GLOBAL__sub_D_vrserial():
 C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:140
      e1a:	08 95       	ret

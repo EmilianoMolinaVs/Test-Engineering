@@ -1,6 +1,29 @@
 /*
-Firmware principal de teste para el proyecto pc0707 de enersi con sensores de corriente
-ina219 sensados por un attiny85 
+  PC0707 - Firmware de prueba para sensores de corriente INA219
+
+  Microcontrolador:
+    ATtiny85
+
+  Comunicación:
+    - I2C: comunicación con los sensores INA219
+    - SoftwareSerial: comunicación con el equipo externo
+
+  Sensores INA219:
+    0x40 -> u1
+    0x41 -> u2
+    0x44 -> u3
+    0x45 -> u4
+
+  Comandos recibidos por puerto serial:
+    ping -> responde {"ping":"pong"}
+    scan -> busca los sensores INA219
+    u1   -> lee el voltaje de bus del INA219 0x40
+    u2   -> lee el voltaje de bus del INA219 0x41
+    u3   -> lee el voltaje de bus del INA219 0x44
+    u4   -> lee el voltaje de bus del INA219 0x45
+
+  El voltaje de bus se obtiene del registro 0x02 del INA219
+  y se convierte a volts usando una resolución de 4 mV/bit.
 */
 
 // ==== DECLARACIÓN DE LIBRERIAS ====
@@ -120,9 +143,9 @@ void loop() {
             bus_V = readINA219BusVoltage(0x45);
 
           if (bus_V < 0) {
-            vrserial.println("E");
+            vrserial.println("error");
           } else {
-            vrserial.print("{\"v\":\"");
+            vrserial.print("{\"voltage\":\"");
             vrserial.print(bus_V, 3);
             vrserial.println("\"}");
           }

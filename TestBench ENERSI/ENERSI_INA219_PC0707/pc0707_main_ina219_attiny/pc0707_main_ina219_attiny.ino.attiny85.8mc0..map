@@ -108,34 +108,34 @@ exit                |000011fe|   W  |            NOTYPE|        |     |.text	/ho
 __stop_program      |00001214|   t  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2280
 __data_load_start   |00001216|   A  |            NOTYPE|        |     |*ABS*
 _etext              |00001216|   T  |            NOTYPE|        |     |.text
-__data_load_end     |000012da|   A  |            NOTYPE|        |     |*ABS*
+__data_load_end     |000012e4|   A  |            NOTYPE|        |     |*ABS*
 __TEXT_REGION_LENGTH__|00002000|   A  |            NOTYPE|        |     |*ABS*
 __DATA_REGION_LENGTH__|0000ffa0|   A  |            NOTYPE|        |     |*ABS*
 __EEPROM_REGION_LENGTH__|00010000|   A  |            NOTYPE|        |     |*ABS*
 __DATA_REGION_ORIGIN__|00800060|   A  |            NOTYPE|        |     |*ABS*
 __data_start        |00800060|   D  |            NOTYPE|        |     |.data
 vtable for SoftwareSerial|00800060|   d  |            OBJECT|00000010|     |.data
-__bss_start         |00800124|   B  |            NOTYPE|        |     |.bss
-__data_end          |00800124|   D  |            NOTYPE|        |     |.data
-_edata              |00800124|   D  |            NOTYPE|        |     |.data
-TWI_Buffer          |00800124|   b  |            OBJECT|00000020|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:32
-SoftwareSerial::_receive_buffer|00800144|   b  |            OBJECT|00000040|     |.bss
-TWI_TxTail          |00800184|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:46
-TWI_TxHead          |00800185|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:45
-USI_TWI_Overflow_State|00800186|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:37
-SoftwareSerial::_receive_buffer_head|00800187|   b  |            OBJECT|00000001|     |.bss
-SoftwareSerial::_receive_buffer_tail|00800188|   b  |            OBJECT|00000001|     |.bss
-SoftwareSerial::active_object|00800189|   b  |            OBJECT|00000002|     |.bss
-millis_timer_fract  |0080018b|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:181
-millis_timer_millis |0080018c|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:180
-millis_timer_overflow_count|00800190|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:178
-vrserial            |00800194|   b  |            OBJECT|0000001f|     |.bss	C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:11
-USI_TWI_state       |008001b3|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:50
-TwoWire::transmitting|008001b4|   b  |            OBJECT|00000001|     |.bss
-TWI_RxHead          |008001b5|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:41
-TWI_RxTail          |008001b6|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:42
-TwoWire::BufferIndex|008001b7|   b  |            OBJECT|00000001|     |.bss
-TwoWire::BufferLength|008001b8|   b  |            OBJECT|00000001|     |.bss
-__bss_end           |008001b9|   B  |            NOTYPE|        |     |.bss
-_end                |008001b9|   N  |            NOTYPE|        |     |.comment
+__bss_start         |0080012e|   B  |            NOTYPE|        |     |.bss
+__data_end          |0080012e|   D  |            NOTYPE|        |     |.data
+_edata              |0080012e|   D  |            NOTYPE|        |     |.data
+TWI_Buffer          |0080012e|   b  |            OBJECT|00000020|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:32
+SoftwareSerial::_receive_buffer|0080014e|   b  |            OBJECT|00000040|     |.bss
+TWI_TxTail          |0080018e|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:46
+TWI_TxHead          |0080018f|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:45
+USI_TWI_Overflow_State|00800190|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:37
+SoftwareSerial::_receive_buffer_head|00800191|   b  |            OBJECT|00000001|     |.bss
+SoftwareSerial::_receive_buffer_tail|00800192|   b  |            OBJECT|00000001|     |.bss
+SoftwareSerial::active_object|00800193|   b  |            OBJECT|00000002|     |.bss
+millis_timer_fract  |00800195|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:181
+millis_timer_millis |00800196|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:180
+millis_timer_overflow_count|0080019a|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:178
+vrserial            |0080019e|   b  |            OBJECT|0000001f|     |.bss	C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:11
+USI_TWI_state       |008001bd|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:50
+TwoWire::transmitting|008001be|   b  |            OBJECT|00000001|     |.bss
+TWI_RxHead          |008001bf|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:41
+TWI_RxTail          |008001c0|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:42
+TwoWire::BufferIndex|008001c1|   b  |            OBJECT|00000001|     |.bss
+TwoWire::BufferLength|008001c2|   b  |            OBJECT|00000001|     |.bss
+__bss_end           |008001c3|   B  |            NOTYPE|        |     |.bss
+_end                |008001c3|   N  |            NOTYPE|        |     |.comment
 __eeprom_end        |00810000|   N  |            NOTYPE|        |     |.comment
