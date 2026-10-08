@@ -6,12 +6,8 @@ Name                  Value   Class        Type         Size     Line  Section
 
 __heap_end          |00000000|   W  |            NOTYPE|        |     |*ABS*
 __tmp_reg__         |00000000|   a  |            NOTYPE|        |     |*ABS*
-__tmp_reg__         |00000000|   a  |            NOTYPE|        |     |*ABS*
-__tmp_reg__         |00000000|   a  |            NOTYPE|        |     |*ABS*
 __vector_default    |00000000|   W  |            NOTYPE|        |     |.text
 __vectors           |00000000|   T  |            NOTYPE|        |     |.text
-__zero_reg__        |00000001|   a  |            NOTYPE|        |     |*ABS*
-__zero_reg__        |00000001|   a  |            NOTYPE|        |     |*ABS*
 __zero_reg__        |00000001|   a  |            NOTYPE|        |     |*ABS*
 __FUSE_REGION_LENGTH__|00000003|   A  |            NOTYPE|        |     |*ABS*
 __trampolines_end   |0000001e|   T  |            NOTYPE|        |     |.text
@@ -26,13 +22,7 @@ __dtors_start       |00000036|   T  |            NOTYPE|        |     |.text
 __dtors_end         |00000038|   T  |            NOTYPE|        |     |.text
 __init              |00000038|   W  |            NOTYPE|        |     |.text
 __SP_L__            |0000003d|   a  |            NOTYPE|        |     |*ABS*
-__SP_L__            |0000003d|   a  |            NOTYPE|        |     |*ABS*
-__SP_L__            |0000003d|   a  |            NOTYPE|        |     |*ABS*
 __SP_H__            |0000003e|   a  |            NOTYPE|        |     |*ABS*
-__SP_H__            |0000003e|   a  |            NOTYPE|        |     |*ABS*
-__SP_H__            |0000003e|   a  |            NOTYPE|        |     |*ABS*
-__SREG__            |0000003f|   a  |            NOTYPE|        |     |*ABS*
-__SREG__            |0000003f|   a  |            NOTYPE|        |     |*ABS*
 __SREG__            |0000003f|   a  |            NOTYPE|        |     |*ABS*
 __do_clear_bss      |00000044|   T  |            NOTYPE|00000010|     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2441
 .do_clear_bss_loop  |0000004c|   t  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2446
@@ -51,78 +41,95 @@ __vector_7          |00000082|   W  |            NOTYPE|        |     |.text
 __vector_8          |00000082|   W  |            NOTYPE|        |     |.text
 __vector_9          |00000082|   W  |            NOTYPE|        |     |.text
 micros              |00000084|   t  |              FUNC|0000004c|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:244
-Print::write(unsigned char const*, unsigned int)|000000d0|   t  |              FUNC|00000050|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:33
-USI_TWI_Master_Transfer|00000120|   t  |              FUNC|00000030|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:213
-SoftwareSerial::peek()|00000150|   t  |              FUNC|00000034|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:442
-SoftwareSerial::flush()|00000184|   t  |              FUNC|0000001e|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:432
-SoftwareSerial::write(unsigned char)|000001a2|   t  |              FUNC|000000b8|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:378
-SoftwareSerial::available()|0000025a|   t  |              FUNC|00000024|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:368
+delay               |000000d0|   t  |              FUNC|00000054|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:404
+Print::write(unsigned char const*, unsigned int)|00000124|   t  |              FUNC|00000050|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:33
+USI_TWI_Data_In_Receive_Buffer|00000174|   t  |              FUNC|0000000e|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:121
+TwoWire::read() [clone .constprop.28]|00000182|   t  |              FUNC|00000054|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:548
+USI_TWI_Master_Transfer|000001d6|   t  |              FUNC|00000030|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:213
+USI_TWI_Start_Transceiver_With_Data_Stop|00000206|   t  |              FUNC|000000de|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:112
 __stack             |0000025f|   W  |            NOTYPE|        |     |*ABS*
-SoftwareSerial::read()|0000027e|   t  |              FUNC|0000003c|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:354
-Stream::timedRead() [clone .constprop.21]|000002ba|   t  |              FUNC|0000007e|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:233
-Print::println(char const*) [clone .constprop.11]|00000338|   t  |              FUNC|00000046|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:119
-String::reserve(unsigned int)|0000037e|   t  |              FUNC|0000004e|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/WString.cpp:146
-__vector_5          |000003cc|   T  |              FUNC|00000094|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:184
+TwoWire::endTransmission(unsigned char) [clone .constprop.25]|000002e4|   t  |              FUNC|00000040|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src/Wire.cpp:475
+SoftwareSerial::peek()|00000324|   t  |              FUNC|00000034|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:442
+SoftwareSerial::flush()|00000358|   t  |              FUNC|0000001e|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:432
+SoftwareSerial::write(unsigned char)|00000376|   t  |              FUNC|000000b8|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:378
 __LOCK_REGION_LENGTH__|00000400|   A  |            NOTYPE|        |     |*ABS*
 __SIGNATURE_REGION_LENGTH__|00000400|   A  |            NOTYPE|        |     |*ABS*
 __USER_SIGNATURE_REGION_LENGTH__|00000400|   A  |            NOTYPE|        |     |*ABS*
-__vector_14         |00000460|   T  |              FUNC|000000f4|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:183
-__vector_13         |00000554|   T  |              FUNC|00000032|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:145
-__vector_2          |00000586|   T  |              FUNC|000000f0|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:189
-digitalWrite        |00000676|   t  |              FUNC|00000076|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:132
-main                |000006ec|   T  |              FUNC|0000044a|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/main.cpp:15
-_GLOBAL__sub_I_vrserial|00000b36|   t  |              FUNC|000000b0|     |.text
-_GLOBAL__sub_D_vrserial|00000be6|   t  |              FUNC|00000038|     |.text
-isspace             |00000c1e|   T  |            NOTYPE|        |     |.text
-__ctype_isfalse     |00000c2e|   T  |            NOTYPE|        |     |.text
-__ctype_istrue      |00000c32|   T  |            NOTYPE|        |     |.text
-__prologue_saves__  |00000c34|   T  |            NOTYPE|00000038|     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2169
-__epilogue_restores__|00000c6c|   T  |            NOTYPE|00000036|     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2222
-__tablejump2__      |00000ca2|   T  |            NOTYPE|0000000c|     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2296
-malloc              |00000cae|   T  |              FUNC|00000138|     |.text
-free                |00000de6|   T  |              FUNC|00000112|     |.text
-realloc             |00000ef8|   T  |              FUNC|0000016c|     |.text
-memcpy              |00001064|   T  |              FUNC|00000012|     |.text
-strcmp              |00001076|   T  |              FUNC|00000012|     |.text
-strcpy              |00001088|   T  |              FUNC|0000000e|     |.text
-__do_global_dtors   |00001096|   T  |            NOTYPE|00000014|     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2496
-_exit               |00001096|   T  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2496
-exit                |00001096|   W  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2496
-__stop_program      |000010ac|   t  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2280
-__data_load_start   |000010ae|   A  |            NOTYPE|        |     |*ABS*
-_etext              |000010ae|   T  |            NOTYPE|        |     |.text
-__data_load_end     |00001164|   A  |            NOTYPE|        |     |*ABS*
+Print::println() [clone .constprop.15]|0000042e|   t  |              FUNC|00000020|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:107
+SoftwareSerial::available()|0000044e|   t  |              FUNC|00000024|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:368
+SoftwareSerial::read()|00000472|   t  |              FUNC|0000003c|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:354
+Print::write(char const*) [clone .part.1] [clone .constprop.14]|000004ae|   t  |              FUNC|00000018|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.h:83
+Print::printNumber(unsigned long, unsigned char) [clone .constprop.9]|000004c6|   t  |              FUNC|0000009c|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:228
+Print::println(char const*) [clone .constprop.12]|00000562|   t  |              FUNC|00000014|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/Print.cpp:119
+__vector_5          |00000576|   T  |              FUNC|00000094|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:184
+__vector_14         |0000060a|   T  |              FUNC|000000f4|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:183
+__vector_13         |000006fe|   T  |              FUNC|00000032|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:145
+__vector_2          |00000730|   T  |              FUNC|000000f0|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\SoftwareSerial/SoftwareSerial.cpp:189
+digitalWrite        |00000820|   t  |              FUNC|00000076|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_digital.c:132
+main                |00000896|   T  |              FUNC|0000046e|     |.text	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/main.cpp:15
+_GLOBAL__sub_I_vrserial|00000d04|   t  |              FUNC|000000b0|     |.text
+_GLOBAL__sub_D_vrserial|00000db4|   t  |              FUNC|00000038|     |.text
+__floatunsisf       |00000dec|   T  |              FUNC|0000007a|     |.text
+__floatsisf         |00000df0|   T  |            NOTYPE|        |     |.text
+__mulsf3            |00000e66|   T  |              FUNC|00000004|     |.text
+__mulsf3x           |00000e7c|   T  |              FUNC|000000d2|     |.text
+__mulsf3_pse        |00000e80|   T  |            NOTYPE|        |     |.text
+__fp_inf            |00000f3c|   T  |              FUNC|0000000c|     |.text
+__fp_nan            |00000f48|   T  |              FUNC|00000006|     |.text
+__fp_pscA           |00000f4e|   T  |              FUNC|0000000e|     |.text
+__fp_pscB           |00000f5c|   T  |              FUNC|0000000e|     |.text
+__fp_round          |00000f6a|   T  |              FUNC|00000022|     |.text
+__fp_split3         |00000f8c|   T  |              FUNC|00000044|     |.text
+__fp_splitA         |00000f9c|   T  |            NOTYPE|        |     |.text
+__fp_zero           |00000fd0|   T  |              FUNC|0000000e|     |.text
+__fp_szero          |00000fd2|   T  |            NOTYPE|        |     |.text
+__mulqi3            |00000fde|   T  |            NOTYPE|00000012|     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:224
+__mulqi3_loop       |00000fe0|   t  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:226
+__mulqi3_exit       |00000fec|   t  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:233
+__subsf3            |00000ff0|   T  |              FUNC|0000000a|     |.text
+__addsf3            |00000ff2|   T  |            NOTYPE|        |     |.text
+__addsf3x           |00001014|   T  |              FUNC|000000c0|     |.text
+__fixsfsi           |000010ba|   T  |              FUNC|0000000a|     |.text
+__fixunssfsi        |000010c4|   T  |              FUNC|00000058|     |.text
+__udivmodsi4        |0000111c|   T  |            NOTYPE|00000044|     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1638
+__udivmodsi4_loop   |00001128|   t  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1646
+__udivmodsi4_ep     |00001142|   t  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:1660
+__tablejump2__      |00001160|   T  |            NOTYPE|0000000c|     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2296
+strcmp              |0000116c|   T  |              FUNC|00000012|     |.text
+__do_global_dtors   |0000117e|   T  |            NOTYPE|00000014|     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2496
+_exit               |0000117e|   T  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2496
+exit                |0000117e|   W  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2496
+__stop_program      |00001194|   t  |            NOTYPE|        |     |.text	/home/jenkins-mingw32/workspace/avr-gcc-staging/label/Ubuntu14.04x64-mingw32/gcc-build/avr/avr25/libgcc/../../../../gcc/libgcc/config/avr/lib1funcs.S:2280
+__data_load_start   |00001196|   A  |            NOTYPE|        |     |*ABS*
+_etext              |00001196|   T  |            NOTYPE|        |     |.text
+__data_load_end     |00001264|   A  |            NOTYPE|        |     |*ABS*
 __TEXT_REGION_LENGTH__|00002000|   A  |            NOTYPE|        |     |*ABS*
 __DATA_REGION_LENGTH__|0000ffa0|   A  |            NOTYPE|        |     |*ABS*
 __EEPROM_REGION_LENGTH__|00010000|   A  |            NOTYPE|        |     |*ABS*
 __DATA_REGION_ORIGIN__|00800060|   A  |            NOTYPE|        |     |*ABS*
 __data_start        |00800060|   D  |            NOTYPE|        |     |.data
-__malloc_heap_end   |00800060|   D  |            OBJECT|00000002|     |.data
-__malloc_heap_start |00800062|   D  |            OBJECT|00000002|     |.data
-__malloc_margin     |00800064|   D  |            OBJECT|00000002|     |.data
-vtable for SoftwareSerial|00800066|   d  |            OBJECT|00000010|     |.data
-__bss_start         |00800116|   B  |            NOTYPE|        |     |.bss
-__data_end          |00800116|   D  |            NOTYPE|        |     |.data
-_edata              |00800116|   D  |            NOTYPE|        |     |.data
-TWI_Buffer          |00800116|   b  |            OBJECT|00000020|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:32
-SoftwareSerial::_receive_buffer|00800136|   b  |            OBJECT|00000040|     |.bss
-TWI_RxTail          |00800176|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:42
-TWI_RxHead          |00800177|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:41
-TWI_TxTail          |00800178|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:46
-TWI_TxHead          |00800179|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:45
-USI_TWI_Overflow_State|0080017a|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:37
-SoftwareSerial::_receive_buffer_head|0080017b|   b  |            OBJECT|00000001|     |.bss
-SoftwareSerial::_receive_buffer_tail|0080017c|   b  |            OBJECT|00000001|     |.bss
-SoftwareSerial::active_object|0080017d|   b  |            OBJECT|00000002|     |.bss
-USI_TWI_state       |0080017f|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:50
-TwoWire::BufferLength|00800180|   b  |            OBJECT|00000001|     |.bss
-millis_timer_fract  |00800181|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:181
-millis_timer_overflow_count|00800182|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:178
-millis_timer_millis |00800186|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:180
-vrserial            |0080018a|   b  |            OBJECT|0000001f|     |.bss	C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:9
-__brkval            |008001a9|   B  |            OBJECT|00000002|     |.bss
-__flp               |008001ab|   B  |            OBJECT|00000002|     |.bss
-__bss_end           |008001ad|   B  |            NOTYPE|        |     |.bss
-__heap_start        |008001ad|   N  |            NOTYPE|        |     |.comment
-_end                |008001ad|   N  |            NOTYPE|        |     |.comment
+vtable for SoftwareSerial|00800060|   d  |            OBJECT|00000010|     |.data
+__bss_start         |0080012e|   B  |            NOTYPE|        |     |.bss
+__data_end          |0080012e|   D  |            NOTYPE|        |     |.data
+_edata              |0080012e|   D  |            NOTYPE|        |     |.data
+TWI_Buffer          |0080012e|   b  |            OBJECT|00000020|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:32
+SoftwareSerial::_receive_buffer|0080014e|   b  |            OBJECT|00000040|     |.bss
+USI_TWI_Overflow_State|0080018e|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:37
+SoftwareSerial::_receive_buffer_head|0080018f|   b  |            OBJECT|00000001|     |.bss
+SoftwareSerial::_receive_buffer_tail|00800190|   b  |            OBJECT|00000001|     |.bss
+SoftwareSerial::active_object|00800191|   b  |            OBJECT|00000002|     |.bss
+TWI_TxTail          |00800193|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:46
+TWI_TxHead          |00800194|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:45
+millis_timer_fract  |00800195|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:181
+millis_timer_millis |00800196|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:180
+millis_timer_overflow_count|0080019a|   b  |            OBJECT|00000004|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\cores\tiny/wiring_millis.inc:178
+vrserial            |0080019e|   b  |            OBJECT|0000001f|     |.bss	C:\GitHub Repositorios\Test-Engineering\TestBench ENERSI\ENERSI_INA219_PC0707\pc0707_main_ina219_attiny/pc0707_main_ina219_attiny.ino:11
+USI_TWI_state       |008001bd|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Master/USI_TWI_Master.c:50
+TwoWire::transmitting|008001be|   b  |            OBJECT|00000001|     |.bss
+TWI_RxHead          |008001bf|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:41
+TWI_RxTail          |008001c0|   b  |            OBJECT|00000001|     |.bss	C:\Users\Emiliano\AppData\Local\Arduino15\packages\UNIT_Electronics_AttinyCore\hardware\avr\3.0.0\libraries\Wire\src\USI_TWI_Slave/USI_TWI_Slave.c:42
+TwoWire::BufferIndex|008001c1|   b  |            OBJECT|00000001|     |.bss
+TwoWire::BufferLength|008001c2|   b  |            OBJECT|00000001|     |.bss
+__bss_end           |008001c3|   B  |            NOTYPE|        |     |.bss
+_end                |008001c3|   N  |            NOTYPE|        |     |.comment
 __eeprom_end        |00810000|   N  |            NOTYPE|        |     |.comment
