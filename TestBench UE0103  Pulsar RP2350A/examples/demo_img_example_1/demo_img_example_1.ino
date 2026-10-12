@@ -15,19 +15,16 @@ BMI270 imu;
 uint8_t i2cAddress = BMI2_I2C_PRIM_ADDR + 1;  // 0x69
 
 // ============ VARIABLES DEL MINION ============
-// Posición inicial (centro de la pantalla)
-float minionX = 160.0;
-float minionY = 120.0;
+float minionX = 0;
+float minionY = 0;
+int oldX = 0;
+int oldY = 0;
 
-// Variables para borrar el frame anterior y evitar parpadeos
-int oldX = 160;
-int oldY = 120;
+// Velocidad inicial en 0 para que nazca estático
+float velX = 0;
+float velY = 0;
 
-// Velocidad actual del minion
-float velX = 10;
-float velY = 10;
-
-// Tamaño de la imagen (debe coincidir con tu array exportado)
+// Tamaño de la imagen
 const int MINION_WIDTH = 64;  
 const int MINION_HEIGHT = 64;
 
@@ -45,97 +42,89 @@ void setup() {
   Serial.println("========================================\n");
 
   // ============ PASO 1: Inicializar HDMI ============
-  Serial.print("1. Inicializando Display HDMI... ");
   if (!display.begin()) {
-    Serial.println("ERROR!");
+    Serial.println("ERROR HDMI!");
     while (true) {
       digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
       delay(100);
     }
   }
-  Serial.println("OK (320x240)");
-  display.fillScreen(0x0000); // Fondo negro
+  display.fillScreen(0x0000);
 
   // ============ PASO 2: Inicializar I2C y BMI270 ============
-  Serial.print("2. Inicializando I2C (SDA=8, SCL=9)... ");
   Wire.setSDA(8);
   Wire.setSCL(9);
   Wire.begin();
   delay(100);
-  Serial.println("OK");
 
-  Serial.print("3. Inicializando BMI270... ");
   if (imu.beginI2C(i2cAddress) != BMI2_OK) {
-    Serial.println("ERROR: IMU NO DETECTADO");
     display.setCursor(10, 10);
     display.setTextColor(0xF800);
     display.print("ERROR: IMU NO DETECTADO");
-    while(1); // Detener si no hay IMU
+    while(1); 
   }
-  Serial.println("OK");
 
-  // Ajustar posición inicial para que el Minion nazca en el centro exacto
+  // Centrar al Minion exactamente según la resolución real
   minionX = (display.width() - MINION_WIDTH) / 2.0;
   minionY = (display.height() - MINION_HEIGHT) / 2.0;
+  
+  // SINCRONIZAR las variables antiguas para evitar el salto del primer fotograma
+  oldX = (int)minionX;
+  oldY = (int)minionY;
 }
 
 void loop() {
   if (millis() - lastFrameTime >= frameDelay) {
     lastFrameTime = millis();
 
-    // 1. Leer los datos del acelerómetro
+    // 1. Leer acelerómetro
     imu.getSensorData();
-
-    // 2. Aplicar "físicas" (inclinación -> aceleración)
-    // Dependiendo de la orientación física de tu placa, es posible que 
-    // debas invertir los signos (+ por -) o cambiar accelX por accelY.
     float accelX = imu.data.accelX; 
     float accelY = imu.data.accelY; 
 
-    velX += accelX * 0.35; // Sensibilidad X
-    velY += accelY * 0.35; // Sensibilidad Y
+    // 2. Físicas Fluidas
+    // Sensibilidad: 0.20 responde rápido pero sin ser incontrolable
+    velX += accelX * 1.50; 
+    velY += accelY * 1.50; 
 
-    // Aplicar fricción (para que no se mueva infinitamente y se detenga)
-    velX *= 0.92;
-    velY *= 0.92;
+    // Fricción: 0.94 da una sensación de "deslizamiento sobre hielo"
+    velX *= 0.6;
+    velY *= 0.6;
 
-    // Actualizar posición
     minionX += velX;
     minionY += velY;
 
-    // 3. Colisiones con los bordes (Rebote)
+    // 3. Colisiones unificadas (Rebote realista)
+    const float rebote = 1.2; 
+
     if (minionX < 0) { 
       minionX = 0; 
-      velX = -velX * 1.6; // Rebote perdiendo energía
+      velX = -velX * rebote; 
     }
     else if (minionX > display.width() - MINION_WIDTH) { 
       minionX = display.width() - MINION_WIDTH; 
-      velX = -velX * 0.6; 
+      velX = -velX * rebote; 
     }
 
     if (minionY < 0) { 
       minionY = 0; 
-      velY = -velY * 0.6; 
+      velY = -velY * rebote; 
     }
     else if (minionY > display.height() - MINION_HEIGHT) { 
       minionY = display.height() - MINION_HEIGHT; 
-      velY = -velY * 0.6; 
+      velY = -velY * rebote; 
     }
 
-    // 4. Dibujar en el HDMI
+    // 4. Dibujar
     int currentX = (int)minionX;
     int currentY = (int)minionY;
 
-    // Si el Minion se movió, borramos SOLO su posición anterior (Evita parpadeos)
     if (currentX != oldX || currentY != oldY) {
       display.fillRect(oldX, oldY, MINION_WIDTH, MINION_HEIGHT, 0x0000); 
     }
 
-    // Dibujar la imagen del minion en la nueva posición
-    // (Asegúrate de que la función de tu librería coincida, usualmente drawRGBBitmap)
     display.drawRGBBitmap(currentX, currentY, epd_bitmap_minion, MINION_WIDTH, MINION_HEIGHT);
 
-    // Guardar posición para el siguiente frame
     oldX = currentX;
     oldY = currentY;
   }
