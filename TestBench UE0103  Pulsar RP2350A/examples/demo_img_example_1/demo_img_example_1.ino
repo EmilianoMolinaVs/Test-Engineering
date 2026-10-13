@@ -1,4 +1,4 @@
-// Firmware Dedicado: HDMI + IMU (Giroscopio) - Laberinto y Vidas (Bananas)
+// Firmware Dedicado: HDMI + IMU (Giroscopio) - Laberinto, Vidas, Bandera y Paredes Pixeladas
 // Arduino Nano RP2350
 
 #include <Wire.h>
@@ -55,11 +55,43 @@ Rect walls[NUM_WALLS] = {
 // Zona de Meta
 Rect goal = {270, 10, 40, 40};
 
+// ============ FUNCIONES DE DIBUJO (TEXTURAS Y UI) ============
+
+// Función para dibujar una pared azul con patrón pixelado
+void drawWall(int x, int y, int w, int h) {
+  // 1. Fondo Azul Oscuro
+  display.fillRect(x, y, w, h, 0x000A); 
+  
+  // 2. Patrón de "píxeles" (Tablero de ajedrez de 4x4 pixeles)
+  for (int i = 0; i < w; i += 4) {
+    for (int j = 0; j < h; j += 4) {
+      // Alternar posiciones para el patrón
+      if (((i / 4) + (j / 4)) % 2 == 0) {
+        // Asegurarnos de no dibujar fuera de los límites de la pared
+        int drawW = (w - i < 4) ? (w - i) : 4;
+        int drawH = (h - j < 4) ? (h - j) : 4;
+        
+        // Azul brillante para el patrón
+        display.fillRect(x + i, y + j, drawW, drawH, 0x001F); 
+      }
+    }
+  }
+}
+
+void drawGoalFlag(int x, int y, int w, int h) {
+  // Limpiar el fondo negro
+  display.fillRect(x, y, w, h, 0x0000);
+  // Mástil de la bandera (Gris)
+  display.fillRect(x + 5, y, 4, h, 0x8410); 
+  // Tela de la bandera (Roja)
+  display.fillRect(x + 9, y + 4, w - 15, h / 2, 0xF800);
+}
+
 void drawMaze() {
   for (int i = 0; i < NUM_WALLS; i++) {
-    display.fillRect(walls[i].x, walls[i].y, walls[i].w, walls[i].h, 0x03E0); 
+    drawWall(walls[i].x, walls[i].y, walls[i].w, walls[i].h); 
   }
-  display.fillRect(goal.x, goal.y, goal.w, goal.h, 0xF800);
+  drawGoalFlag(goal.x, goal.y, goal.w, goal.h);
 }
 
 // Retorna true si hay intersección entre dos rectángulos
@@ -124,7 +156,7 @@ void loop() {
     const float rebote = 0.8; 
     bool colisionX = false;
     bool colisionY = false;
-    bool hitWall = false; // Bandera para saber si restamos una banana
+    bool hitWall = false;
 
     // 2. Colisiones con bordes
     if (nextX < 0) { nextX = 0; colisionX = true; hitWall = true; } 
@@ -162,7 +194,7 @@ void loop() {
       minionX = 5; minionY = 5;
       velX = 0; velY = 0;
       virtualAngleX = 0; virtualAngleY = 0;
-      bananas = 10; // Reiniciar vidas
+      bananas = 10; 
       
       display.fillScreen(0x0000);
       drawMaze();
@@ -178,7 +210,7 @@ void loop() {
       minionX = 5; minionY = 5;
       velX = 0; velY = 0;
       virtualAngleX = 0; virtualAngleY = 0;
-      bananas = 10; // Reiniciar vidas como premio
+      bananas = 10; 
       
       display.fillScreen(0x0000);
       drawMaze();
@@ -191,31 +223,32 @@ void loop() {
     int currentY = (int)minionY;
 
     if (currentX != oldX || currentY != oldY) {
+      // Borrar la posición vieja del minion
       display.fillRect(oldX, oldY, MINION_WIDTH, MINION_HEIGHT, 0x0000); 
       
+      // Redibujar las partes afectadas del mapa (usando la nueva función de paredes texturizadas)
       for (int i = 0; i < NUM_WALLS; i++) {
         if (checkCollision(oldX, oldY, MINION_WIDTH, MINION_HEIGHT, walls[i].x, walls[i].y, walls[i].w, walls[i].h)) {
-          display.fillRect(walls[i].x, walls[i].y, walls[i].w, walls[i].h, 0x03E0);
+          drawWall(walls[i].x, walls[i].y, walls[i].w, walls[i].h);
         }
       }
       if (checkCollision(oldX, oldY, MINION_WIDTH, MINION_HEIGHT, goal.x, goal.y, goal.w, goal.h)) {
-          display.fillRect(goal.x, goal.y, goal.w, goal.h, 0xF800);
+          drawGoalFlag(goal.x, goal.y, goal.w, goal.h);
       }
     }
 
+    // Dibujar minion
     display.drawRGBBitmap(currentX, currentY, epd_bitmap_minion, MINION_WIDTH, MINION_HEIGHT);
 
     oldX = currentX;
     oldY = currentY;
 
-    // 8. Dibujar UI (Contador de Bananas en Esquina Inferior Derecha)
-    // Se dibuja al final para que siempre esté por encima de todo.
-    // Usamos colores de texto y fondo juntos (Amarillo sobre Negro) para evitar parpadeos.
+    // 8. Dibujar UI (Contador de Bananas)
     display.setTextSize(1);
     display.setTextColor(0xFFE0, 0x0000); 
     display.setCursor(240, 220); 
     display.print("Bananas: ");
     display.print(bananas);
-    if (bananas < 10) display.print(" "); // Borrar el segundo dígito si bajamos de 10
+    if (bananas < 10) display.print(" "); 
   }
 }
