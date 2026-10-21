@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-#include <DevLab_PhotoInterrupter.h>
+#include <DevLab_Button.h>
 #include <DevLabDDP.h>
 #include <DevLab_I2C_Orchestrator.h>
 #include <Adafruit_GFX.h>
@@ -16,11 +16,10 @@
 // --- Pines y Configuración I2C (ESP32-C6) ---
 constexpr uint8_t I2C_SDA = 6;
 constexpr uint8_t I2C_SCL = 7;
-constexpr uint32_t I2C_FREQ = 50000;  // 100kHz para compatibilidad total con la red
+constexpr uint32_t I2C_FREQ = 100000;  // 100kHz para estabilidad de red
 
 // --- Direcciones I2C ---
 constexpr uint8_t TEMT6000_ADDR = 0x20;
-constexpr uint8_t ITR523S_ADDR = 0x32;
 constexpr uint8_t OLED_ADDRESS = 0x3C;
 
 // --- Configuración OLED y Gráfica ---
@@ -28,10 +27,9 @@ constexpr int OLED_WIDTH = 128;
 constexpr int OLED_HEIGHT = 64;
 constexpr int GRAPH_LEFT = 27;
 constexpr int GRAPH_WIDTH = OLED_WIDTH - GRAPH_LEFT;
-// Reducimos la gráfica a la mitad inferior para dar espacio al texto
 constexpr int GRAPH_TOP = 32;
 constexpr int GRAPH_BOTTOM = OLED_HEIGHT - 1;
-constexpr uint16_t GRAPH_ADC_MIN = 0;  // Ajustado para ver el rango desde cero
+constexpr uint16_t GRAPH_ADC_MIN = 0;
 constexpr uint16_t GRAPH_ADC_MAX = 4095;
 constexpr uint16_t GRAPH_ADC_MIDDLE = GRAPH_ADC_MIN + ((GRAPH_ADC_MAX - GRAPH_ADC_MIN) / 2);
 
@@ -39,7 +37,7 @@ constexpr uint16_t GRAPH_ADC_MIDDLE = GRAPH_ADC_MIN + ((GRAPH_ADC_MAX - GRAPH_AD
 Adafruit_SSD1306 display(OLED_WIDTH, OLED_HEIGHT, &Wire, -1);
 DevLab_I2C_Orchestrator bus(Wire, I2C_FREQ);
 DevLabDDP::Master master(bus, DevLabDDP::DEVICE_TEMT6000);
-DevLab_PhotoInterrupter itr(Wire, ITR523S_ADDR, I2C_FREQ);
+DevLab_Button button(Wire, DevLab_Button::DEFAULT_ADDRESS, I2C_FREQ);
 ICP101xx icp_sensor;
 
 // --- Variables de Estado ---
@@ -49,15 +47,17 @@ bool temtOk = false;
 // Datos de sensores
 uint16_t samples[GRAPH_WIDTH] = { 0 };
 uint16_t lastAdc = 0;
-bool isBlocked = false;
-uint16_t itrCount = 0;
 float currentPressure = 0.0;
 float currentTemp = 0.0;
 
+// Variables de estado del botón
+uint32_t pressCount = 0;
+bool isPressed = false;
+
 // Temporizadores no bloqueantes
+uint32_t lastBtnTime = 0;
 uint32_t lastTemtTime = 0;
 uint32_t lastIcpTime = 0;
-uint32_t lastItrTime = 0;
 
 // --- Funciones Auxiliares ---
 bool readADC0(uint16_t &value) {
@@ -86,19 +86,19 @@ void updateDisplay() {
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
 
-  // Fila 1: Sensor ITR523S
+  // Fila 1: Botón I2C
   display.setCursor(0, 0);
-  display.print("ITR: ");
-  display.print(isBlocked ? "BLOCK" : "FREE ");
+  display.print("BTN: ");
+  display.print(isPressed ? "PRESS  " : "RELEASE");
   display.print(" Cnt:");
-  display.print(itrCount);
+  display.print(pressCount);
 
   // Fila 2: Presión y Temperatura (ICP10111)
   display.setCursor(0, 10);
   display.print("T:");
   display.print(currentTemp, 1);
   display.print("C P:");
-  display.print(currentPressure, 0);  // Omitimos decimales por espacio
+  display.print(currentPressure, 0);
 
   // Fila 3: Valor actual del ADC (TEMT6000)
   display.setCursor(0, 20);
@@ -141,68 +141,68 @@ void updateDisplay() {
 
 void setup() {
   Serial.begin(115200);
+  delay(2000);  // Tiempo de estabilización eléctrica
 
-  // 1. Tiempo de estabilización eléctrica para que los módulos enciendan
-  delay(2000);
-
-  // 2. Recuperación del bus (Desbloquea esclavos atascados en SDA LOW)
   if (!bus.beginRecovered(I2C_SDA, I2C_SCL, 20000, false)) {
     Serial.println("Error Crítico: El bus I2C está bloqueado físicamente.");
   }
 
-  // Forzar el reloj global para la red
   Wire.setClock(I2C_FREQ);
 
-  // 3. Inicializar OLED primero
+  // 1. Inicializar OLED
   if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
     Serial.println("Error: No se encontró OLED SSD1306");
   } else {
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
-    display.print("Inicializando I2C...");
+    display.print("Iniciando red I2C...");
     display.display();
   }
-
-  delay(500);  // Pausa entre módulos
-
-  // 4. Inicializar ITR523S con verificación
-  for (int i = 0; i < 5; i++) {
-    if (!itr.isConnected()) {
-      Serial.println("Error: ITR523S no detectado en 0x32");
-    }
-    delay(500);
-  }
-
   delay(200);
 
-  // 5. Inicializar TEMT6000
+  // 2. Inicializar Botón
+  if (!button.beginRecovered(I2C_SDA, I2C_SCL)) {
+    Serial.println("Button module not found; check wiring, power and firmware");
+  }
+  delay(200);
+  if (!button.isConnected()) {
+    Serial.println("Error: Botón I2C no detectado");
+  }
+  delay(200);
+
+  // 3. Inicializar TEMT6000
   DevLabDDP::DeviceInfo info;
   temtVerified = master.matchesExpectedDevice(TEMT6000_ADDR, &info);
   if (!temtVerified) {
     Serial.println("Error: TEMT6000 no detectado en 0x20");
   }
-
   delay(200);
 
-  // 6. Inicializar ICP101xx
+  // 4. Inicializar ICP101xx
   if (!icp_sensor.begin(&Wire)) {
     Serial.println("Error: ICP10111 no detectado");
   }
 }
+
 void loop() {
   uint32_t now = millis();
 
-  // TAREA 1: Leer el Interrumptor Óptico (cada 10 ms para respuesta rápida)
-  if (now - lastItrTime >= 10) {
-    lastItrTime = now;
-    if (itr.isConnected()) {
-      itr.readBlocked(isBlocked);
-      itr.readCount(itrCount);
+  // TAREA 1: Actualizar estado del botón (10 ms)
+  if (now - lastBtnTime >= 10) {
+    lastBtnTime = now;
+    if (button.isConnected() && button.update()) {
+      if (button.wasPressed()) {
+        pressCount++;
+        isPressed = true;
+      }
+      if (button.wasReleased()) {
+        isPressed = false;
+      }
     }
   }
 
-  // TAREA 2: Leer ADC del TEMT6000 y actualizar OLED (cada 50 ms para fluidez)
+  // TAREA 2: Leer ADC del TEMT6000 y actualizar OLED (50 ms)
   if (now - lastTemtTime >= 50) {
     lastTemtTime = now;
     uint16_t adcVal = 0;
@@ -212,15 +212,12 @@ void loop() {
       lastAdc = adcVal;
       addSample(lastAdc);
     }
-
-    // Actualizamos la pantalla al mismo ritmo de la gráfica
     updateDisplay();
   }
 
-  // TAREA 3: Leer Presión y Temperatura (cada 1000 ms, cambios más lentos)
+  // TAREA 3: Leer Presión y Temperatura (1000 ms)
   if (now - lastIcpTime >= 1000) {
     lastIcpTime = now;
-    // Ejecutar medición no bloqueante (modo NORMAL)
     icp_sensor.measure(icp_sensor.NORMAL);
     currentPressure = icp_sensor.getPressurePa();
     currentTemp = icp_sensor.getTemperatureC();
