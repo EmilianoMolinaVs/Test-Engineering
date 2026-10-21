@@ -11,11 +11,17 @@
 
 #include <DevLab_TCAN1051HVD.h>
 #include <ArduinoJson.h>
+#include <HardwareSerial.h>
 
 // ==== DECLARACIÓN DE PINES ====
+#define RUN_BUTTON 4  // >> Botonera de Arranque - Pin para botón de inicio físico
+#define RX2 15        // >> GPIO15 como RX de UART2 - Recepción de datos desde interfaz web
+#define TX2 19        // >> GPIO19 como TX de UART2 - Transmisión de datos a interfaz web
+
 #define CAN_TX_PIN GPIO_NUM_6
 #define CAN_RX_PIN GPIO_NUM_7
 
+HardwareSerial PagWeb(1);  // Crear objeto para UART2 en PULSAR como PagWeb
 DevLab_TCAN1051HVD can(CAN_TX_PIN, CAN_RX_PIN);
 
 // ==== CREACIÓN DE OBJETOS JSON ====
@@ -29,6 +35,7 @@ String dataInput = "";
 void setup() {
   Serial.begin(115200);
   delay(1000);
+  PagWeb.begin(115200, SERIAL_8N1, RX2, TX2);  // UART para interfaz web
 
   // Intentamos iniciar el controlador CAN
   if (!can.begin()) {
@@ -49,14 +56,30 @@ void setup() {
   sendJSON["message"] = "Dispositivo MAIN iniciado correctamente";
   serializeJson(sendJSON, Serial);
   Serial.println();
+
+  pinMode(RUN_BUTTON, INPUT);
 }
 
 void loop() {
+
+  // ==== Manejo del botón de arranque ====
+  if (digitalRead(RUN_BUTTON) == HIGH) {
+    sendJSON.clear();  // Limpia cualquier dato previo
+    delay(100);        // Debounce
+
+    if (digitalRead(RUN_BUTTON) == LOW) {
+      //serialDebug("Arranque por botonera");
+      sendJSON["Run"] = "OK";           // Envio de corriente JSON para corto
+      serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+      PagWeb.println();
+    }
+  }
+
   TCAN1051_Frame frame;
 
   // ==== 1. PROCESAMIENTO DE COMANDOS SERIALES (JSON) ====
-  if (Serial.available()) {
-    String inJSON = Serial.readStringUntil('\n');
+  if (PagWeb.available()) {
+    String inJSON = PagWeb.readStringUntil('\n');
     DeserializationError error = deserializeJson(receiveJSON, inJSON);
 
     if (error) {
@@ -74,6 +97,7 @@ void loop() {
 
       if (Function == "ping") opc = 1;          // {"Function":"ping"}
       else if (Function == "testCAN") opc = 2;  // {"Function":"testCAN"}
+      else if (Function == "restart") opc = 3;  // {"Function":"restart"}
 
       switch (opc) {
 
@@ -85,6 +109,9 @@ void loop() {
             sendJSON["ping"] = "pong";
             serializeJson(sendJSON, Serial);
             Serial.println();
+
+            serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+            PagWeb.println();
             break;
           }
 
@@ -98,6 +125,9 @@ void loop() {
             sendJSON["message"] = "Iniciando rafaga de 100 mensajes CAN";
             serializeJson(sendJSON, Serial);
             Serial.println();
+
+            serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+            PagWeb.println();
 
             const char* text = "ping";
             uint8_t data[4] = { 0 };
@@ -129,9 +159,16 @@ void loop() {
             serializeJson(sendJSON, Serial);
             Serial.println();
 
+            serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+            PagWeb.println();
+
             contador = 0;
             break;
           }
+
+        case 3:
+          ESP.restart();
+          break;
 
         // --- CASO DEFAULT: COMANDO DESCONOCIDO ---
         default:
@@ -140,6 +177,9 @@ void loop() {
           sendJSON["error"] = "invalid option";
           serializeJson(sendJSON, Serial);
           Serial.println();
+
+          serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+          PagWeb.println();
           break;
       }
     }
@@ -160,6 +200,8 @@ void loop() {
       sendJSON["message"] = "Validacion exitosa confirmada por Esclavo";
       serializeJson(sendJSON, Serial);
       Serial.println();
+      serializeJson(sendJSON, PagWeb);  // Envío de datos por JSON a la PagWeb
+      PagWeb.println();
     }
 
     // Limpiamos el buffer para la siguiente lectura (¡Bug corregido!)
