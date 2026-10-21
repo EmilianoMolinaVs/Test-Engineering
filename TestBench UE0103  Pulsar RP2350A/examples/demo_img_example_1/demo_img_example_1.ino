@@ -1,4 +1,4 @@
-// Firmware Dedicado: HDMI + IMU (Giroscopio) - Laberinto y Vidas (Bananas)
+// Firmware Dedicado: HDMI + IMU (Giroscopio) - Laberinto Final (Bandera Carreras y Victoria)
 // Arduino Nano RP2350
 
 #include <Wire.h>
@@ -55,11 +55,102 @@ Rect walls[NUM_WALLS] = {
 // Zona de Meta
 Rect goal = {270, 10, 40, 40};
 
+// ============ FUNCIONES DE DIBUJO (TEXTURAS, META Y VICTORIA) ============
+
+// Función para dibujar una pared azul con patrón pixelado
+void drawWall(int x, int y, int w, int h) {
+  display.fillRect(x, y, w, h, 0x000A); // Fondo Azul Oscuro
+  
+  // Patrón de "píxeles" (Tablero de ajedrez)
+  for (int i = 0; i < w; i += 4) {
+    for (int j = 0; j < h; j += 4) {
+      if (((i / 4) + (j / 4)) % 2 == 0) {
+        int drawW = (w - i < 4) ? (w - i) : 4;
+        int drawH = (h - j < 4) ? (h - j) : 4;
+        display.fillRect(x + i, y + j, drawW, drawH, 0x001F); 
+      }
+    }
+  }
+}
+
+// Función para dibujar bandera de carreras (a cuadros)
+void drawGoalFlag(int x, int y, int w, int h) {
+  display.fillRect(x, y, w, h, 0x0000); // Limpiar fondo
+  display.fillRect(x + 5, y, 4, h, 0x8410); // Mástil (Gris)
+  
+  // Tela de la bandera (Cuadros blancos y negros)
+  int flagW = w - 15;
+  int flagH = h / 2;
+  int startX = x + 9;
+  int startY = y + 4;
+  int sqSize = 5; // Tamaño de cada cuadro
+  
+  for (int i = 0; i < flagW; i += sqSize) {
+    for (int j = 0; j < flagH; j += sqSize) {
+      uint16_t color = (((i / sqSize) + (j / sqSize)) % 2 == 0) ? 0xFFFF : 0x0000;
+      int drawW = (flagW - i < sqSize) ? (flagW - i) : sqSize;
+      int drawH = (flagH - j < sqSize) ? (flagH - j) : sqSize;
+      display.fillRect(startX + i, startY + j, drawW, drawH, color);
+    }
+  }
+  // Borde blanco de la bandera para que resalte
+  display.drawRect(startX, startY, flagW, flagH, 0xFFFF);
+}
+
 void drawMaze() {
   for (int i = 0; i < NUM_WALLS; i++) {
-    display.fillRect(walls[i].x, walls[i].y, walls[i].w, walls[i].h, 0x03E0); 
+    drawWall(walls[i].x, walls[i].y, walls[i].w, walls[i].h); 
   }
-  display.fillRect(goal.x, goal.y, goal.w, goal.h, 0xF800);
+  drawGoalFlag(goal.x, goal.y, goal.w, goal.h);
+}
+
+// Pantalla de celebración
+void playVictoryScreen() {
+  display.fillScreen(0x0000);
+  unsigned long startMillis = millis();
+
+  // Bucle de celebración de 3 segundos
+  while (millis() - startMillis < 3000) {
+    // 1. Generar un fuego artificial retro aleatorio
+    int fx = random(20, 300);
+    int fy = random(20, 220);
+    uint16_t fColor = random(0x1111, 0xFFFF); // Colores aleatorios brillantes
+
+    // Dibujar explosión retro (cruz y diagonales)
+    display.drawLine(fx - 15, fy, fx + 15, fy, fColor);
+    display.drawLine(fx, fy - 15, fx, fy + 15, fColor);
+    display.drawLine(fx - 10, fy - 10, fx + 10, fy + 10, fColor);
+    display.drawLine(fx - 10, fy + 10, fx + 10, fy - 10, fColor);
+
+    // 2. Texto WINNER intermitente en el centro
+    display.setTextSize(5);
+    if ((millis() / 150) % 2 == 0) {
+      display.setTextColor(0xFFE0, 0x0000); // Amarillo con fondo negro
+    } else {
+      display.setTextColor(0xF800, 0x0000); // Rojo con fondo negro
+    }
+    display.setCursor(60, 100);
+    display.print("WINNER!");
+
+    delay(80); // Velocidad de la animación
+
+    // 3. Borrar la explosión anterior para el efecto de parpadeo
+    display.drawLine(fx - 15, fy, fx + 15, fy, 0x0000);
+    display.drawLine(fx, fy - 15, fx, fy + 15, 0x0000);
+    display.drawLine(fx - 10, fy - 10, fx + 10, fy + 10, 0x0000);
+    display.drawLine(fx - 10, fy + 10, fx + 10, fy - 10, 0x0000);
+  }
+
+  // Al terminar, resetear todo al estado inicial
+  minionX = 5; minionY = 5;
+  velX = 0; velY = 0;
+  virtualAngleX = 0; virtualAngleY = 0;
+  bananas = 10; 
+  
+  display.fillScreen(0x0000);
+  drawMaze();
+  oldX = 5; oldY = 5;
+  lastFrameTime = millis();
 }
 
 // Retorna true si hay intersección entre dos rectángulos
@@ -105,7 +196,7 @@ void loop() {
 
     imu.getSensorData();
     
-    // 1. Cinemática del Giroscopio
+    // Cinemática del Giroscopio
     virtualAngleX += imu.data.gyroY * dt; 
     virtualAngleY += imu.data.gyroX * dt; 
 
@@ -124,16 +215,16 @@ void loop() {
     const float rebote = 0.8; 
     bool colisionX = false;
     bool colisionY = false;
-    bool hitWall = false; // Bandera para saber si restamos una banana
+    bool hitWall = false;
 
-    // 2. Colisiones con bordes
+    // Colisiones con bordes
     if (nextX < 0) { nextX = 0; colisionX = true; hitWall = true; } 
     else if (nextX > display.width() - MINION_WIDTH) { nextX = display.width() - MINION_WIDTH; colisionX = true; hitWall = true; }
 
     if (nextY < 0) { nextY = 0; colisionY = true; hitWall = true; } 
     else if (nextY > display.height() - MINION_HEIGHT) { nextY = display.height() - MINION_HEIGHT; colisionY = true; hitWall = true; }
 
-    // 3. Colisiones con las paredes
+    // Colisiones con las paredes
     for (int i = 0; i < NUM_WALLS; i++) {
       if (checkCollision(nextX, minionY, MINION_WIDTH, MINION_HEIGHT, walls[i].x, walls[i].y, walls[i].w, walls[i].h)) {
         colisionX = true; hitWall = true;
@@ -151,18 +242,18 @@ void loop() {
     if (colisionX) velX = -velX * rebote;
     if (colisionY) velY = -velY * rebote;
 
-    // 4. Sistema de Daño (Pérdida de Bananas)
+    // Sistema de Daño (Pérdida de Bananas)
     if (hitWall && (currentMillis - lastDamageTime > DAMAGE_COOLDOWN)) {
       bananas--;
       lastDamageTime = currentMillis;
     }
 
-    // 5. Condición de Derrota (0 Bananas)
+    // Condición de Derrota (0 Bananas)
     if (bananas <= 0) {
       minionX = 5; minionY = 5;
       velX = 0; velY = 0;
       virtualAngleX = 0; virtualAngleY = 0;
-      bananas = 10; // Reiniciar vidas
+      bananas = 10; 
       
       display.fillScreen(0x0000);
       drawMaze();
@@ -173,20 +264,13 @@ void loop() {
     minionX = nextX;
     minionY = nextY;
 
-    // 6. Verificar si llegó a la Meta (Victoria)
+    // Verificar si llegó a la Meta (Victoria)
     if (checkCollision(minionX, minionY, MINION_WIDTH, MINION_HEIGHT, goal.x, goal.y, goal.w, goal.h)) {
-      minionX = 5; minionY = 5;
-      velX = 0; velY = 0;
-      virtualAngleX = 0; virtualAngleY = 0;
-      bananas = 10; // Reiniciar vidas como premio
-      
-      display.fillScreen(0x0000);
-      drawMaze();
-      oldX = 5; oldY = 5;
+      playVictoryScreen(); // Llama a la animación y reinicia el laberinto internamente
       return; 
     }
 
-    // 7. Dibujado Diferencial
+    // Dibujado Diferencial
     int currentX = (int)minionX;
     int currentY = (int)minionY;
 
@@ -195,11 +279,11 @@ void loop() {
       
       for (int i = 0; i < NUM_WALLS; i++) {
         if (checkCollision(oldX, oldY, MINION_WIDTH, MINION_HEIGHT, walls[i].x, walls[i].y, walls[i].w, walls[i].h)) {
-          display.fillRect(walls[i].x, walls[i].y, walls[i].w, walls[i].h, 0x03E0);
+          drawWall(walls[i].x, walls[i].y, walls[i].w, walls[i].h);
         }
       }
       if (checkCollision(oldX, oldY, MINION_WIDTH, MINION_HEIGHT, goal.x, goal.y, goal.w, goal.h)) {
-          display.fillRect(goal.x, goal.y, goal.w, goal.h, 0xF800);
+          drawGoalFlag(goal.x, goal.y, goal.w, goal.h);
       }
     }
 
@@ -208,14 +292,12 @@ void loop() {
     oldX = currentX;
     oldY = currentY;
 
-    // 8. Dibujar UI (Contador de Bananas en Esquina Inferior Derecha)
-    // Se dibuja al final para que siempre esté por encima de todo.
-    // Usamos colores de texto y fondo juntos (Amarillo sobre Negro) para evitar parpadeos.
+    // Dibujar UI
     display.setTextSize(1);
     display.setTextColor(0xFFE0, 0x0000); 
     display.setCursor(240, 220); 
     display.print("Bananas: ");
     display.print(bananas);
-    if (bananas < 10) display.print(" "); // Borrar el segundo dígito si bajamos de 10
+    if (bananas < 10) display.print(" "); 
   }
 }
