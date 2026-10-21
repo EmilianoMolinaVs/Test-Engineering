@@ -9,6 +9,7 @@
 #include <DevLab_Button.h>
 #include <DevLabDDP.h>
 #include <DevLab_I2C_Orchestrator.h>
+#include <DevLab_GT365xx.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "ue_i2c_icp_10111_sen.h"
@@ -16,10 +17,11 @@
 // --- Pines y Configuración I2C (ESP32-C6) ---
 constexpr uint8_t I2C_SDA = 6;
 constexpr uint8_t I2C_SCL = 7;
-constexpr uint32_t I2C_FREQ = 100000;  // 100kHz para estabilidad de red
+constexpr uint32_t I2C_FREQ = 100000;  // 100kHz para estabilidad de red con múltiples nodos
 
 // --- Direcciones I2C ---
 constexpr uint8_t TEMT6000_ADDR = 0x20;
+constexpr uint8_t LDR_ADDRESS = 0x26U;
 constexpr uint8_t OLED_ADDRESS = 0x3C;
 
 // --- Configuración OLED y Gráfica ---
@@ -38,15 +40,18 @@ Adafruit_SSD1306 display(OLED_WIDTH, OLED_HEIGHT, &Wire, -1);
 DevLab_I2C_Orchestrator bus(Wire, I2C_FREQ);
 DevLabDDP::Master master(bus, DevLabDDP::DEVICE_TEMT6000);
 DevLab_Button button(Wire, DevLab_Button::DEFAULT_ADDRESS, I2C_FREQ);
+DevLab_GT365xx ldrSensor(Wire, LDR_ADDRESS, I2C_FREQ);
 ICP101xx icp_sensor;
 
 // --- Variables de Estado ---
 bool temtVerified = false;
 bool temtOk = false;
+bool ldrOk = false;
 
 // Datos de sensores
 uint16_t samples[GRAPH_WIDTH] = { 0 };
-uint16_t lastAdc = 0;
+uint16_t lastAdc = 0;  // TEMT6000
+uint16_t ldrAdc = 0;   // LDR GT36537
 float currentPressure = 0.0;
 float currentTemp = 0.0;
 
@@ -57,6 +62,7 @@ bool isPressed = false;
 // Temporizadores no bloqueantes
 uint32_t lastBtnTime = 0;
 uint32_t lastTemtTime = 0;
+uint32_t lastLdrTime = 0;
 uint32_t lastIcpTime = 0;
 
 // --- Funciones Auxiliares ---
@@ -100,19 +106,23 @@ void updateDisplay() {
   display.print("C P:");
   display.print(currentPressure, 0);
 
-  // Fila 3: Valor actual del ADC (TEMT6000)
+  // Fila 3: Valores de Luz (TEMT6000 y LDR)
   display.setCursor(0, 20);
-  if (temtOk) {
-    display.print("Luz: ");
-    display.print(lastAdc);
-    display.print(" (");
-    display.print((lastAdc * 3.3f) / 4095.0f, 1);
-    display.print("V)");
+  display.print("T:");
+  if (temtOk) display.print(lastAdc);
+  else display.print("---");
+
+  display.print(" L:");
+  if (ldrOk) {
+    display.print(ldrAdc);
+    display.print("(");
+    display.print((ldrAdc * 100) / 4095);  // Porcentaje relativo
+    display.print("%)");
   } else {
-    display.print("Luz: Sin respuesta");
+    display.print("---");
   }
 
-  // --- Dibujar Gráfica ---
+  // --- Dibujar Gráfica (TEMT6000) ---
   const int graphMiddle = adcToY(GRAPH_ADC_MIDDLE);
   display.setCursor(0, GRAPH_TOP);
   display.print(GRAPH_ADC_MAX);
@@ -143,10 +153,10 @@ void setup() {
   Serial.begin(115200);
   delay(2000);  // Tiempo de estabilización eléctrica
 
+  // Recuperación global del bus I2C
   if (!bus.beginRecovered(I2C_SDA, I2C_SCL, 20000, false)) {
     Serial.println("Error Crítico: El bus I2C está bloqueado físicamente.");
   }
-
   Wire.setClock(I2C_FREQ);
 
   // 1. Inicializar OLED
@@ -179,7 +189,17 @@ void setup() {
   }
   delay(200);
 
-  // 4. Inicializar ICP101xx
+  // 4. Inicializar LDR GT36537
+  ldrSensor.beginRecovered(I2C_SDA, I2C_SCL);
+  if (!ldrSensor.busReady()) {
+    Serial.println("ERROR: I2C bus is blocked");
+  }
+  if (!ldrSensor.isConnected()) {
+    Serial.println("Error: LDR GT36537 no detectado en 0x26");
+  }
+  delay(200);
+
+  // 5. Inicializar ICP101xx
   if (!icp_sensor.begin(&Wire)) {
     Serial.println("Error: ICP10111 no detectado");
   }
@@ -202,7 +222,17 @@ void loop() {
     }
   }
 
-  // TAREA 2: Leer ADC del TEMT6000 y actualizar OLED (50 ms)
+  // TAREA 2: Leer LDR GT36537 (250 ms)
+  if (now - lastLdrTime >= 250) {
+    lastLdrTime = now;
+    if (ldrSensor.isConnected()) {
+      ldrOk = ldrSensor.readRaw(ldrAdc);
+    } else {
+      ldrOk = false;
+    }
+  }
+
+  // TAREA 3: Leer ADC del TEMT6000 y actualizar OLED (50 ms)
   if (now - lastTemtTime >= 50) {
     lastTemtTime = now;
     uint16_t adcVal = 0;
@@ -212,10 +242,12 @@ void loop() {
       lastAdc = adcVal;
       addSample(lastAdc);
     }
+
+    // La pantalla se refresca aquí aprovechando los 50ms de actualización
     updateDisplay();
   }
 
-  // TAREA 3: Leer Presión y Temperatura (1000 ms)
+  // TAREA 4: Leer Presión y Temperatura (1000 ms)
   if (now - lastIcpTime >= 1000) {
     lastIcpTime = now;
     icp_sensor.measure(icp_sensor.NORMAL);
