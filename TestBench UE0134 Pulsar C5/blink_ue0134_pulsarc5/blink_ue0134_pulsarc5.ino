@@ -5,10 +5,18 @@ Funcionalidades:
 
 - Control de blink y neopixel 
 - Lectura de direcciones I2C y manejo de sensores nativos 
+  . MAX17048 Addr 0x36      | Charger Battery Sensor
+  . MMC5603 Addr 0x30       | 
+  . SHT40 Addr 0x44 XDDDD   | Humidity and Temperature Sensor
+  . LPS22DF Addr 0x5C
+  . VCNL4040 Addr 0x60
+
+  34 60 18
 */
 
 // ==== BIBLIOTECAS ====
 #include <Wire.h>
+#include <WiFi.h>
 #include <HardwareSerial.h>
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
@@ -127,17 +135,15 @@ void loop() {
     DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
 
     if (error) {
-      sendJSON.clear();
-      sendJSON["error"] = error.c_str();
-      sendJSON["message"] = "JSON invalido recibido";
-      serializeJson(sendJSON, Serial);
-      Serial.println();
+      Serial.println("Halo murió en Reach...");
     } else {
 
       int opc = 0;
       String Function = receiveJSON["Function"];
 
-      if (Function == "ping") opc = 1;  // {"Function":"ping"}
+      if (Function == "ping") opc = 1;           // {"Function":"ping"}
+      else if (Function == "mac") opc = 2;       // {"Function":"mac"}
+      else if (Function == "i2c_scan") opc = 3;  // {"Function":"i2c_scan"}
 
       switch (opc) {
         case 1:
@@ -149,17 +155,40 @@ void loop() {
             break;
           }
 
+        case 2:
+          {
+            sendJSON.clear();
+            WiFi.mode(WIFI_MODE_STA);
+            String mac = WiFi.macAddress();
+            sendJSON["mac"] = mac;
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+            break;
+          }
 
-        default: break;
+
+        case 3:
+          {
+            for (uint8_t addr = 1; addr < 127; addr++) {
+              Wire.beginTransmission(addr);
+              if (Wire.endTransmission() == 0) {
+                Serial.print("Dispositivo en 0x");
+                Serial.println(addr, HEX);
+              }
+              delay(10);
+            }
+            break;
+          }
+
+        default:
+          sendJSON.clear();
+          sendJSON["error"] = "InvalidInput";
+          sendJSON["msg"] = "invalid option";
+          serializeJson(sendJSON, Serial);
+          Serial.println();
+          break;
       }
     }
-
-
-
-
-
-
-
   } else {
     demo();
   }
