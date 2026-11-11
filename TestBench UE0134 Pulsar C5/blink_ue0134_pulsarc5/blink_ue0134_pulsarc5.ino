@@ -21,6 +21,7 @@ Funcionalidades:
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_MMC56x3.h>
+#include <LPS22DFSensor.h>
 
 // ==== DECLARACIÓN DE GPIOS ====
 #define NEOP_PIN 0
@@ -40,6 +41,9 @@ String JSON_salida;   // Variable que envía el JSON de datos
 #define REG_VCELL 0x02      //
 #define REG_SOC 0x04        //
 #define REG_MODE 0x06       // Registro para comandos especiales
+
+LPS22DFSensor lps22df(&Wire);
+float pressure, temperature;
 
 // ==== CREACIÓN DE OBJETOS ====
 StaticJsonDocument<254> receiveJSON;
@@ -153,6 +157,7 @@ void loop() {
       else if (Function == "i2c_scan") opc = 3;  // {"Function":"i2c_scan"}
       else if (Function == "mgn") opc = 4;       // {"Function":"mgn"}
       else if (Function == "bat") opc = 5;       // {"Function":"bat"}
+      else if (Function == "press") opc = 6;     // {"Function":"press"}
 
       switch (opc) {
         case 1:
@@ -250,6 +255,24 @@ void loop() {
             Serial.print(porcentaje, 1);
             Serial.println(" %");
 
+            break;
+          }
+
+        case 6:
+          {
+            lps22df.begin();
+            lps22df.Enable();
+
+            for (int i = 0; i < 30; i++) {
+              lps22df.GetPressure(&pressure);
+              lps22df.GetTemperature(&temperature);
+
+              Serial.print("Pressure[hPa]:");
+              Serial.print(pressure, 2);
+              Serial.print(", Temperature[C]:");
+              Serial.println(temperature, 2);
+              delay(200);
+            }
             break;
           }
 
