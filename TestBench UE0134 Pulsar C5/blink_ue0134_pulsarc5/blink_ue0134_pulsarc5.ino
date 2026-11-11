@@ -4,6 +4,7 @@ Firmware test base v1.0 Pulsar C5
 Funcionalidades: 
 
 - Control de blink y neopixel 
+- Lectura de direcciones I2C y manejo de sensores nativos 
 */
 
 // ==== BIBLIOTECAS ====
@@ -16,12 +17,18 @@ Funcionalidades:
 // ==== DECLARACIÓN DE GPIOS ====
 #define NEOP_PIN 0
 #define LED_BUILTIN 27
+#define SDA_PIN 2
+#define SCL_PIN 3
 
 // ==== MACROS Y VARIABLES GLOBALES ====
 #define NUMPIXELS 1    // Número de Neopixeles
 int intensity = 30;    // Intensidad de brillo en Neopixel
 int delay_neop = 250;  // Tiempo de actualización en Neopixel
 
+String JSON_entrada;  // Variable que recibe JSON del frontend
+String JSON_salida;   // Variable que envía el JSON de datos
+
+// ==== CREACIÓN DE OBJETOS ====
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOP_PIN, NEO_GRB + NEO_KHZ800);
 
 // ==== FUNCIONALIDADES ====
@@ -96,6 +103,8 @@ void setup() {
   // ==== Inicializaciones ====
   Serial.begin(115200);
 
+  Wire.begin(SDA_PIN, SCL_PIN);
+
   pixels.clear();
   pixels.setBrightness(150);
 
@@ -103,10 +112,20 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
-  // ==== Mensaje de Bienvenida ====
- // messageIntro();
+  // ==== Mensaje de Bienvenida ====|
+  // messageIntro();
 }
 
 void loop() {
-  demo();
+
+
+  if (Serial.available()) {
+
+    if (Serial.read() == 'r') {
+
+      Serial.println("Caracter r");
+    }
+  } else {
+    demo();
+  }
 }
