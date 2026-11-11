@@ -8,6 +8,11 @@ tarjeta neurotronics para comunicar uart, alimentación, gnd y gpios
 Recibe instrucciones JSON por UART proveniente del frontend a traves de un ch340 conectado
 a un arnes con db9 y convertidor ttl a rs232 hembra
 
+En donde los gpios de la pulsar C6: 
+const int enable[] = { 9, 19, 21, 15, 20, 18, 7, 6, 0, 2, 14, 1 };
+
+son el orden de activacion de los reles de OUT1 - OUT 12
+
 */
 
 #include <Arduino.h>
@@ -33,6 +38,7 @@ a un arnes con db9 y convertidor ttl a rs232 hembra
 
 const int enable[] = { 9, 19, 21, 15, 20, 18, 7, 6, 0, 2, 14, 1 };
 int noEnable = sizeof(enable) / sizeof(enable[0]);
+bool debug = true;
 
 HardwareSerial PagWeb(1);  // Crear objeto para UART2 en PULSAR como PagWeb
 
@@ -61,8 +67,8 @@ void setup() {
   Serial.begin(115200);                        // Comunicación serial para depuración
   PagWeb.begin(115200, SERIAL_8N1, RX2, TX2);  // UART para interfaz web
   delay(100);
-  serialDebug("Serial Initialized...");
-  pagwebDebug("Test Multi LM2596 Initialized...");
+  serialDebug("Test Neurotronics Ready...");
+  pagwebDebug("UART slave neurotronics ready...");
 
   for (int i = 0; i < noEnable; i++) {
     pinMode(enable[i], OUTPUT);
@@ -84,7 +90,7 @@ void loop() {
       sendJSON["error"] = error.c_str();
       serializeJson(sendJSON, Serial);
       Serial.println();
-
+ha
       serializeJson(sendJSON, PagWeb);
       PagWeb.println();
     } else {
@@ -95,7 +101,7 @@ void loop() {
       if (Function == "ping") opc = 1;        // {"Function":"ping"}
       else if (Function == "on") opc = 2;     // {"Function":"on", "Relay": 1}
       else if (Function == "off") opc = 3;    // {"Function":"off"}
-      else if (Function == "sweep") opc = 4;  //  {"Function":"sweep"}
+      else if (Function == "sweep") opc = 4;  // {"Function":"sweep"}
 
       switch (opc) {
         case 1:
@@ -104,6 +110,8 @@ void loop() {
             sendJSON["ping"] = "pong";
             serializeJson(sendJSON, PagWeb);
             PagWeb.println();
+
+            if (debug) serialDebug("successful ping response");
             break;
           }
 
