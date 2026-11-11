@@ -6,9 +6,9 @@ Funcionalidades:
 - Control de blink y neopixel 
 - Lectura de direcciones I2C y manejo de sensores nativos 
   . MAX17048 Addr 0x36      | Charger Battery Sensor
-  . MMC5603 Addr 0x30       | 
-  . SHT40 Addr 0x44 XDDDD   | Humidity and Temperature Sensor
-  . LPS22DF Addr 0x5C
+  . MMC5603 Addr 0x30       | Magnetometer Sensor 
+  . SHT40 Addr 0x44 No aparece   | Humidity and Temperature Sensor
+  . LPS22DF Addr 0x5C       | 
   . VCNL4040 Addr 0x60
 
   34 60 18
@@ -20,7 +20,7 @@ Funcionalidades:
 #include <HardwareSerial.h>
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
-#include <Adafruit_SSD1306.h>
+#include <Adafruit_MMC56x3.h>
 
 // ==== DECLARACIÓN DE GPIOS ====
 #define NEOP_PIN 0
@@ -36,10 +36,17 @@ int delay_neop = 250;  // Tiempo de actualización en Neopixel
 String JSON_entrada;  // Variable que recibe JSON del frontend
 String JSON_salida;   // Variable que envía el JSON de datos
 
+#define MAX17048_ADDR 0x36  // Dirección de esclavo MAX17048
+#define REG_VCELL 0x02      //
+#define REG_SOC 0x04        //
+#define REG_MODE 0x06       // Registro para comandos especiales
+
 // ==== CREACIÓN DE OBJETOS ====
-Adafruit_NeoPixel pixels(NUMPIXELS, NEOP_PIN, NEO_GRB + NEO_KHZ800);
 StaticJsonDocument<254> receiveJSON;
 StaticJsonDocument<254> sendJSON;
+Adafruit_NeoPixel pixels(NUMPIXELS, NEOP_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_MMC5603 mmc = Adafruit_MMC5603(12345);
+
 
 // ==== FUNCIONALIDADES ====
 void demo() {
@@ -144,6 +151,8 @@ void loop() {
       if (Function == "ping") opc = 1;           // {"Function":"ping"}
       else if (Function == "mac") opc = 2;       // {"Function":"mac"}
       else if (Function == "i2c_scan") opc = 3;  // {"Function":"i2c_scan"}
+      else if (Function == "mgn") opc = 4;       // {"Function":"mgn"}
+      else if (Function == "bat") opc = 5;       // {"Function":"bat"}
 
       switch (opc) {
         case 1:
@@ -180,6 +189,71 @@ void loop() {
             break;
           }
 
+        case 4:
+          {
+            if (!mmc.begin(MMC56X3_DEFAULT_ADDRESS, &Wire)) {  // I2C mode
+              /* There was a problem detecting the MMC5603 ... check your connections */
+              Serial.println("Ooops, no MMC5603 detected ... Check your wiring!");
+              break;
+            } else {
+              Serial.println("MMC5603 initialized...");
+            }
+
+            /* Display some basic information on this sensor */
+            mmc.printSensorDetails();
+            mmc.setDataRate(100);  // in Hz, from 1-255 or 1000
+            mmc.setContinuousMode(true);
+
+            for (int i = 0; i < 30; i++) {
+
+              sensors_event_t event;
+              mmc.getEvent(&event);
+
+              // Display the results (magnetic vector values are in micro-Tesla (uT))
+              Serial.print("X: ");
+              Serial.print(event.magnetic.x);
+              Serial.print("  ");
+              Serial.print("Y: ");
+              Serial.print(event.magnetic.y);
+              Serial.print("  ");
+              Serial.print("Z: ");
+              Serial.print(event.magnetic.z);
+              Serial.print("  ");
+              Serial.println("uT");
+              delay(200);
+            }
+
+            break;
+          }
+
+        case 5:
+          {
+            quickStart();
+            delay(1000);
+            float voltaje = leerVoltaje();
+            float porcentaje = leerSOC();
+
+            // Si el algoritmo se pierde por un pico de voltaje y da más del 100%
+            if (porcentaje > 100.0) {
+              Serial.println("-> SOC irreal detectado (>100%). Forzando Quick-Start...");
+              quickStart();
+              delay(500);  // Esperamos medio segundo para que actualice los registros
+
+              // Volvemos a tomar las lecturas ya corregidas
+              voltaje = leerVoltaje();
+              porcentaje = leerSOC();
+            }
+
+            Serial.print("Voltaje: ");
+            Serial.print(voltaje, 1);  // 1 decimal de precisión
+            Serial.print(" V  |  SOC: ");
+            Serial.print(porcentaje, 1);
+            Serial.println(" %");
+
+            break;
+          }
+
+
         default:
           sendJSON.clear();
           sendJSON["error"] = "InvalidInput";
@@ -192,4 +266,42 @@ void loop() {
   } else {
     demo();
   }
+}
+
+
+// ______________________
+
+// Función para reiniciar el algoritmo del MAX17048
+void quickStart() {
+  Wire.beginTransmission(MAX17048_ADDR);
+  Wire.write(REG_MODE);
+  Wire.write(0x40);  // MSB del comando 0x4000
+  Wire.write(0x00);  // LSB del comando 0x4000
+  Wire.endTransmission();
+}
+
+// Función para leer registros de 16 bits
+uint16_t leerRegistro16(uint8_t reg) {
+  Wire.beginTransmission(MAX17048_ADDR);
+  Wire.write(reg);
+  Wire.endTransmission(false);  // Restart para mantener el bus
+
+  Wire.requestFrom((uint8_t)MAX17048_ADDR, (size_t)2);
+
+  if (Wire.available() == 2) {
+    uint16_t msb = Wire.read();
+    uint16_t lsb = Wire.read();
+    return (msb << 8) | lsb;
+  }
+  return 0;
+}
+
+float leerVoltaje() {
+  uint16_t rawVcell = leerRegistro16(REG_VCELL);
+  return rawVcell * 0.000078125;
+}
+
+float leerSOC() {
+  uint16_t rawSoc = leerRegistro16(REG_SOC);
+  return rawSoc / 256.0;
 }
