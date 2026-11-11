@@ -30,6 +30,8 @@ String JSON_salida;   // Variable que envía el JSON de datos
 
 // ==== CREACIÓN DE OBJETOS ====
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOP_PIN, NEO_GRB + NEO_KHZ800);
+StaticJsonDocument<254> receiveJSON;
+StaticJsonDocument<254> sendJSON;
 
 // ==== FUNCIONALIDADES ====
 void demo() {
@@ -112,7 +114,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
-  // ==== Mensaje de Bienvenida ====|
+  // ==== Mensaje de Bienvenida ====
   // messageIntro();
 }
 
@@ -121,10 +123,43 @@ void loop() {
 
   if (Serial.available()) {
 
-    if (Serial.read() == 'r') {
+    JSON_entrada = Serial.readStringUntil('\n');
+    DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
 
-      Serial.println("Caracter r");
+    if (error) {
+      sendJSON.clear();
+      sendJSON["error"] = error.c_str();
+      sendJSON["message"] = "JSON invalido recibido";
+      serializeJson(sendJSON, Serial);
+      Serial.println();
+    } else {
+
+      int opc = 0;
+      String Function = receiveJSON["Function"];
+
+      if (Function == "ping") opc = 1;  // {"Function":"ping"}
+
+      switch (opc) {
+        case 1:
+          {
+            sendJSON.clear();
+            sendJSON["ping"] = "pong";
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+            break;
+          }
+
+
+        default: break;
+      }
     }
+
+
+
+
+
+
+
   } else {
     demo();
   }
