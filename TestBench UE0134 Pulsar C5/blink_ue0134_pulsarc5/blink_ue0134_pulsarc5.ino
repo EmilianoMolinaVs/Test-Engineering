@@ -9,7 +9,7 @@ Funcionalidades:
   . MMC5603 Addr 0x30       | Magnetometer Sensor 
   . SHT40 Addr 0x44 No Addr | Humidity and Temperature Sensor
   . LPS22DF Addr 0x5C       | Pressure and Temperature Sensor
-  . VCNL4040 Addr 0x60
+  . VCNL4040 Addr 0x60      | Light Sensor 
 
   34 60 18
 */
@@ -21,6 +21,7 @@ Funcionalidades:
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_MMC56x3.h>
+#include "SparkFun_VCNL4040_Arduino_Library.h"
 
 // ==== DECLARACIÓN DE GPIOS ====
 #define NEOP_PIN 0
@@ -53,6 +54,7 @@ StaticJsonDocument<254> receiveJSON;
 StaticJsonDocument<254> sendJSON;
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOP_PIN, NEO_GRB + NEO_KHZ800);
 Adafruit_MMC5603 mmc = Adafruit_MMC5603(12345);
+VCNL4040 proximitySensor;
 
 
 // ==== FUNCIONALIDADES ====
@@ -184,6 +186,7 @@ void loop() {
       else if (Function == "mgn") opc = 4;       // {"Function":"mgn"}
       else if (Function == "bat") opc = 5;       // {"Function":"bat"}
       else if (Function == "press") opc = 6;     // {"Function":"press"}
+      else if (Function == "prox") opc = 7;      // {"Function":"prox"}
 
       switch (opc) {
         case 1:
@@ -349,6 +352,26 @@ void loop() {
               }
               delay(200);
             }
+            break;
+          }
+
+        case 7:
+          {
+
+            if (proximitySensor.begin() == false) {
+              Serial.println("Device not found. Please check wiring.");
+              break;
+            }
+
+            for (int i = 0; i < 30; i++) {
+              unsigned int proxValue = proximitySensor.getProximity();
+
+              Serial.print("Proximity Value: ");
+              Serial.print(proxValue);
+              Serial.println();
+              delay(200);
+            }
+
             break;
           }
 
