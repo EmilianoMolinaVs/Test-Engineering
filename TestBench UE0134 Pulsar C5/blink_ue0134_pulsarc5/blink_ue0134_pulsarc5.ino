@@ -7,8 +7,8 @@ Funcionalidades:
 - Lectura de direcciones I2C y manejo de sensores nativos 
   . MAX17048 Addr 0x36      | Charger Battery Sensor
   . MMC5603 Addr 0x30       | Magnetometer Sensor 
-  . SHT40 Addr 0x44 No aparece   | Humidity and Temperature Sensor
-  . LPS22DF Addr 0x5C       | 
+  . SHT40 Addr 0x44 No Addr | Humidity and Temperature Sensor
+  . LPS22DF Addr 0x5C       | Pressure and Temperature Sensor
   . VCNL4040 Addr 0x60
 
   34 60 18
