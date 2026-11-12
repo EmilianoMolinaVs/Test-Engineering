@@ -11,7 +11,7 @@ Funcionalidades:
   . LPS22DF Addr 0x5C       | Pressure and Temperature Sensor
   . VCNL4040 Addr 0x60      | Light Sensor 
 
-  34 60 18
+{"I2C_Devices":["0x18","0x30","0x34","0x36","0x5C","0x60"],"Result":"OK"}
 */
 
 // ==== BIBLIOTECAS ====
@@ -30,9 +30,9 @@ Funcionalidades:
 #define SCL_PIN 3
 
 // ==== MACROS Y VARIABLES GLOBALES ====
-#define NUMPIXELS 26   // Número de Neopixeles
-int intensity = 30;    // Intensidad de brillo en Neopixel
-int delay_neop = 250;  // Tiempo de actualización en Neopixel
+#define NUMPIXELS 1   // Número de Neopixeles
+int intensity = 30;   // Intensidad de brillo en Neopixel
+int delay_neop = 50;  // Tiempo de actualización en Neopixel
 
 String JSON_entrada;  // Variable que recibe JSON del frontend
 String JSON_salida;   // Variable que envía el JSON de datos
@@ -167,7 +167,6 @@ void setup() {
 
 void loop() {
 
-
   if (Serial.available()) {
 
     JSON_entrada = Serial.readStringUntil('\n');
@@ -188,6 +187,8 @@ void loop() {
       else if (Function == "press") opc = 6;     // {"Function":"press"}
       else if (Function == "prox") opc = 7;      // {"Function":"prox"}
 
+      else if (Function == "restart") opc = 15;  // {"Function":"restart"}
+
       switch (opc) {
         case 1:
           {
@@ -202,179 +203,186 @@ void loop() {
           {
             sendJSON.clear();
             WiFi.mode(WIFI_MODE_STA);
-            String mac = WiFi.macAddress();
-            sendJSON["mac"] = mac;
+            sendJSON["mac"] = WiFi.macAddress();
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
           }
 
-
         case 3:
           {
+            // Escaneo I2C formateado como un array JSON
+            sendJSON.clear();
+            JsonArray devices = sendJSON.createNestedArray("I2C_Devices");
             for (uint8_t addr = 1; addr < 127; addr++) {
               Wire.beginTransmission(addr);
               if (Wire.endTransmission() == 0) {
-                Serial.print("Dispositivo en 0x");
-                Serial.println(addr, HEX);
+                char hexAddr[5];
+                sprintf(hexAddr, "0x%02X", addr);
+                devices.add(hexAddr);
               }
               delay(10);
             }
+            sendJSON["Result"] = "OK";
+            serializeJson(sendJSON, Serial);
+            Serial.println();
             break;
           }
 
-        case 4:
+        case 4:  // ==== MMC5603 ====
           {
-            if (!mmc.begin(MMC56X3_DEFAULT_ADDRESS, &Wire)) {  // I2C mode
-              /* There was a problem detecting the MMC5603 ... check your connections */
-              Serial.println("Ooops, no MMC5603 detected ... Check your wiring!");
+            if (!mmc.begin(MMC56X3_DEFAULT_ADDRESS, &Wire)) {
+              sendJSON.clear();
+              sendJSON["Sensor"] = "MMC5603";
+              sendJSON["Result"] = "Error";
+              sendJSON["Msg"] = "Not found";
+              serializeJson(sendJSON, Serial);
+              Serial.println();
               break;
-            } else {
-              Serial.println("MMC5603 initialized...");
             }
 
-            /* Display some basic information on this sensor */
-            mmc.printSensorDetails();
-            mmc.setDataRate(100);  // in Hz, from 1-255 or 1000
+            mmc.setDataRate(100);
             mmc.setContinuousMode(true);
 
             for (int i = 0; i < 30; i++) {
-
               sensors_event_t event;
               mmc.getEvent(&event);
 
-              // Display the results (magnetic vector values are in micro-Tesla (uT))
-              Serial.print("X: ");
-              Serial.print(event.magnetic.x);
-              Serial.print("  ");
-              Serial.print("Y: ");
-              Serial.print(event.magnetic.y);
-              Serial.print("  ");
-              Serial.print("Z: ");
-              Serial.print(event.magnetic.z);
-              Serial.print("  ");
-              Serial.println("uT");
+              sendJSON.clear();
+              sendJSON["Sensor"] = "MMC5603";
+              sendJSON["Result"] = "OK";
+              sendJSON["X_uT"] = event.magnetic.x;
+              sendJSON["Y_uT"] = event.magnetic.y;
+              sendJSON["Z_uT"] = event.magnetic.z;
+              serializeJson(sendJSON, Serial);
+              Serial.println();
               delay(200);
             }
-
             break;
           }
 
-        case 5:
+        case 5:  // ==== MAX17048 ====
           {
+            // Candado: Verificamos si hay ACK en la dirección I2C
+            Wire.beginTransmission(MAX17048_ADDR);
+            if (Wire.endTransmission() != 0) {
+              sendJSON.clear();
+              sendJSON["Sensor"] = "MAX17048";
+              sendJSON["Result"] = "Error";
+              sendJSON["Msg"] = "Not found";
+              serializeJson(sendJSON, Serial);
+              Serial.println();
+              break;
+            }
+
             quickStart();
-            delay(1000);
+            delay(500);  // Esperar estabilización
             float voltaje = leerVoltaje();
             float porcentaje = leerSOC();
 
-            // Si el algoritmo se pierde por un pico de voltaje y da más del 100%
             if (porcentaje > 100.0) {
-              Serial.println("-> SOC irreal detectado (>100%). Forzando Quick-Start...");
               quickStart();
-              delay(500);  // Esperamos medio segundo para que actualice los registros
-
-              // Volvemos a tomar las lecturas ya corregidas
+              delay(500);
               voltaje = leerVoltaje();
               porcentaje = leerSOC();
             }
 
-            Serial.print("Voltaje: ");
-            Serial.print(voltaje, 1);  // 1 decimal de precisión
-            Serial.print(" V  |  SOC: ");
-            Serial.print(porcentaje, 1);
-            Serial.println(" %");
-
+            sendJSON.clear();
+            sendJSON["Sensor"] = "MAX17048";
+            sendJSON["Result"] = "OK";
+            sendJSON["V"] = voltaje;
+            sendJSON["SOC"] = porcentaje;
+            serializeJson(sendJSON, Serial);
+            Serial.println();
             break;
           }
 
-        case 6:
+        case 6:  // ==== LPS22DF ====
           {
-            Serial.println("Iniciando lecturas LPS22DF (I2C Nativo)...");
-
-            // ==== Validación del registro WhoAmI ====
+            // Candado WHO_AM_I
             Wire.beginTransmission(LPS22DF_ADDR);
             Wire.write(LPS_WHO_AM_I);
-            Wire.endTransmission(false);  // Repeated start
-            Wire.requestFrom(LPS22DF_ADDR, 1);
+            Wire.endTransmission(false);
+            Wire.requestFrom((uint16_t)LPS22DF_ADDR, (uint8_t)1);
 
-            if (Wire.available()) {
-              uint8_t id = Wire.read();
-              Serial.printf("WHO_AM_I: 0x%02X\n", id);  // Debería imprimir 0xB4
-              sendJSON["id"] = id;
-              sendJSON["Result"] = "OK";
-            } else {
-              Serial.println("Error: Sensor no encontrado.");
+            if (!Wire.available()) {
+              sendJSON.clear();
+              sendJSON["Sensor"] = "LPS22DF";
+              sendJSON["Result"] = "Error";
+              sendJSON["Msg"] = "Not found";
+              serializeJson(sendJSON, Serial);
+              Serial.println();
+              break;
             }
 
+            uint8_t id = Wire.read();  // 0xB4
 
-            // 2. Configurar el sensor (Encendido continuo)
-            // ODR = 25Hz (0b0100 << 4) = 0x40. Promediado AVG = 4 (bits inferiores por defecto)
             Wire.beginTransmission(LPS22DF_ADDR);
             Wire.write(LPS_CTRL_REG1);
             Wire.write(0x40);
             Wire.endTransmission();
 
-            // ==== Toma de Datos ====
             for (int i = 0; i < 30; i++) {
-              // Lectura en ráfaga de 5 bytes (3 bytes de presión + 2 bytes de temperatura)
               Wire.beginTransmission(LPS22DF_ADDR);
               Wire.write(LPS_PRESS_OUT);
               Wire.endTransmission(false);
-              Wire.requestFrom(LPS22DF_ADDR, 5);
+              Wire.requestFrom((uint16_t)LPS22DF_ADDR, (uint8_t)5);
+
+              sendJSON.clear();
+              sendJSON["Sensor"] = "LPS22DF";
 
               if (Wire.available() == 5) {
-                uint8_t px = Wire.read();  // XL
-                uint8_t pl = Wire.read();  // L
-                uint8_t ph = Wire.read();  // H
-                uint8_t tl = Wire.read();  // Temp L
-                uint8_t th = Wire.read();  // Temp H
+                uint8_t px = Wire.read();
+                uint8_t pl = Wire.read();
+                uint8_t ph = Wire.read();
+                uint8_t tl = Wire.read();
+                uint8_t th = Wire.read();
 
-                // Ensamblar presión (24 bits)
                 int32_t press_raw = (int32_t)(ph << 16 | pl << 8 | px);
-                // Extensión de signo manual para números negativos
-                if (press_raw & 0x00800000) {
-                  press_raw |= 0xFF000000;
-                }
-
-                // Ensamblar temperatura (16 bits)
+                if (press_raw & 0x00800000) press_raw |= 0xFF000000;
                 int16_t temp_raw = (int16_t)(th << 8 | tl);
 
-                // Conversión física
-                pressure = press_raw / 4096.0f;
-                temperature = temp_raw / 100.0f;
-
-                Serial.print("Pressure[hPa]:");
-                Serial.print(pressure, 2);
-                Serial.print(", Temperature[C]:");
-                Serial.println(temperature, 2);
+                sendJSON["Result"] = "OK";
+                sendJSON["ID"] = id;
+                sendJSON["Press_hPa"] = press_raw / 4096.0f;
+                sendJSON["Temp_C"] = temp_raw / 100.0f;
               } else {
-                Serial.println("Error de lectura I2C en LPS22DF.");
+                sendJSON["Result"] = "Error";
+                sendJSON["Msg"] = "Read error";
               }
+
+              serializeJson(sendJSON, Serial);
+              Serial.println();
               delay(200);
             }
             break;
           }
 
-        case 7:
+        case 7:  // ==== VCNL4040 ====
           {
-
-            if (proximitySensor.begin() == false) {
-              Serial.println("Device not found. Please check wiring.");
+            if (!proximitySensor.begin()) {
+              sendJSON.clear();
+              sendJSON["Sensor"] = "VCNL4040";
+              sendJSON["Result"] = "Error";
+              sendJSON["Msg"] = "Not found";
+              serializeJson(sendJSON, Serial);
+              Serial.println();
               break;
             }
 
             for (int i = 0; i < 30; i++) {
               unsigned int proxValue = proximitySensor.getProximity();
 
-              Serial.print("Proximity Value: ");
-              Serial.print(proxValue);
+              sendJSON.clear();
+              sendJSON["Sensor"] = "VCNL4040";
+              sendJSON["Result"] = "OK";
+              sendJSON["Prox"] = proxValue;
+              serializeJson(sendJSON, Serial);
               Serial.println();
               delay(200);
             }
-
             break;
           }
-
 
         default:
           sendJSON.clear();
