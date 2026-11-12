@@ -13,7 +13,17 @@ Funcionalidades:
 
 {"I2C_Devices":["0x18","0x30","0x34","0x36","0x5C","0x60"],"Result":"OK"}
 
--
+
+      {"Function":"ping"}
+      {"Function":"mac"}
+      {"Function":"i2c_scan"}
+      {"Function":"mgn"}
+      {"Function":"bat"}
+      {"Function":"press"}
+      {"Function":"prox"}
+      {"Function":"sd"}
+
+
 */
 
 // ==== BIBLIOTECAS ====
@@ -29,14 +39,20 @@ Funcionalidades:
 #include "SPI.h"
 
 // ==== DECLARACIÓN DE GPIOS ====
-#define NEOP_PIN 0   // >> GPIO Entrada de Neopixel
-#define LED_PIN 27   // >> GPIO LED BUILT IN
-#define SDA_PIN 2    // >> PIN SDA Bus I2C
-#define SCL_PIN 3    // >> PIN SCL bus I2C
-#define MISO_PIN 26  // >> PIN MISO en SPI bus para SD CARD | D12
-#define MOSI_PIN 7   // >> PIN MOSI en SPI bus para SD CARD | D11
-#define SCK_PIN 27   // >> PIN SCK en SPI bus para SD CARD  | D13
-#define CS_PIN 23    // >> PIN CS en SPI bus para SD CARD   | D5
+#define NEOP_PIN 0  // >> GPIO Entrada de Neopixel
+#define LED_PIN 27  // >> GPIO LED BUILT IN
+#define SDA_PIN 2   // >> PIN SDA Bus I2C
+#define SCL_PIN 3   // >> PIN SCL bus I2C
+
+// ¡NUEVO!: Pines seguros para el segundo bus I2C
+#define SDA2_PIN 1  // >> PIN SDA Segundo Bus I2C
+#define SCL2_PIN 6  // >> PIN SCL Segundo Bus I2C
+
+// Pines SD Card
+#define MISO_PIN 26  // >> PIN MISO en SPI bus para SD CARD
+#define MOSI_PIN 7   // >> PIN MOSI en SPI bus para SD CARD
+#define SCK_PIN 27   // >> PIN SCK en SPI bus para SD CARD
+#define CS_PIN 23    // >> PIN CS en SPI bus para SD CARD
 
 // ==== MACROS Y VARIABLES GLOBALES ====
 #define NUMPIXELS 10  // Número de Neopixeles
@@ -65,6 +81,8 @@ Adafruit_NeoPixel pixels(NUMPIXELS, NEOP_PIN, NEO_GRB + NEO_KHZ800);
 Adafruit_MMC5603 mmc = Adafruit_MMC5603(12345);
 VCNL4040 proximitySensor;
 
+TwoWire Wire2 = TwoWire(1);  // Instancia para el segundo bus I2C (índice 1)
+SPIClass sdSPI(HSPI);        // Instancia separada para el bus SPI (HSPI / FSPI según core de C5)
 
 // ==== FUNCIONALIDADES ====
 void demo() {
@@ -161,7 +179,8 @@ void setup() {
   // ==== Inicializaciones ====
   Serial.begin(115200);
   Wire.begin(SDA_PIN, SCL_PIN);
-  SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
+  Wire2.begin(SDA2_PIN, SCL2_PIN);
+  sdSPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
 
   pixels.clear();
   pixels.setBrightness(150);
@@ -219,20 +238,32 @@ void loop() {
             break;
           }
 
-        case 3:
+        case 3:  // ==== ESCÁNER I2C DUAL ====
           {
-            // Escaneo I2C formateado como un array JSON
             sendJSON.clear();
-            JsonArray devices = sendJSON.createNestedArray("I2C_Devices");
+            JsonArray devices_bus1 = sendJSON.createNestedArray("I2C_Bus1_LP");
+            JsonArray devices_bus2 = sendJSON.createNestedArray("I2C_Bus2");
+
+            // Escaneo Bus 1 (LP en GPIO 2, 3)
             for (uint8_t addr = 1; addr < 127; addr++) {
               Wire.beginTransmission(addr);
               if (Wire.endTransmission() == 0) {
                 char hexAddr[5];
                 sprintf(hexAddr, "0x%02X", addr);
-                devices.add(hexAddr);
+                devices_bus1.add(hexAddr);
               }
-              delay(10);
             }
+
+            // Escaneo Bus 2 (GPIO 1, 4)
+            for (uint8_t addr = 1; addr < 127; addr++) {
+              Wire2.beginTransmission(addr);
+              if (Wire2.endTransmission() == 0) {
+                char hexAddr[5];
+                sprintf(hexAddr, "0x%02X", addr);
+                devices_bus2.add(hexAddr);
+              }
+            }
+
             sendJSON["Result"] = "OK";
             serializeJson(sendJSON, Serial);
             Serial.println();
@@ -403,8 +434,8 @@ void loop() {
             sendJSON.clear();
             sendJSON["Sensor"] = "SD_CARD";
 
-            // Verificamos inicialización de la tarjeta
-            if (!SD.begin(CS_PIN)) {
+            // ¡NUEVO! Inicializar con la instancia sdSPI
+            if (!SD.begin(CS_PIN, sdSPI)) {
               sendJSON["Result"] = "Error";
               sendJSON["Msg"] = "Init failed / No SD";
             } else {
@@ -416,12 +447,12 @@ void loop() {
               } else {
                 sendJSON["Result"] = "OK";
 
-                // Determinamos el tipo de tarjeta
                 if (cardType == CARD_MMC) sendJSON["Type"] = "MMC";
                 else if (cardType == CARD_SD) sendJSON["Type"] = "SDSC";
                 else if (cardType == CARD_SDHC) sendJSON["Type"] = "SDHC";
                 else sendJSON["Type"] = "UNKNOWN";
 
+                // ¡CORREGIDO! Multiplicación para tamaño en MB
                 uint64_t cardSizeMB = SD.cardSize() / (1024 * 1024);
                 sendJSON["Size_MB"] = cardSizeMB;
               }
