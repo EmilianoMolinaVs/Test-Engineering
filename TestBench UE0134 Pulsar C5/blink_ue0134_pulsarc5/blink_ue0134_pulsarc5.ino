@@ -29,7 +29,7 @@ Funcionalidades:
 #define SCL_PIN 3
 
 // ==== MACROS Y VARIABLES GLOBALES ====
-#define NUMPIXELS 1    // Número de Neopixeles
+#define NUMPIXELS 26   // Número de Neopixeles
 int intensity = 30;    // Intensidad de brillo en Neopixel
 int delay_neop = 250;  // Tiempo de actualización en Neopixel
 
@@ -288,11 +288,36 @@ void loop() {
           {
             Serial.println("Iniciando lecturas LPS22DF (I2C Nativo)...");
 
+            // ==== Validación del registro WhoAmI ====
+            Wire.beginTransmission(LPS22DF_ADDR);
+            Wire.write(LPS_WHO_AM_I);
+            Wire.endTransmission(false);  // Repeated start
+            Wire.requestFrom(LPS22DF_ADDR, 1);
+
+            if (Wire.available()) {
+              uint8_t id = Wire.read();
+              Serial.printf("WHO_AM_I: 0x%02X\n", id);  // Debería imprimir 0xB4
+              sendJSON["id"] = id;
+              sendJSON["Result"] = "OK";
+            } else {
+              Serial.println("Error: Sensor no encontrado.");
+            }
+
+
+            // 2. Configurar el sensor (Encendido continuo)
+            // ODR = 25Hz (0b0100 << 4) = 0x40. Promediado AVG = 4 (bits inferiores por defecto)
+            Wire.beginTransmission(LPS22DF_ADDR);
+            Wire.write(LPS_CTRL_REG1);
+            Wire.write(0x40);
+            Wire.endTransmission();
+
+            // ==== Toma de Datos ====
             for (int i = 0; i < 30; i++) {
+              // Lectura en ráfaga de 5 bytes (3 bytes de presión + 2 bytes de temperatura)
               Wire.beginTransmission(LPS22DF_ADDR);
               Wire.write(LPS_PRESS_OUT);
               Wire.endTransmission(false);
-              Wire.requestFrom((uint16_t)LPS22DF_ADDR, (uint8_t)5);
+              Wire.requestFrom(LPS22DF_ADDR, 5);
 
               if (Wire.available() == 5) {
                 uint8_t px = Wire.read();  // XL
