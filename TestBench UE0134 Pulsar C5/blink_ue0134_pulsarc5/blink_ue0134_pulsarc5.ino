@@ -21,7 +21,6 @@ Funcionalidades:
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_MMC56x3.h>
-#include <LPS22DFSensor.h>
 
 // ==== DECLARACIÓN DE GPIOS ====
 #define NEOP_PIN 0
@@ -42,8 +41,12 @@ String JSON_salida;   // Variable que envía el JSON de datos
 #define REG_SOC 0x04        //
 #define REG_MODE 0x06       // Registro para comandos especiales
 
-LPS22DFSensor lps22df(&Wire);
-float pressure, temperature;
+// ==== MACROS LPS22DF ====
+#define LPS22DF_ADDR 0x5C  // Dirección en tu placa Pulsar C5
+#define LPS_WHO_AM_I 0x0F
+#define LPS_CTRL_REG1 0x10
+#define LPS_PRESS_OUT 0x28
+float temperature, pressure;
 
 // ==== CREACIÓN DE OBJETOS ====
 StaticJsonDocument<254> receiveJSON;
@@ -54,37 +57,60 @@ Adafruit_MMC5603 mmc = Adafruit_MMC5603(12345);
 
 // ==== FUNCIONALIDADES ====
 void demo() {
+  // Variables estáticas para mantener su valor entre cada ejecución de la función
+  static unsigned long previousMillis = 0;
+  static int colorState = 0;
+  static int pixelIndex = 0;
 
-  // ---- Arranque de Neopixel ----
-  digitalWrite(LED_BUILTIN, HIGH);
-  for (int i = 0; i < NUMPIXELS; i++) {
-    pixels.setPixelColor(i, pixels.Color(intensity, 0, 0));
+  unsigned long currentMillis = millis();
+
+  // Verificamos si ya pasó el tiempo (delay_neop = 250ms)
+  if (currentMillis - previousMillis >= delay_neop) {
+    previousMillis = currentMillis;  // Actualizamos la marca de tiempo
+
+    switch (colorState) {
+      case 0:  // Estado 0: Rojo
+        digitalWrite(LED_BUILTIN, HIGH);
+        pixels.setPixelColor(pixelIndex, pixels.Color(intensity, 0, 0));
+        break;
+
+      case 1:  // Estado 1: Verde
+        digitalWrite(LED_BUILTIN, LOW);
+        pixels.setPixelColor(pixelIndex, pixels.Color(0, intensity, 0));
+        break;
+
+      case 2:  // Estado 2: Azul
+        digitalWrite(LED_BUILTIN, HIGH);
+        pixels.setPixelColor(pixelIndex, pixels.Color(0, 0, intensity));
+        break;
+
+      case 3:  // Estado 3: Cian/Custom
+        digitalWrite(LED_BUILTIN, LOW);
+        pixels.setPixelColor(pixelIndex, pixels.Color(0, 130, intensity));
+        break;
+
+      case 4:  // Estado 4: Limpieza y reinicio del ciclo
+        pixels.clear();
+        pixels.show();
+
+        // Reiniciamos los contadores
+        colorState = 0;
+        pixelIndex = 0;
+        return;  // Salimos para arrancar el ciclo rojo en la siguiente iteración
+    }
+
+    // Mostramos el color cargado
     pixels.show();
-    delay(delay_neop);
-  }
 
-  digitalWrite(LED_BUILTIN, LOW);
-  for (int i = 0; i < NUMPIXELS; i++) {
-    pixels.setPixelColor(i, pixels.Color(0, intensity, 0));
-    pixels.show();
-    delay(delay_neop);
-  }
+    // Avanzamos al siguiente pixel
+    pixelIndex++;
 
-  digitalWrite(LED_BUILTIN, HIGH);
-  for (int i = 0; i < NUMPIXELS; i++) {
-    pixels.setPixelColor(i, pixels.Color(0, 0, intensity));
-    pixels.show();
-    delay(delay_neop);
+    // Si ya recorrimos todos los pixeles, pasamos al siguiente color
+    if (pixelIndex >= NUMPIXELS) {
+      pixelIndex = 0;
+      colorState++;
+    }
   }
-
-  digitalWrite(LED_BUILTIN, LOW);
-  for (int i = 0; i < NUMPIXELS; i++) {
-    pixels.setPixelColor(i, pixels.Color(0, 130, intensity));
-    pixels.show();
-    delay(delay_neop);
-  }
-
-  pixels.clear();
 }
 
 void messageIntro() {
@@ -260,17 +286,42 @@ void loop() {
 
         case 6:
           {
-            lps22df.begin();
-            lps22df.Enable();
+            Serial.println("Iniciando lecturas LPS22DF (I2C Nativo)...");
 
             for (int i = 0; i < 30; i++) {
-              lps22df.GetPressure(&pressure);
-              lps22df.GetTemperature(&temperature);
+              Wire.beginTransmission(LPS22DF_ADDR);
+              Wire.write(LPS_PRESS_OUT);
+              Wire.endTransmission(false);
+              Wire.requestFrom((uint16_t)LPS22DF_ADDR, (uint8_t)5);
 
-              Serial.print("Pressure[hPa]:");
-              Serial.print(pressure, 2);
-              Serial.print(", Temperature[C]:");
-              Serial.println(temperature, 2);
+              if (Wire.available() == 5) {
+                uint8_t px = Wire.read();  // XL
+                uint8_t pl = Wire.read();  // L
+                uint8_t ph = Wire.read();  // H
+                uint8_t tl = Wire.read();  // Temp L
+                uint8_t th = Wire.read();  // Temp H
+
+                // Ensamblar presión (24 bits)
+                int32_t press_raw = (int32_t)(ph << 16 | pl << 8 | px);
+                // Extensión de signo manual para números negativos
+                if (press_raw & 0x00800000) {
+                  press_raw |= 0xFF000000;
+                }
+
+                // Ensamblar temperatura (16 bits)
+                int16_t temp_raw = (int16_t)(th << 8 | tl);
+
+                // Conversión física
+                pressure = press_raw / 4096.0f;
+                temperature = temp_raw / 100.0f;
+
+                Serial.print("Pressure[hPa]:");
+                Serial.print(pressure, 2);
+                Serial.print(", Temperature[C]:");
+                Serial.println(temperature, 2);
+              } else {
+                Serial.println("Error de lectura I2C en LPS22DF.");
+              }
               delay(200);
             }
             break;
@@ -327,4 +378,25 @@ float leerVoltaje() {
 float leerSOC() {
   uint16_t rawSoc = leerRegistro16(REG_SOC);
   return rawSoc / 256.0;
+}
+
+void initLPS22DF() {
+  // Verificar comunicación
+  Wire.beginTransmission(LPS22DF_ADDR);
+  Wire.write(LPS_WHO_AM_I);
+  Wire.endTransmission(false);
+  Wire.requestFrom((uint16_t)LPS22DF_ADDR, (uint8_t)1);
+
+  if (Wire.available()) {
+    uint8_t id = Wire.read();
+    Serial.printf("LPS22DF Detectado. WHO_AM_I: 0x%02X\n", id);
+  } else {
+    Serial.println("Error: LPS22DF no detectado en 0x5C.");
+  }
+
+  // Encender muestreo continuo (ODR = 25Hz)
+  Wire.beginTransmission(LPS22DF_ADDR);
+  Wire.write(LPS_CTRL_REG1);
+  Wire.write(0x40);
+  Wire.endTransmission();
 }
