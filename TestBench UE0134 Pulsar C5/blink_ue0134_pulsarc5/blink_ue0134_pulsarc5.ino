@@ -12,6 +12,8 @@ Funcionalidades:
   . VCNL4040 Addr 0x60      | Light Sensor 
 
 {"I2C_Devices":["0x18","0x30","0x34","0x36","0x5C","0x60"],"Result":"OK"}
+
+-
 */
 
 // ==== BIBLIOTECAS ====
@@ -22,16 +24,23 @@ Funcionalidades:
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_MMC56x3.h>
 #include "SparkFun_VCNL4040_Arduino_Library.h"
+#include "FS.h"
+#include "SD.h"
+#include "SPI.h"
 
 // ==== DECLARACIÓN DE GPIOS ====
-#define NEOP_PIN 0
-#define LED_BUILTIN 27
-#define SDA_PIN 2
-#define SCL_PIN 3
+#define NEOP_PIN 0   // >> GPIO Entrada de Neopixel
+#define LED_PIN 27   // >> GPIO LED BUILT IN
+#define SDA_PIN 2    // >> PIN SDA Bus I2C
+#define SCL_PIN 3    // >> PIN SCL bus I2C
+#define MISO_PIN 26  // >> PIN MISO en SPI bus para SD CARD | D12
+#define MOSI_PIN 7   // >> PIN MOSI en SPI bus para SD CARD | D11
+#define SCK_PIN 27   // >> PIN SCK en SPI bus para SD CARD  | D13
+#define CS_PIN 23    // >> PIN CS en SPI bus para SD CARD   | D5
 
 // ==== MACROS Y VARIABLES GLOBALES ====
-#define NUMPIXELS 1   // Número de Neopixeles
-int intensity = 30;   // Intensidad de brillo en Neopixel
+#define NUMPIXELS 10  // Número de Neopixeles
+int intensity = 20;   // Intensidad de brillo en Neopixel
 int delay_neop = 50;  // Tiempo de actualización en Neopixel
 
 String JSON_entrada;  // Variable que recibe JSON del frontend
@@ -72,22 +81,22 @@ void demo() {
 
     switch (colorState) {
       case 0:  // Estado 0: Rojo
-        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(LED_PIN, HIGH);
         pixels.setPixelColor(pixelIndex, pixels.Color(intensity, 0, 0));
         break;
 
       case 1:  // Estado 1: Verde
-        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(LED_PIN, LOW);
         pixels.setPixelColor(pixelIndex, pixels.Color(0, intensity, 0));
         break;
 
       case 2:  // Estado 2: Azul
-        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(LED_PIN, HIGH);
         pixels.setPixelColor(pixelIndex, pixels.Color(0, 0, intensity));
         break;
 
       case 3:  // Estado 3: Cian/Custom
-        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(LED_PIN, LOW);
         pixels.setPixelColor(pixelIndex, pixels.Color(0, 130, intensity));
         break;
 
@@ -151,15 +160,15 @@ void setup() {
 
   // ==== Inicializaciones ====
   Serial.begin(115200);
-
   Wire.begin(SDA_PIN, SCL_PIN);
+  SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
 
   pixels.clear();
   pixels.setBrightness(150);
 
   // ==== Inicialización de GPIOs ====
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 
   // ==== Mensaje de Bienvenida ====
   // messageIntro();
@@ -186,6 +195,7 @@ void loop() {
       else if (Function == "bat") opc = 5;       // {"Function":"bat"}
       else if (Function == "press") opc = 6;     // {"Function":"press"}
       else if (Function == "prox") opc = 7;      // {"Function":"prox"}
+      else if (Function == "sd") opc = 8;        // {"Function":"sd"}
 
       else if (Function == "restart") opc = 15;  // {"Function":"restart"}
 
@@ -231,6 +241,7 @@ void loop() {
 
         case 4:  // ==== MMC5603 ====
           {
+            sendJSON.clear();
             if (!mmc.begin(MMC56X3_DEFAULT_ADDRESS, &Wire)) {
               sendJSON.clear();
               sendJSON["Sensor"] = "MMC5603";
@@ -263,6 +274,7 @@ void loop() {
 
         case 5:  // ==== MAX17048 ====
           {
+            sendJSON.clear();
             // Candado: Verificamos si hay ACK en la dirección I2C
             Wire.beginTransmission(MAX17048_ADDR);
             if (Wire.endTransmission() != 0) {
@@ -299,6 +311,7 @@ void loop() {
 
         case 6:  // ==== LPS22DF ====
           {
+            sendJSON.clear();
             // Candado WHO_AM_I
             Wire.beginTransmission(LPS22DF_ADDR);
             Wire.write(LPS_WHO_AM_I);
@@ -360,6 +373,7 @@ void loop() {
 
         case 7:  // ==== VCNL4040 ====
           {
+            sendJSON.clear();
             if (!proximitySensor.begin()) {
               sendJSON.clear();
               sendJSON["Sensor"] = "VCNL4040";
@@ -381,6 +395,46 @@ void loop() {
               Serial.println();
               delay(200);
             }
+            break;
+          }
+
+        case 8:  // ==== SD CARD ====
+          {
+            sendJSON.clear();
+            sendJSON["Sensor"] = "SD_CARD";
+
+            // Verificamos inicialización de la tarjeta
+            if (!SD.begin(CS_PIN)) {
+              sendJSON["Result"] = "Error";
+              sendJSON["Msg"] = "Init failed / No SD";
+            } else {
+              uint8_t cardType = SD.cardType();
+
+              if (cardType == CARD_NONE) {
+                sendJSON["Result"] = "Error";
+                sendJSON["Msg"] = "No SD card attached";
+              } else {
+                sendJSON["Result"] = "OK";
+
+                // Determinamos el tipo de tarjeta
+                if (cardType == CARD_MMC) sendJSON["Type"] = "MMC";
+                else if (cardType == CARD_SD) sendJSON["Type"] = "SDSC";
+                else if (cardType == CARD_SDHC) sendJSON["Type"] = "SDHC";
+                else sendJSON["Type"] = "UNKNOWN";
+
+                uint64_t cardSizeMB = SD.cardSize() / (1024 * 1024);
+                sendJSON["Size_MB"] = cardSizeMB;
+              }
+            }
+
+            serializeJson(sendJSON, Serial);
+            Serial.println();
+            break;
+          }
+
+        case 15:  // ==== RESTART ====
+          {
+            ESP.restart();
             break;
           }
 
