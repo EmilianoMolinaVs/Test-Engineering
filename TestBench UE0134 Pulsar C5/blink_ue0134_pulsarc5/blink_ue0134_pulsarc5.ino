@@ -7,12 +7,11 @@ Funcionalidades:
 - Lectura de direcciones I2C y manejo de sensores nativos 
   . MAX17048 Addr 0x36      | Charger Battery Sensor
   . MMC5603 Addr 0x30       | Magnetometer Sensor 
-  . SHT40 Addr 0x44 No Addr | Humidity and Temperature Sensor
+  . SHT40 Addr 0x44         | Humidity and Temperature Sensor
   . LPS22DF Addr 0x5C       | Pressure and Temperature Sensor
   . VCNL4040 Addr 0x60      | Light Sensor 
 
-{"I2C_Devices":["0x18","0x30","0x34","0x36","0x5C","0x60"],"Result":"OK"}
-
+{"I2C_Devices":["0x30","0x36","0x44","0x5C","0x60"],"Result":"OK"}
 
       {"Function":"ping"}
       {"Function":"mac"}
@@ -22,10 +21,10 @@ Funcionalidades:
       {"Function":"press"}
       {"Function":"prox"}
       {"Function":"sd"}
+      {"Function":"restart"}
 
-
+-
 */
-
 // ==== BIBLIOTECAS ====
 #include <Wire.h>
 #include <WiFi.h>
@@ -39,16 +38,12 @@ Funcionalidades:
 #include "SPI.h"
 
 // ==== DECLARACIÓN DE GPIOS ====
-#define NEOP_PIN 0  // >> GPIO Entrada de Neopixel
-#define LED_PIN 27  // >> GPIO LED BUILT IN
-#define SDA_PIN 2   // >> PIN SDA Bus I2C
-#define SCL_PIN 3   // >> PIN SCL bus I2C
-
-// ¡NUEVO!: Pines seguros para el segundo bus I2C
-#define SDA2_PIN 1  // >> PIN SDA Segundo Bus I2C
-#define SCL2_PIN 6  // >> PIN SCL Segundo Bus I2C
-
-// Pines SD Card
+#define NEOP_PIN 0   // >> GPIO Entrada de Neopixel
+#define LED_PIN 27   // >> GPIO LED BUILT IN (¡Comparte pin con SCK_PIN!)
+#define SDA_PIN 2    // >> PIN SDA Bus I2C 1 (LP)
+#define SCL_PIN 3    // >> PIN SCL Bus I2C 1 (LP)
+#define SDA2_PIN 1   // >> PIN SDA Segundo Bus I2C
+#define SCL2_PIN 6   // >> PIN SCL Segundo Bus I2C
 #define MISO_PIN 26  // >> PIN MISO en SPI bus para SD CARD
 #define MOSI_PIN 7   // >> PIN MOSI en SPI bus para SD CARD
 #define SCK_PIN 27   // >> PIN SCK en SPI bus para SD CARD
@@ -63,9 +58,9 @@ String JSON_entrada;  // Variable que recibe JSON del frontend
 String JSON_salida;   // Variable que envía el JSON de datos
 
 #define MAX17048_ADDR 0x36  // Dirección de esclavo MAX17048
-#define REG_VCELL 0x02      //
-#define REG_SOC 0x04        //
-#define REG_MODE 0x06       // Registro para comandos especiales
+#define REG_VCELL 0x02
+#define REG_SOC 0x04
+#define REG_MODE 0x06  // Registro para comandos especiales
 
 // ==== MACROS LPS22DF ====
 #define LPS22DF_ADDR 0x5C  // Dirección en tu placa Pulsar C5
@@ -75,66 +70,53 @@ String JSON_salida;   // Variable que envía el JSON de datos
 float temperature, pressure;
 
 // ==== CREACIÓN DE OBJETOS ====
-StaticJsonDocument<254> receiveJSON;
-StaticJsonDocument<254> sendJSON;
+// Aumentado a 512 bytes para evitar truncamiento en los arreglos JSON de escaneo
+StaticJsonDocument<512> receiveJSON;
+StaticJsonDocument<512> sendJSON;
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOP_PIN, NEO_GRB + NEO_KHZ800);
 Adafruit_MMC5603 mmc = Adafruit_MMC5603(12345);
 VCNL4040 proximitySensor;
 
-TwoWire Wire2 = TwoWire(1);  // Instancia para el segundo bus I2C (índice 1)
-SPIClass sdSPI(HSPI);        // Instancia separada para el bus SPI (HSPI / FSPI según core de C5)
-
 // ==== FUNCIONALIDADES ====
 void demo() {
-  // Variables estáticas para mantener su valor entre cada ejecución de la función
   static unsigned long previousMillis = 0;
   static int colorState = 0;
   static int pixelIndex = 0;
 
   unsigned long currentMillis = millis();
 
-  // Verificamos si ya pasó el tiempo (delay_neop = 250ms)
   if (currentMillis - previousMillis >= delay_neop) {
-    previousMillis = currentMillis;  // Actualizamos la marca de tiempo
+    previousMillis = currentMillis;
 
+    // Nota: Se omite digitalWrite(LED_PIN) aquí para no destruir la asignación SPI SCK en GPIO 27
     switch (colorState) {
       case 0:  // Estado 0: Rojo
-        digitalWrite(LED_PIN, HIGH);
         pixels.setPixelColor(pixelIndex, pixels.Color(intensity, 0, 0));
         break;
 
       case 1:  // Estado 1: Verde
-        digitalWrite(LED_PIN, LOW);
         pixels.setPixelColor(pixelIndex, pixels.Color(0, intensity, 0));
         break;
 
       case 2:  // Estado 2: Azul
-        digitalWrite(LED_PIN, HIGH);
         pixels.setPixelColor(pixelIndex, pixels.Color(0, 0, intensity));
         break;
 
       case 3:  // Estado 3: Cian/Custom
-        digitalWrite(LED_PIN, LOW);
         pixels.setPixelColor(pixelIndex, pixels.Color(0, 130, intensity));
         break;
 
       case 4:  // Estado 4: Limpieza y reinicio del ciclo
         pixels.clear();
         pixels.show();
-
-        // Reiniciamos los contadores
         colorState = 0;
         pixelIndex = 0;
-        return;  // Salimos para arrancar el ciclo rojo en la siguiente iteración
+        return;
     }
 
-    // Mostramos el color cargado
     pixels.show();
-
-    // Avanzamos al siguiente pixel
     pixelIndex++;
 
-    // Si ya recorrimos todos los pixeles, pasamos al siguiente color
     if (pixelIndex >= NUMPIXELS) {
       pixelIndex = 0;
       colorState++;
@@ -142,68 +124,28 @@ void demo() {
   }
 }
 
-void messageIntro() {
-  delay(1000);  // Pequeña pausa para que el usuario alcance a leerlo
-  Serial.println("========================================================");
-  Serial.println("*                                                      *");
-  Serial.println("*    🚀 ¡HOLA! BIENVENIDO A TU PULSAR C5 🚀      *");
-  Serial.println("*                                                      *");
-  Serial.println("========================================================");
-  Serial.println("*  Tu nueva placa de desarrollo esta lista para usar.  *");
-  Serial.println("*  Esperamos que la disfrutes al máximo! :D            *");
-  Serial.println("========================================================");
-  delay(500);  // Pequeña pausa para que el usuario alcance a leerlo
-  Serial.print("\n>> Iniciando proceso de hackeo de computadora");
-  for (int i = 0; i < 10; i++) {
-    Serial.print(".");
-    delay(100);
-  }
-  Serial.print("\n>> Computadora hackeada");
-  for (int i = 0; i < 3; i++) {
-    Serial.print(".");
-    delay(300);
-  }
-  Serial.print("\n>> Borrando archivos de sistema");
-  for (int i = 0; i < 10; i++) {
-    Serial.print(".");
-    delay(100);
-  }
-  delay(1000);
-  Serial.println("\n Bromita! XDD");
-  Serial.println("¡Disfruta de tu nueva PULSAR C5 de 🚀 UNIT Electronics 🚀 :D!");
-}
-
-
 void setup() {
-
-  // ==== Inicializaciones ====
   Serial.begin(115200);
+
+  // Inicializamos el Bus 1 por defecto en GPIOs 2 y 3
   Wire.begin(SDA_PIN, SCL_PIN);
-  Wire2.begin(SDA2_PIN, SCL2_PIN);
-  sdSPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
+
+  // Configuramos CS con Pull-Up antes de iniciar SPI para evitar estados flotantes en la SD
+  pinMode(CS_PIN, OUTPUT);
+  digitalWrite(CS_PIN, HIGH);
 
   pixels.clear();
   pixels.setBrightness(150);
-
-  // ==== Inicialización de GPIOs ====
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
-
-  // ==== Mensaje de Bienvenida ====
-  // messageIntro();
 }
 
 void loop() {
-
   if (Serial.available()) {
-
     JSON_entrada = Serial.readStringUntil('\n');
     DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
 
     if (error) {
       Serial.println("Halo murió en Reach...");
     } else {
-
       int opc = 0;
       String Function = receiveJSON["Function"];
 
@@ -215,7 +157,6 @@ void loop() {
       else if (Function == "press") opc = 6;     // {"Function":"press"}
       else if (Function == "prox") opc = 7;      // {"Function":"prox"}
       else if (Function == "sd") opc = 8;        // {"Function":"sd"}
-
       else if (Function == "restart") opc = 15;  // {"Function":"restart"}
 
       switch (opc) {
@@ -238,33 +179,64 @@ void loop() {
             break;
           }
 
-        case 3:  // ==== ESCÁNER I2C DUAL ====
+        case 3:  // ==== ESCÁNER I2C DUAL CON VALIDACIÓN ESTRICTA ====
           {
             sendJSON.clear();
-            JsonArray devices_bus1 = sendJSON.createNestedArray("I2C_Bus1_LP");
+            JsonArray devices_bus1 = sendJSON.createNestedArray("I2C_Devices");
             JsonArray devices_bus2 = sendJSON.createNestedArray("I2C_Bus2");
 
-            // Escaneo Bus 1 (LP en GPIO 2, 3)
+            // Lista obligatoria de sensores en Bus 1: 0x30, 0x36, 0x44, 0x5C, 0x60
+            const uint8_t reqAddrs[] = { 0x30, 0x36, 0x44, 0x5C, 0x60 };
+            const uint8_t totalReq = sizeof(reqAddrs) / sizeof(reqAddrs[0]);
+            uint8_t matchedCount = 0;
+
+            // 1. Escaneo Bus 1 (GPIO 2 y 3)
+            Wire.end();
+            Wire.begin(SDA_PIN, SCL_PIN);
             for (uint8_t addr = 1; addr < 127; addr++) {
               Wire.beginTransmission(addr);
               if (Wire.endTransmission() == 0) {
                 char hexAddr[5];
                 sprintf(hexAddr, "0x%02X", addr);
                 devices_bus1.add(hexAddr);
+
+                // Verificamos si la dirección encontrada está en la lista requerida
+                for (uint8_t k = 0; k < totalReq; k++) {
+                  if (addr == reqAddrs[k]) {
+                    matchedCount++;
+                    break;
+                  }
+                }
               }
             }
 
-            // Escaneo Bus 2 (GPIO 1, 4)
+            // 2. Escaneo Bus 2 (GPIO 1 y 6) usando el controlador HP_I2C0 por matriz GPIO
+            Wire.end();
+            pinMode(SDA2_PIN, INPUT_PULLUP);
+            pinMode(SCL2_PIN, INPUT_PULLUP);
+            Wire.begin(SDA2_PIN, SCL2_PIN);
+
             for (uint8_t addr = 1; addr < 127; addr++) {
-              Wire2.beginTransmission(addr);
-              if (Wire2.endTransmission() == 0) {
+              Wire.beginTransmission(addr);
+              if (Wire.endTransmission() == 0) {
                 char hexAddr[5];
                 sprintf(hexAddr, "0x%02X", addr);
                 devices_bus2.add(hexAddr);
               }
             }
 
-            sendJSON["Result"] = "OK";
+            // Restauramos el Bus 1 por defecto para el resto de los cases
+            Wire.end();
+            Wire.begin(SDA_PIN, SCL_PIN);
+
+            // Solo enviamos "OK" si se encontraron exactamente los 5 sensores del Bus 1
+            if (matchedCount == totalReq) {
+              sendJSON["Result"] = "OK";
+            } else {
+              sendJSON["Result"] = "Error";
+              sendJSON["Missing_Count"] = totalReq - matchedCount;
+            }
+
             serializeJson(sendJSON, Serial);
             Serial.println();
             break;
@@ -274,7 +246,6 @@ void loop() {
           {
             sendJSON.clear();
             if (!mmc.begin(MMC56X3_DEFAULT_ADDRESS, &Wire)) {
-              sendJSON.clear();
               sendJSON["Sensor"] = "MMC5603";
               sendJSON["Result"] = "Error";
               sendJSON["Msg"] = "Not found";
@@ -306,10 +277,8 @@ void loop() {
         case 5:  // ==== MAX17048 ====
           {
             sendJSON.clear();
-            // Candado: Verificamos si hay ACK en la dirección I2C
             Wire.beginTransmission(MAX17048_ADDR);
             if (Wire.endTransmission() != 0) {
-              sendJSON.clear();
               sendJSON["Sensor"] = "MAX17048";
               sendJSON["Result"] = "Error";
               sendJSON["Msg"] = "Not found";
@@ -319,7 +288,7 @@ void loop() {
             }
 
             quickStart();
-            delay(500);  // Esperar estabilización
+            delay(500);
             float voltaje = leerVoltaje();
             float porcentaje = leerSOC();
 
@@ -343,14 +312,12 @@ void loop() {
         case 6:  // ==== LPS22DF ====
           {
             sendJSON.clear();
-            // Candado WHO_AM_I
             Wire.beginTransmission(LPS22DF_ADDR);
             Wire.write(LPS_WHO_AM_I);
             Wire.endTransmission(false);
             Wire.requestFrom((uint16_t)LPS22DF_ADDR, (uint8_t)1);
 
             if (!Wire.available()) {
-              sendJSON.clear();
               sendJSON["Sensor"] = "LPS22DF";
               sendJSON["Result"] = "Error";
               sendJSON["Msg"] = "Not found";
@@ -406,7 +373,6 @@ void loop() {
           {
             sendJSON.clear();
             if (!proximitySensor.begin()) {
-              sendJSON.clear();
               sendJSON["Sensor"] = "VCNL4040";
               sendJSON["Result"] = "Error";
               sendJSON["Msg"] = "Not found";
@@ -434,8 +400,12 @@ void loop() {
             sendJSON.clear();
             sendJSON["Sensor"] = "SD_CARD";
 
-            // ¡NUEVO! Inicializar con la instancia sdSPI
-            if (!SD.begin(CS_PIN, sdSPI)) {
+            // Reiniciamos el bus SPI global justo antes de montar la SD
+            // para asegurar que GPIO 27 (SCK) esté asignado a SPI y usamos 4 MHz para mayor estabilidad
+            SPI.end();
+            SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
+
+            if (!SD.begin(CS_PIN, SPI, 4000000)) {
               sendJSON["Result"] = "Error";
               sendJSON["Msg"] = "Init failed / No SD";
             } else {
@@ -452,10 +422,10 @@ void loop() {
                 else if (cardType == CARD_SDHC) sendJSON["Type"] = "SDHC";
                 else sendJSON["Type"] = "UNKNOWN";
 
-                // ¡CORREGIDO! Multiplicación para tamaño en MB
-                uint64_t cardSizeMB = SD.cardSize() / (1024 * 1024);
+                uint64_t cardSizeMB = SD.cardSize() / (1024ULL * 1024ULL);
                 sendJSON["Size_MB"] = cardSizeMB;
               }
+              SD.end();  // Liberamos el montaje para permitir re-ejecutar el test en caliente
             }
 
             serializeJson(sendJSON, Serial);
@@ -483,23 +453,20 @@ void loop() {
   }
 }
 
-
 // ______________________
 
-// Función para reiniciar el algoritmo del MAX17048
 void quickStart() {
   Wire.beginTransmission(MAX17048_ADDR);
   Wire.write(REG_MODE);
-  Wire.write(0x40);  // MSB del comando 0x4000
-  Wire.write(0x00);  // LSB del comando 0x4000
+  Wire.write(0x40);
+  Wire.write(0x00);
   Wire.endTransmission();
 }
 
-// Función para leer registros de 16 bits
 uint16_t leerRegistro16(uint8_t reg) {
   Wire.beginTransmission(MAX17048_ADDR);
   Wire.write(reg);
-  Wire.endTransmission(false);  // Restart para mantener el bus
+  Wire.endTransmission(false);
 
   Wire.requestFrom((uint8_t)MAX17048_ADDR, (size_t)2);
 
@@ -519,25 +486,4 @@ float leerVoltaje() {
 float leerSOC() {
   uint16_t rawSoc = leerRegistro16(REG_SOC);
   return rawSoc / 256.0;
-}
-
-void initLPS22DF() {
-  // Verificar comunicación
-  Wire.beginTransmission(LPS22DF_ADDR);
-  Wire.write(LPS_WHO_AM_I);
-  Wire.endTransmission(false);
-  Wire.requestFrom((uint16_t)LPS22DF_ADDR, (uint8_t)1);
-
-  if (Wire.available()) {
-    uint8_t id = Wire.read();
-    Serial.printf("LPS22DF Detectado. WHO_AM_I: 0x%02X\n", id);
-  } else {
-    Serial.println("Error: LPS22DF no detectado en 0x5C.");
-  }
-
-  // Encender muestreo continuo (ODR = 25Hz)
-  Wire.beginTransmission(LPS22DF_ADDR);
-  Wire.write(LPS_CTRL_REG1);
-  Wire.write(0x40);
-  Wire.endTransmission();
 }
