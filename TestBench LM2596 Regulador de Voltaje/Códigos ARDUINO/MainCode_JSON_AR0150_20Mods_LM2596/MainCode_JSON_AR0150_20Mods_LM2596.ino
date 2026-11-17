@@ -39,8 +39,8 @@
  * Dirección I2C del dispositivo esclavo.
  * Esta dirección debe coincidir con la configurada en el firmware del esclavo.
  */
-const uint8_t SLAVE_ADDR_0 = 0x41;
-const uint8_t SLAVE_ADDR_1 = 0x42;
+const uint8_t SLAVE_ADDR_0 = 0x42;
+const uint8_t SLAVE_ADDR_1 = 0x43;
 
 
 // ==== CREACIÓN DE OBJETOS ====
@@ -123,8 +123,8 @@ void pagwebDebug(String str) {
  * @brief Envía un comando I2C al dispositivo esclavo.
  * @param command Comando a enviar (byte).
  */
-void sendCommandI2C(uint8_t command) {
-  Wire.beginTransmission(SLAVE_ADDR);
+void sendCommandI2C(uint8_t command, uint8_t addr) {
+  Wire.beginTransmission(addr);
   Wire.write(command);
   uint8_t error = Wire.endTransmission();
 
@@ -141,7 +141,7 @@ void sendCommandI2C(uint8_t command) {
  * @return Respuesta del esclavo (byte) o 0xFF en caso de error
  */
 uint8_t readResponseI2C() {
-  Wire.requestFrom(SLAVE_ADDR, (uint8_t)1);  // Solicitar 1 byte
+  Wire.requestFrom(SLAVE_ADDR_1, (uint8_t)1);  // Solicitar 1 byte
 
   if (Wire.available()) {
     uint8_t response = Wire.read();
@@ -268,33 +268,37 @@ void loop() {
 
       case 3:  // Activación de canal
         {
-          if (channel >= 1 && channel <= 16) {
+          if (channel >= 1 && channel <= 20) {
             serialDebug("Test Channel " + String(channel) + " ON...");
             pagwebDebug("Test Channel " + String(channel) + " ON...");
 
             // Mapear canal a comando I2C (0x00-0x0F para canales 1-16)
             switch (channel) {
-              case 1: sendCommandI2C(0x00); break;
-              case 2: sendCommandI2C(0x01); break;
-              case 3: sendCommandI2C(0x02); break;
-              case 4: sendCommandI2C(0x03); break;
-              case 5: sendCommandI2C(0x04); break;
-              case 6: sendCommandI2C(0x05); break;
-              case 7: sendCommandI2C(0x06); break;
-              case 8: sendCommandI2C(0x07); break;
-              case 9: sendCommandI2C(0x08); break;
-              case 10: sendCommandI2C(0x09); break;
-              case 11: sendCommandI2C(0x0A); break;
-              case 12: sendCommandI2C(0x0B); break;
-              case 13: sendCommandI2C(0x0C); break;
-              case 14: sendCommandI2C(0x0D); break;
-              case 15: sendCommandI2C(0x0E); break;
-              case 16: sendCommandI2C(0x0F); break;
+              case 1: sendCommandI2C(0x00, SLAVE_ADDR_0); break;
+              case 2: sendCommandI2C(0x01, SLAVE_ADDR_0); break;
+              case 3: sendCommandI2C(0x02, SLAVE_ADDR_0); break;
+              case 4: sendCommandI2C(0x03, SLAVE_ADDR_0); break;
+              case 5: sendCommandI2C(0x04, SLAVE_ADDR_0); break;
+              case 6: sendCommandI2C(0x05, SLAVE_ADDR_0); break;
+              case 7: sendCommandI2C(0x06, SLAVE_ADDR_0); break;
+              case 8: sendCommandI2C(0x07, SLAVE_ADDR_0); break;
+              case 9: sendCommandI2C(0x08, SLAVE_ADDR_0); break;
+              case 10: sendCommandI2C(0x09, SLAVE_ADDR_0); break;
+              case 11: sendCommandI2C(0x0A, SLAVE_ADDR_0); break;
+              case 12: sendCommandI2C(0x0B, SLAVE_ADDR_0); break;
+              case 13: sendCommandI2C(0x0C, SLAVE_ADDR_0); break;
+              case 14: sendCommandI2C(0x0D, SLAVE_ADDR_0); break;
+              case 15: sendCommandI2C(0x0E, SLAVE_ADDR_0); break;
+              case 16: sendCommandI2C(0x0F, SLAVE_ADDR_0); break;
+              case 17: sendCommandI2C(0x00, SLAVE_ADDR_1); break;
+              case 18: sendCommandI2C(0x01, SLAVE_ADDR_1); break;
+              case 19: sendCommandI2C(0x02, SLAVE_ADDR_1); break;
+              case 20: sendCommandI2C(0x03, SLAVE_ADDR_1); break;
               default: break;
             }
           } else {
-            serialDebug("Invalid channel... Select [1-16]");
-            pagwebDebug("Invalid channel... Select [1-16]");
+            serialDebug("Invalid channel... Select [1-20]");
+            pagwebDebug("Invalid channel... Select [1-20]");
           }
           delay(100);
           break;
@@ -303,16 +307,21 @@ void loop() {
       case 4:  // Barrido automático
         {
           pagwebDebug("Initiating test sweep...");
-          sendCommandI2C(0xFF);  // Comando de barrido
-          delay(4000);           // Esperar a que termine el barrido
-          sendCommandI2C(0xFE);  // Comando de suspensión
+          sendCommandI2C(0xFF, SLAVE_ADDR_0);  // Comando de barrido
+          delay(4000);                         // Esperar a que termine el barrido
+          sendCommandI2C(0xFE, SLAVE_ADDR_0);  // Comando de suspensión
+          sendCommandI2C(0xFF, SLAVE_ADDR_1);  // Comando de barrido
+          delay(4000);                         // Esperar a que termine el barrido
+          sendCommandI2C(0xFE, SLAVE_ADDR_1);  // Comando de suspensión
           break;
         }
 
       case 5:  // Modo suspensión
         {
           pagwebDebug("Sleep mode...");
-          sendCommandI2C(0xFE);  // Comando de suspensión
+          sendCommandI2C(0xFE, SLAVE_ADDR_0);  // Comando de suspensión
+          delay(100);
+          sendCommandI2C(0xFE, SLAVE_ADDR_1);  // Comando de suspensión
           delay(100);
           break;
         }
