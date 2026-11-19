@@ -268,7 +268,7 @@ void loop() {
 
       case 3:  // Activación de canal
         {
-          if (channel >= 1 && channel <= 20) {
+          if (channel >= 1 && channel <= 32) {
             serialDebug("Test Channel " + String(channel) + " ON...");
             pagwebDebug("Test Channel " + String(channel) + " ON...");
 
@@ -294,11 +294,23 @@ void loop() {
               case 18: sendCommandI2C(0x01, SLAVE_ADDR_1); break;
               case 19: sendCommandI2C(0x02, SLAVE_ADDR_1); break;
               case 20: sendCommandI2C(0x03, SLAVE_ADDR_1); break;
+              case 21: sendCommandI2C(0x04, SLAVE_ADDR_1); break;
+              case 22: sendCommandI2C(0x05, SLAVE_ADDR_1); break;
+              case 23: sendCommandI2C(0x06, SLAVE_ADDR_1); break;
+              case 24: sendCommandI2C(0x07, SLAVE_ADDR_1); break;
+              case 25: sendCommandI2C(0x08, SLAVE_ADDR_1); break;
+              case 26: sendCommandI2C(0x09, SLAVE_ADDR_1); break;
+              case 27: sendCommandI2C(0x0A, SLAVE_ADDR_1); break;
+              case 28: sendCommandI2C(0x0B, SLAVE_ADDR_1); break;
+              case 29: sendCommandI2C(0x0C, SLAVE_ADDR_1); break;
+              case 30: sendCommandI2C(0x0D, SLAVE_ADDR_1); break;
+              case 31: sendCommandI2C(0x0E, SLAVE_ADDR_1); break;
+              case 32: sendCommandI2C(0x0F, SLAVE_ADDR_1); break;
               default: break;
             }
           } else {
-            serialDebug("Invalid channel... Select [1-20]");
-            pagwebDebug("Invalid channel... Select [1-20]");
+            serialDebug("Invalid channel... Select [1-32]");
+            pagwebDebug("Invalid channel... Select [1-32]");
           }
           delay(100);
           break;

@@ -39,7 +39,7 @@
  * Dirección I2C del dispositivo esclavo.
  * Esta dirección debe coincidir con la configurada en el firmware del esclavo.
  */
-const uint8_t SLAVE_ADDR = 0x40;
+const uint8_t SLAVE_ADDR = 0x42;
 
 // ==== CREACIÓN DE OBJETOS ====
 /**
