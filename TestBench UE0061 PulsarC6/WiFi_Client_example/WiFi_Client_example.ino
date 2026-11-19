@@ -3,7 +3,7 @@
 #include <ArduinoJson.h>
 
 const char *ssid = "IngPruebas-Master";
-const char *password = "cachirula&lojansito";
+const char *password = "cachirula";
 
 // La IP por defecto del SoftAP del Master es 192.168.4.1
 const char *serverUrl = "http://192.168.4.1/ping";
@@ -15,10 +15,13 @@ void setup() {
   WiFi.begin(ssid, password);
   Serial.print("Conectando al Master");
 
-  while (WiFi.status() != WL_CONNECTED) {
+  for (int i = 0; i < 50; i++) {
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.print(".");
+    } else break;
     delay(500);
-    Serial.print(".");
   }
+
   Serial.println("\n¡Conectado a la red de Pruebas!");
 }
 
@@ -51,7 +54,7 @@ void loop() {
       DeserializationError error = deserializeJson(docRes, payload);
 
       if (!error) {
-        String respuestaMaster = docRes["respuesta"];
+        String respuestaMaster = docRes["message"];
         long uptimeMaster = docRes["master_uptime_ms"];
 
         Serial.printf("Master respondió (HTTP %d):\n", httpResponseCode);

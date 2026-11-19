@@ -22,7 +22,6 @@ Funcionalidades:
       {"Function":"prox"}
       {"Function":"sd"}
       {"Function":"restart"}
-
 -
 */
 // ==== BIBLIOTECAS ====
@@ -52,7 +51,7 @@ Funcionalidades:
 // ==== MACROS Y VARIABLES GLOBALES ====
 #define NUMPIXELS 10  // Número de Neopixeles
 int intensity = 20;   // Intensidad de brillo en Neopixel
-int delay_neop = 50;  // Tiempo de actualización en Neopixel
+int delay_neop = 20;  // Tiempo de actualización en Neopixel
 
 String JSON_entrada;  // Variable que recibe JSON del frontend
 String JSON_salida;   // Variable que envía el JSON de datos
@@ -71,8 +70,8 @@ float temperature, pressure;
 
 // ==== CREACIÓN DE OBJETOS ====
 // Aumentado a 512 bytes para evitar truncamiento en los arreglos JSON de escaneo
-StaticJsonDocument<512> receiveJSON;
-StaticJsonDocument<512> sendJSON;
+StaticJsonDocument<128> receiveJSON;
+StaticJsonDocument<128> sendJSON;
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOP_PIN, NEO_GRB + NEO_KHZ800);
 Adafruit_MMC5603 mmc = Adafruit_MMC5603(12345);
 VCNL4040 proximitySensor;
