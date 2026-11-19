@@ -465,6 +465,26 @@ void loop() {
             break;
           }
 
+        case 9:  // ==== WiFi Connection ====
+          {
+            sendJSON.clear();
+            const char *ssid = "IngPruebas-Master";
+            const char *password = "cachirula";
+            const char *serverUrl = "http://192.168.4.1/ping";
+
+
+            break;
+          }
+
+        case 10:  // ==== GPIOs Status ====
+          {
+            sendJSON.clear();
+
+
+            
+            break;
+          }
+
         case 15:  // ==== RESTART ====
           {
             ESP.restart();
