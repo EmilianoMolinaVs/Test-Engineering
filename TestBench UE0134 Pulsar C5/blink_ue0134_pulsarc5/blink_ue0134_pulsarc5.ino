@@ -47,6 +47,12 @@ Funcionalidades:
 #define MOSI_PIN 7   // >> PIN MOSI en SPI bus para SD CARD
 #define SCK_PIN 27   // >> PIN SCK en SPI bus para SD CARD
 #define CS_PIN 23    // >> PIN CS en SPI bus para SD CARD
+#define PIN_9 9      // >> PIN 9 GPIO Digital | Pareja [9 - 24]
+#define PIN_24 24    // >> PIN 24 GPIO Digital
+#define PIN_4 4      // >> PIN 4 GPIO Digital | Pareja [4 - 5]
+#define PIN_5 5      // >> PIN 5 GPIO Digital
+
+
 
 // ==== MACROS Y VARIABLES GLOBALES ====
 #define NUMPIXELS 10  // Número de Neopixeles
@@ -189,6 +195,8 @@ void loop() {
       else if (Function == "press") opc = 6;     // {"Function":"press"}
       else if (Function == "prox") opc = 7;      // {"Function":"prox"}
       else if (Function == "sd") opc = 8;        // {"Function":"sd"}
+      else if (Function == "wifi") opc = 9;      // {"Function":"wifi"}
+      else if (Function == "gpios") opc = 10;    // {"Function":"gpios"}
       else if (Function == "restart") opc = 15;  // {"Function":"restart"}
 
       switch (opc) {
@@ -479,9 +487,21 @@ void loop() {
         case 10:  // ==== GPIOs Status ====
           {
             sendJSON.clear();
+            sendJSON["Test"] = "GPIOs";
 
+            bool stateA = testGpios(PIN_24, PIN_9);
+            bool stateB = testGpios(PIN_4, PIN_5);
 
-            
+            if (stateA && stateB) {
+              sendJSON["Result"] = "OK";
+            } else {
+              sendJSON["gpios"] = false;
+              sendJSON["D4_D6"] = stateA;
+              sendJSON["D16_D17"] = stateB;
+            }
+
+            serializeJson(sendJSON, Serial);
+            Serial.println();
             break;
           }
 
@@ -538,4 +558,34 @@ float leerVoltaje() {
 float leerSOC() {
   uint16_t rawSoc = leerRegistro16(REG_SOC);
   return rawSoc / 256.0;
+}
+
+
+bool testGpios(uint8_t gpioA, uint8_t gpioB) {
+  bool resultAB = testSequence(gpioA, gpioB);
+  if (!resultAB)
+    return false;
+  delay(10);  // Pausa entre pruebas
+  bool resultBA = testSequence(gpioB, gpioA);
+  if (!resultBA)
+    return false;
+  return true;  // Ambas pruebas correctas
+}
+
+bool testSequence(uint8_t gpioOut, uint8_t gpioIn) {
+
+  pinMode(gpioOut, OUTPUT);
+  pinMode(gpioIn, INPUT);  // Configuración con resistencia
+  uint8_t testPattern[] = { 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1 };
+
+  for (int i = 0; i < sizeof(testPattern); i++) {
+    digitalWrite(gpioOut, testPattern[i]);  // Envía bit
+    delay(10);                              // Espera de estabilización
+    int readValue = digitalRead(gpioIn);    // Lee bit
+    if (readValue != testPattern[i]) {
+      return false;
+    }
+  }
+
+  return true;  // Todos los bits coincidieron correctamente
 }
