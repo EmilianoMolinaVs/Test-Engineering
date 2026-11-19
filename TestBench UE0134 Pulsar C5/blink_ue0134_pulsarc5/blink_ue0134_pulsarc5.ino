@@ -50,7 +50,7 @@ Funcionalidades:
 
 // ==== MACROS Y VARIABLES GLOBALES ====
 #define NUMPIXELS 10  // Número de Neopixeles
-int intensity = 20;   // Intensidad de brillo en Neopixel
+int intensity = 10;   // Intensidad de brillo en Neopixel
 int delay_neop = 20;  // Tiempo de actualización en Neopixel
 
 String JSON_entrada;  // Variable que recibe JSON del frontend
@@ -102,7 +102,7 @@ void demo() {
         break;
 
       case 3:  // Estado 3: Cian/Custom
-        pixels.setPixelColor(pixelIndex, pixels.Color(0, 130, intensity));
+        pixels.setPixelColor(pixelIndex, pixels.Color(0, intensity, intensity));
         break;
 
       case 4:  // Estado 4: Limpieza y reinicio del ciclo
@@ -123,6 +123,37 @@ void demo() {
   }
 }
 
+void mensajeBienvenida() {
+  delay(1000);  // Pequeña pausa para que el usuario alcance a leerlo
+  Serial.println("========================================================");
+  Serial.println("*                                                      *");
+  Serial.println("*    🚀 ¡HOLA! BIENVENIDO A TU PULSAR C5 🚀      *");
+  Serial.println("*                                                      *");
+  Serial.println("========================================================");
+  Serial.println("*  Tu nueva placa de desarrollo esta lista para usar.  *");
+  Serial.println("*  Esperamos que la disfrutes al máximo! :D            *");
+  Serial.println("========================================================");
+  delay(500);  // Pequeña pausa para que el usuario alcance a leerlo
+  Serial.print("\n>> Iniciando proceso de hackeo de computadora");
+  for (int i = 0; i < 10; i++) {
+    Serial.print(".");
+    delay(100);
+  }
+  Serial.print("\n>> Computadora hackeada");
+  for (int i = 0; i < 3; i++) {
+    Serial.print(".");
+    delay(300);
+  }
+  Serial.print("\n>> Borrando archivos de sistema");
+  for (int i = 0; i < 10; i++) {
+    Serial.print(".");
+    delay(100);
+  }
+  delay(1000);
+  Serial.println("\n Bromita! XDD");
+  Serial.println("¡Disfruta de tu nueva PULSAR C5 de 🚀 UNIT Electronics 🚀 :D!");
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -135,6 +166,8 @@ void setup() {
 
   pixels.clear();
   pixels.setBrightness(150);
+
+  mensajeBienvenida();
 }
 
 void loop() {
