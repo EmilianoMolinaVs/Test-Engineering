@@ -484,16 +484,20 @@ void loop() {
             WiFi.mode(WIFI_STA);
             WiFi.setSleep(false);  // Evita microcortes que provocan el error -11
             WiFi.begin(ssid, password);
-            Serial.print("Conectando al Master");
 
             for (int i = 0; i < 50; i++) {
-              if (WiFi.status() != WL_CONNECTED) {
-                Serial.print(".");
-              } else break;
+              if (WiFi.status() == WL_CONNECTED) break;
               delay(500);
             }
 
-            if (WiFi.status() == WL_CONNECTED) {
+            if (WiFi.status() != WL_CONNECTED) {
+              sendJSON["Result"] = "FAIL";
+              sendJSON["error"] = "WiFi connection timeout";
+              sendJSON["wifi_status"] = WiFi.status();
+            } else {
+              sendJSON["ip"] = WiFi.localIP().toString();
+              sendJSON["rssi"] = WiFi.RSSI();
+
               HTTPClient http;
               http.setReuse(false);   // Fuerza conexión limpia en cada ciclo
               http.setTimeout(5000);  // Tiempo de espera explícito (5 segundos)
@@ -506,11 +510,11 @@ void loop() {
 
               String jsonRequest;
               serializeJson(docReq, jsonRequest);
-              Serial.println("\nEnviando: " + jsonRequest);
 
               int httpResponseCode = http.POST(jsonRequest);
+              sendJSON["http_code"] = httpResponseCode;
 
-              if (httpResponseCode > 0) {
+              if (httpResponseCode == 200) {
                 String payload = http.getString();
 
                 JsonDocument docRes;
@@ -520,21 +524,28 @@ void loop() {
                   String respuestaMaster = docRes["respuesta"] | "sin respuesta";
                   unsigned long uptimeMaster = docRes["master_uptime_ms"] | 0;
 
-                  Serial.printf("Master respondió (HTTP %d):\n", httpResponseCode);
-                  Serial.printf(" - Mensaje: %s\n", respuestaMaster.c_str());
-                  Serial.printf(" - Uptime Master: %lu ms\n", uptimeMaster);
-                  Serial.println("{\"Result\":\"OK\"}");
+                  sendJSON["Result"] = "OK";
+                  sendJSON["response"] = respuestaMaster;
+                  // sendJSON["uptime"] = uptimeMaster;
                 } else {
-                  Serial.println("Error al parsear el JSON recibido del Master.");
+                  sendJSON["Result"] = "FAIL";
+                  sendJSON["error"] = "Error al parsear JSON del accessPoint";
+                  sendJSON["parse_error"] = error.c_str();
                 }
               } else {
-                Serial.printf("Error en la petición HTTP. Código: %d\n", httpResponseCode);
+                sendJSON["Result"] = "FAIL";
+                sendJSON["error"] = (httpResponseCode > 0)
+                                      ? "HTTP status inesperado"
+                                      : "Error en peticion HTTP";
               }
+
               http.end();
             }
+
+            serializeJson(sendJSON, Serial);
+            Serial.println();
             break;
           }
-
         case 10:  // ==== GPIOs Status ====
           {
             sendJSON.clear();
