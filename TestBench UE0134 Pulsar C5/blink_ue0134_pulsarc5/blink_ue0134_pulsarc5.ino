@@ -21,9 +21,12 @@ Funcionalidades:
       {"Function":"press"}
       {"Function":"prox"}
       {"Function":"sd"}
+      {"Function":"wifi"}
+      {"Function":"gpios"}
       {"Function":"restart"}
 -
 */
+
 // ==== BIBLIOTECAS ====
 #include <Wire.h>
 #include <WiFi.h>
@@ -180,8 +183,19 @@ void setup() {
 }
 
 void loop() {
-  if (Serial0.available()) {
-    JSON_entrada = Serial0.readStringUntil('\n');
+
+  Stream *activePort = nullptr;
+
+
+  if (Serial.available() || Serial0.available()) {
+
+    if (Serial.available()) {
+      activePort = &Serial;
+    } else if (Serial0.available()) {
+      activePort = &Serial0;
+    }
+
+    JSON_entrada = activePort->readStringUntil('\n');
     DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
 
     if (error) {
@@ -207,10 +221,8 @@ void loop() {
           {
             sendJSON.clear();
             sendJSON["ping"] = "pong";
-            serializeJson(sendJSON, Serial);
-            Serial.println();
-            serializeJson(sendJSON, Serial0);
-            Serial0.println();
+            serializeJson(sendJSON, *activePort);
+            activePort->println();
             break;
           }
 
@@ -219,10 +231,8 @@ void loop() {
             sendJSON.clear();
             WiFi.mode(WIFI_MODE_STA);
             sendJSON["mac"] = WiFi.macAddress();
-            serializeJson(sendJSON, Serial);
-            Serial.println();
-            serializeJson(sendJSON, Serial0);
-            Serial0.println();
+            serializeJson(sendJSON, *activePort);
+            activePort->println();
             break;
           }
 
@@ -284,10 +294,8 @@ void loop() {
               sendJSON["Missing_Count"] = totalReq - matchedCount;
             }
 
-            serializeJson(sendJSON, Serial);
-            Serial.println();
-            serializeJson(sendJSON, Serial0);
-            Serial0.println();
+            serializeJson(sendJSON, *activePort);
+            activePort->println();
             break;
           }
 
@@ -298,10 +306,8 @@ void loop() {
               sendJSON["Sensor"] = "MMC5603";
               sendJSON["Result"] = "Error";
               sendJSON["Msg"] = "Not found";
-              serializeJson(sendJSON, Serial);
-              Serial.println();
-              serializeJson(sendJSON, Serial0);
-              Serial0.println();
+              serializeJson(sendJSON, *activePort);
+              activePort->println();
               break;
             }
 
@@ -318,8 +324,8 @@ void loop() {
               sendJSON["X_uT"] = event.magnetic.x;
               sendJSON["Y_uT"] = event.magnetic.y;
               sendJSON["Z_uT"] = event.magnetic.z;
-              serializeJson(sendJSON, Serial);
-              Serial.println();
+              serializeJson(sendJSON, *activePort);
+              activePort->println();
               delay(200);
             }
             break;
@@ -333,8 +339,8 @@ void loop() {
               sendJSON["Sensor"] = "MAX17048";
               sendJSON["Result"] = "Error";
               sendJSON["Msg"] = "Not found";
-              serializeJson(sendJSON, Serial);
-              Serial.println();
+              serializeJson(sendJSON, *activePort);
+              activePort->println();
               break;
             }
 
@@ -355,8 +361,8 @@ void loop() {
             sendJSON["Result"] = "OK";
             sendJSON["V"] = voltaje;
             sendJSON["SOC"] = porcentaje;
-            serializeJson(sendJSON, Serial);
-            Serial.println();
+            serializeJson(sendJSON, *activePort);
+            activePort->println();
             break;
           }
 
@@ -372,8 +378,8 @@ void loop() {
               sendJSON["Sensor"] = "LPS22DF";
               sendJSON["Result"] = "Error";
               sendJSON["Msg"] = "Not found";
-              serializeJson(sendJSON, Serial);
-              Serial.println();
+              serializeJson(sendJSON, *activePort);
+              activePort->println();
               break;
             }
 
@@ -413,8 +419,8 @@ void loop() {
                 sendJSON["Msg"] = "Read error";
               }
 
-              serializeJson(sendJSON, Serial);
-              Serial.println();
+              serializeJson(sendJSON, *activePort);
+              activePort->println();
               delay(200);
             }
             break;
@@ -439,8 +445,8 @@ void loop() {
               sendJSON["Sensor"] = "VCNL4040";
               sendJSON["Result"] = "OK";
               sendJSON["Prox"] = proxValue;
-              serializeJson(sendJSON, Serial);
-              Serial.println();
+              serializeJson(sendJSON, *activePort);
+              activePort->println();
               delay(200);
             }
             break;
@@ -479,10 +485,8 @@ void loop() {
               SD.end();  // Liberamos el montaje para permitir re-ejecutar el test en caliente
             }
 
-            serializeJson(sendJSON, Serial);
-            Serial.println();
-            serializeJson(sendJSON, Serial0);
-            Serial0.println();
+            serializeJson(sendJSON, *activePort);
+            activePort->println();
             break;
           }
 
@@ -554,10 +558,8 @@ void loop() {
               http.end();
             }
 
-            serializeJson(sendJSON, Serial);
-            Serial.println();
-            serializeJson(sendJSON, Serial0);
-            Serial0.println();
+            serializeJson(sendJSON, *activePort);
+            activePort->println();
             break;
           }
         case 10:  // ==== GPIOs Status ====
@@ -576,10 +578,8 @@ void loop() {
               sendJSON["D16_D17"] = stateB;
             }
 
-            serializeJson(sendJSON, Serial);
-            Serial.println();
-            serializeJson(sendJSON, Serial0);
-            Serial0.println();
+            serializeJson(sendJSON, *activePort);
+            activePort->println();
             break;
           }
 
@@ -593,10 +593,8 @@ void loop() {
           sendJSON.clear();
           sendJSON["error"] = "InvalidInput";
           sendJSON["msg"] = "invalid option";
-          serializeJson(sendJSON, Serial);
-          Serial.println();
-          serializeJson(sendJSON, Serial0);
-          Serial0.println();
+          serializeJson(sendJSON, *activePort);
+          activePort->println();
           break;
       }
     }
