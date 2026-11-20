@@ -1,5 +1,5 @@
 /*
-Firmware test base v1.0 Pulsar C5 
+Firmware test v1.0 Pulsar C5 
 
 Funcionalidades: 
 
@@ -28,7 +28,6 @@ Funcionalidades:
 #include <Wire.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <HardwareSerial.h>
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_MMC56x3.h>
@@ -38,6 +37,8 @@ Funcionalidades:
 #include "SPI.h"
 
 // ==== DECLARACIÓN DE GPIOS ====
+#define RX2_PIN 12   // >> GPIO RX de Serial 0
+#define TX2_PIN 11   // >> GPIO TX de Serial 0
 #define NEOP_PIN 0   // >> GPIO Entrada de Neopixel
 #define LED_PIN 27   // >> GPIO LED BUILT IN (¡Comparte pin con SCK_PIN!)
 #define SDA_PIN 2    // >> PIN SDA Bus I2C 1 (LP)
@@ -76,7 +77,6 @@ String JSON_salida;   // Variable que envía el JSON de datos
 float temperature, pressure;
 
 // ==== CREACIÓN DE OBJETOS ====
-// Aumentado a 512 bytes para evitar truncamiento en los arreglos JSON de escaneo
 StaticJsonDocument<128> receiveJSON;
 StaticJsonDocument<128> sendJSON;
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOP_PIN, NEO_GRB + NEO_KHZ800);
@@ -163,6 +163,8 @@ void mensajeBienvenida() {
 
 void setup() {
   Serial.begin(115200);
+  delay(100);
+  Serial0.begin(115200, SERIAL_8N1, RX2_PIN, TX2_PIN);
 
   // Inicializamos el Bus 1 por defecto en GPIOs 2 y 3
   Wire.begin(SDA_PIN, SCL_PIN);
@@ -178,8 +180,8 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available()) {
-    JSON_entrada = Serial.readStringUntil('\n');
+  if (Serial0.available()) {
+    JSON_entrada = Serial0.readStringUntil('\n');
     DeserializationError error = deserializeJson(receiveJSON, JSON_entrada);
 
     if (error) {
@@ -207,6 +209,8 @@ void loop() {
             sendJSON["ping"] = "pong";
             serializeJson(sendJSON, Serial);
             Serial.println();
+            serializeJson(sendJSON, Serial0);
+            Serial0.println();
             break;
           }
 
@@ -217,6 +221,8 @@ void loop() {
             sendJSON["mac"] = WiFi.macAddress();
             serializeJson(sendJSON, Serial);
             Serial.println();
+            serializeJson(sendJSON, Serial0);
+            Serial0.println();
             break;
           }
 
@@ -280,6 +286,8 @@ void loop() {
 
             serializeJson(sendJSON, Serial);
             Serial.println();
+            serializeJson(sendJSON, Serial0);
+            Serial0.println();
             break;
           }
 
@@ -292,6 +300,8 @@ void loop() {
               sendJSON["Msg"] = "Not found";
               serializeJson(sendJSON, Serial);
               Serial.println();
+              serializeJson(sendJSON, Serial0);
+              Serial0.println();
               break;
             }
 
@@ -471,6 +481,8 @@ void loop() {
 
             serializeJson(sendJSON, Serial);
             Serial.println();
+            serializeJson(sendJSON, Serial0);
+            Serial0.println();
             break;
           }
 
@@ -485,7 +497,7 @@ void loop() {
             WiFi.setSleep(false);  // Evita microcortes que provocan el error -11
             WiFi.begin(ssid, password);
 
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 30; i++) {
               if (WiFi.status() == WL_CONNECTED) break;
               delay(500);
             }
@@ -544,6 +556,8 @@ void loop() {
 
             serializeJson(sendJSON, Serial);
             Serial.println();
+            serializeJson(sendJSON, Serial0);
+            Serial0.println();
             break;
           }
         case 10:  // ==== GPIOs Status ====
@@ -564,6 +578,8 @@ void loop() {
 
             serializeJson(sendJSON, Serial);
             Serial.println();
+            serializeJson(sendJSON, Serial0);
+            Serial0.println();
             break;
           }
 
@@ -579,6 +595,8 @@ void loop() {
           sendJSON["msg"] = "invalid option";
           serializeJson(sendJSON, Serial);
           Serial.println();
+          serializeJson(sendJSON, Serial0);
+          Serial0.println();
           break;
       }
     }
