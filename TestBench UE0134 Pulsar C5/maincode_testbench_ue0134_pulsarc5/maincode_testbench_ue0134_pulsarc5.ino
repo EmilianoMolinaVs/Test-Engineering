@@ -55,8 +55,8 @@ StaticJsonDocument<512> filterJSON;
 
 bool waitingResponse = false;
 unsigned long sendTime = 0;
-unsigned long activeTimeout = 5000;
-const unsigned long TIMEOUT_DEFAULT = 5000;
+unsigned long activeTimeout = 10000;
+const unsigned long TIMEOUT_DEFAULT = 7000;
 const unsigned long TIMEOUT_WIFI = 30000;
 
 const float shuntOffset_mV = 0.0f;
@@ -106,7 +106,6 @@ void setup() {
   delay(100);
 
   UART.begin(115200, SERIAL_8N1, RX2, TX2);
-  UART.setTimeout(100);
 
   Wire.begin(SDA_PIN, SCL_PIN);
 
@@ -218,8 +217,10 @@ void loop() {
 
             default:
               sendJSON.clear();
+              sendJSON["source"] = "testbench";
               sendJSON["status"] = "FAIL";
               sendJSON["error"] = "Invalid function requested";
+              sendJSON["received"] = Function;
               serializeJson(sendJSON, Serial);
               Serial.println();
               break;
