@@ -103,7 +103,6 @@ float current_in() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.setTimeout(100);
   delay(100);
 
   UART.begin(115200, SERIAL_8N1, RX2, TX2);
@@ -121,11 +120,11 @@ void setup() {
 
   // ---- Definición de entradas y salidas ----
   pinMode(RUN_BUTTON, INPUT_PULLDOWN);
-  pinMode(RELAYA, OUTPUT);  // Cambiar a INPUT si hay puente físico con RELAYB
+  // pinMode(RELAYA, OUTPUT);
   pinMode(RELAYB, OUTPUT);
   pinMode(RELAY_PIN, OUTPUT);
 
-  digitalWrite(RELAYA, LOW);
+  // digitalWrite(RELAYA, LOW);
   digitalWrite(RELAYB, LOW);
   digitalWrite(RELAY_PIN, HIGH);
 }
@@ -177,10 +176,12 @@ void loop() {
 
           switch (opc) {
             case 10:
+              serialDebug("Relay 5V ON");
               digitalWrite(RELAY_PIN, HIGH);
               break;
 
             case 11:
+              serialDebug("Relay 5V OFF");
               digitalWrite(RELAY_PIN, LOW);
               break;
 
@@ -200,12 +201,12 @@ void loop() {
 
             case 13:
               digitalWrite(RELAYB, LOW);
-              digitalWrite(RELAYA, LOW);
+              // digitalWrite(RELAYA, LOW);
               break;
 
             case 14:
               digitalWrite(RELAYB, HIGH);
-              digitalWrite(RELAYA, HIGH);
+              // digitalWrite(RELAYA, HIGH);
               break;
 
             case 15:

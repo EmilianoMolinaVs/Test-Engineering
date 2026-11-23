@@ -25,9 +25,6 @@ se conecta al bus de pines GPIO01 y GPIO02 UARTL
 #define RELAYB 9      // Relevadores de Accionamiento de Fuente
 #define RELAY_PIN 20  // >> GPIO de Accionamiento de Rele de Alimentación
 
-#define RELAYA 8  // Relevadores de Accionamiento de Fuente
-#define RELAYB 9
-
 // ==== Inicialización de objetos
 HardwareSerial UART(1);            // Objeto para UART2 en PULSAR como PagWeb
 Adafruit_INA219 ina219_in(0x40);   // Sensor de corriente INA219 en entrada del testbench
@@ -86,7 +83,7 @@ float current_in() {
 void setup() {
 
   Serial.begin(115200);  // Serial enlaza la PagWeb DIS 4800 || VSV 115200
-  Serial.setTimeout(200);
+  // Serial.setTimeout(200);
   delay(100);
   UART.begin(115200, SERIAL_8N1, RX2, TX2);  // Bus de comunicación con el CH552
   //serialDebug("Test Pulsar C6 Initialized...");
@@ -106,11 +103,11 @@ void setup() {
 
   // ---- Definición de entradas y salidas ----
   pinMode(RUN_BUTTON, INPUT_PULLDOWN);
-  pinMode(RELAYA, OUTPUT);
+  //pinMode(RELAYA, OUTPUT);
   pinMode(RELAYB, OUTPUT);
   pinMode(RELAY_PIN, OUTPUT);
 
-  digitalWrite(RELAYA, LOW);
+  //digitalWrite(RELAYA, LOW);
   digitalWrite(RELAYB, LOW);
   digitalWrite(RELAY_PIN, HIGH);
 }
