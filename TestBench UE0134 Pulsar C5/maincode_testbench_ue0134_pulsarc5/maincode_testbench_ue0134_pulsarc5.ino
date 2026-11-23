@@ -20,7 +20,8 @@ JSON passthrough por UART y ejecutando el control interno de relevadores e INA21
       {"Function":"relayOFF"}
       {"Function":"currentSensor"}
       {"Function":"powerON"}
-      {"Function":"powerOFF"}
+     {"Function":"powerOFF"}
+     
       {"Function":"hi"}
 
 */
@@ -175,19 +176,19 @@ void loop() {
 
           switch (opc) {
             case 10:
-              serialDebug("Relay 5V ON");
+              // serialDebug("Relay 5V ON");
               digitalWrite(RELAY_PIN, HIGH);
               break;
 
             case 11:
-              serialDebug("Relay 5V OFF");
+              // serialDebug("Relay 5V OFF");
               digitalWrite(RELAY_PIN, LOW);
               break;
 
             case 12:
               {
                 sendJSON.clear();
-                const float minCurrent = 0.150f;
+                const float minCurrent = 0.130f;
                 const float maxCurrent = 0.280f;
                 delay(50);
                 float corriente = fabsf(current_in());
