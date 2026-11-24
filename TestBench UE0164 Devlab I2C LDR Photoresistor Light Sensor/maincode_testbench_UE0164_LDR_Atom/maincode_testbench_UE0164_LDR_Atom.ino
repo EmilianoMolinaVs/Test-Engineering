@@ -6,6 +6,7 @@ Desarrollado para Esp32c6
 #include <Wire.h>
 #include <ArduinoJson.h>
 #include <HardwareSerial.h>
+#include <DevLab_GT365xx.h>
 
 // ==== DECLARACIÓN DE GPIOS ====
 #define RX2_PIN 15     // >> GPIO como RXD
@@ -19,10 +20,11 @@ Desarrollado para Esp32c6
 #define CMD_RELAY_ON 0xA1
 #define CMD_ADC_PA0_12BIT 0x59
 #define CMD_ADC_PA1_12BIT 0xDB
+#define ADDR_LDR 0x26
 
 // ==== DECLARACIÓN DE VARIABLES GLOBALES ====
 #define WIRE Wire
-#define I2C_FREQ 100000  // 100 kHz BUS I2C
+#define I2C_FREQ 400000  // 100 kHz BUS I2C
 uint8_t found_devices[128];
 uint8_t device_count = 0;
 #define DEVICE_DELAY 30
@@ -130,7 +132,7 @@ void setup() {
 
   sendJSON.clear();
   sendJSON["System"] = "Ready";
-  sendJSON["Module"] = "TEMT6000 + PY32F003 DevLab";
+  sendJSON["Module"] = " + PY32F003 DevLab";
   serializeJson(sendJSON, PagWeb);
   PagWeb.println();
 
@@ -177,7 +179,7 @@ void loop() {
     } else {
 
       String Function = receiveJSON["Function"];
-      String targetAddr = receiveJSON["Address"] | "0x20";  // 0x20 por defecto si no viene
+      String targetAddr = receiveJSON["Address"] | "0x26";  // 0x20 por defecto si no viene
 
       int opc = 0;
 
@@ -298,8 +300,8 @@ void scanDevices() {
     if (WIRE.endTransmission() == 0) {
       found_devices[device_count++] = addr;
 
-      // Si la dirección es 0x20, activamos la bandera
-      if (addr == 0x20) {
+      // Si la dirección es 0x26, activamos la bandera
+      if (addr == ADDR_LDR) {
         target_found = true;
       }
 
@@ -317,7 +319,7 @@ void scanDevices() {
     sendJSON["Result"] = "OK";
   } else {
     sendJSON["scan"] = "FAIL";
-    sendJSON["error"] = "0x20_NOT_FOUND";  // Contexto adicional útil para tu script de Python
+    sendJSON["error"] = "0x26_NOT_FOUND";
   }
 
   sendJSON["count"] = device_count;
@@ -337,9 +339,9 @@ void relayOn(String cmd) {
   sendJSON["addr"] = hexStr;
 
   if (sendCommand(address, CMD_RELAY_ON)) {
-    sendJSON["relay"] = "OK";
+    sendJSON["blink"] = "OK";
   } else {
-    sendJSON["relay"] = "FAIL";
+    sendJSON["blink"] = "FAIL";
   }
   serializeJson(sendJSON, *activePort);
   activePort->println();
@@ -357,9 +359,9 @@ void relayOff(String cmd) {
   sendJSON["addr"] = hexStr;
 
   if (sendCommand(address, CMD_RELAY_OFF)) {
-    sendJSON["relay"] = "OK";
+    sendJSON["blink"] = "OK";
   } else {
-    sendJSON["relay"] = "FAIL";
+    sendJSON["blink"] = "FAIL";
   }
   serializeJson(sendJSON, *activePort);
   activePort->println();
@@ -398,7 +400,7 @@ void readADCCommand(String cmd, bool adc1) {
       sendJSON["adc"] = "OK";
       sendJSON["value"] = adc_value;
 
-      // Puedes agregar lógica para determinar el estado según tu sensor (TEMT6000)
+      // Puedes agregar lógica para determinar el estado según tu sensor
       if (adc_value > 500) {
         sendJSON["state"] = "light";
       } else {
