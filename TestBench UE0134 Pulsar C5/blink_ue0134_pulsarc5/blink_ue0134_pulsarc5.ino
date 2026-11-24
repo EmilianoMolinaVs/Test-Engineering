@@ -58,7 +58,6 @@ Funcionalidades:
 #define PIN_5 5      // >> PIN 5 GPIO Digital
 
 
-
 // ==== MACROS Y VARIABLES GLOBALES ====
 #define NUMPIXELS 10  // Número de Neopixeles
 int intensity = 10;   // Intensidad de brillo en Neopixel

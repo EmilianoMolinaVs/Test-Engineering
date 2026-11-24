@@ -8,8 +8,8 @@ Desarrollado por Esp32c6
 #include <HardwareSerial.h>
 
 // ==== DECLARACIÓN DE GPIOS ====
-#define RX2_PIN 15      // >> GPIO como RXD
-#define TX2_PIN 19      // >> GPIO como TXD
+#define RX2_PIN 15     // >> GPIO como RXD
+#define TX2_PIN 19     // >> GPIO como TXD
 #define I2C_SDA 6      // >> PIN SDA de I2C
 #define I2C_SCL 7      // >> PIN SCL de I2C
 #define POWER_USBC 20  // >> GPIO de Accionamiento de Rele de Alimentación
@@ -41,7 +41,7 @@ uint8_t parseHex(String hex_str);
 HardwareSerial PagWeb(1);  // Objeto para UART2 en PULSAR como PagWeb
 StaticJsonDocument<1024> receiveJSON;
 StaticJsonDocument<1024> sendJSON;
-
+Stream* activePort = nullptr;
 
 
 // ==== FUNCIONES DE UTILIDAD EN MANIPULACIÓN DE BUS I2C ====
@@ -157,17 +157,23 @@ void setup() {
 
 void loop() {
 
-  if (PagWeb.available()) {
+  if (Serial.available() || PagWeb.available()) {
 
-    String JSONin = PagWeb.readStringUntil('\n');
+    if (Serial.available()) {
+      activePort = &Serial;
+    } else if (PagWeb.available()) {
+      activePort = &PagWeb;
+    }
+
+    String JSONin = activePort->readStringUntil('\n');
     DeserializationError error = deserializeJson(receiveJSON, JSONin);
 
     if (error) {
       sendJSON.clear();
       sendJSON["status"] = "FAIL";
       sendJSON["error"] = String("Invalid JSON: ") + error.c_str();
-      serializeJson(sendJSON, PagWeb);
-      PagWeb.println();
+      serializeJson(sendJSON, *activePort);
+      activePort->println();
     } else {
 
       String Function = receiveJSON["Function"];
@@ -189,8 +195,8 @@ void loop() {
           {
             sendJSON.clear();
             sendJSON["ping"] = "pong";
-            serializeJson(sendJSON, PagWeb);
-            PagWeb.println();
+            serializeJson(sendJSON, *activePort);
+            activePort->println();
             break;
           }
 
@@ -276,8 +282,8 @@ void scanDevices() {
   if (i2c_safe_mode) {
     sendJSON["scan"] = "FAIL";
     sendJSON["error"] = "SAFE_MODE";
-    serializeJson(sendJSON, PagWeb);
-    PagWeb.println();
+    serializeJson(sendJSON, *activePort);
+    activePort->println();
     return;
   }
 
@@ -315,8 +321,8 @@ void scanDevices() {
   }
 
   sendJSON["count"] = device_count;
-  serializeJson(sendJSON, PagWeb);
-  PagWeb.println();
+  serializeJson(sendJSON, *activePort);
+  activePort->println();
 }
 
 void relayOn(String cmd) {
@@ -335,8 +341,8 @@ void relayOn(String cmd) {
   } else {
     sendJSON["relay"] = "FAIL";
   }
-  serializeJson(sendJSON, PagWeb);
-  PagWeb.println();
+  serializeJson(sendJSON, *activePort);
+  activePort->println();
 }
 
 void relayOff(String cmd) {
@@ -355,8 +361,8 @@ void relayOff(String cmd) {
   } else {
     sendJSON["relay"] = "FAIL";
   }
-  serializeJson(sendJSON, PagWeb);
-  PagWeb.println();
+  serializeJson(sendJSON, *activePort);
+  activePort->println();
 }
 
 void readADCCommand(String cmd, bool adc1) {
@@ -365,8 +371,8 @@ void readADCCommand(String cmd, bool adc1) {
   if (i2c_safe_mode) {
     sendJSON["adc"] = "FAIL";
     sendJSON["error"] = "SAFE_MODE";
-    serializeJson(sendJSON, PagWeb);
-    PagWeb.println();
+    serializeJson(sendJSON, *activePort);
+    activePort->println();
     return;
   }
 
@@ -399,16 +405,16 @@ void readADCCommand(String cmd, bool adc1) {
         sendJSON["state"] = "dark";
       }
 
-      serializeJson(sendJSON, PagWeb);
-      PagWeb.println();
+      serializeJson(sendJSON, *activePort);
+      activePort->println();
       return;
     }
     while (WIRE.available()) WIRE.read();  // Limpiar buffer
   }
 
   sendJSON["adc"] = "FAIL";
-  serializeJson(sendJSON, PagWeb);
-  PagWeb.println();
+  serializeJson(sendJSON, *activePort);
+  activePort->println();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -446,8 +452,8 @@ uint8_t parseHex(String hex_str) {
     sendJSON.clear();
     sendJSON["status"] = "ERROR";
     sendJSON["msg"] = "Invalid I2C address";
-    serializeJson(sendJSON, PagWeb);
-    PagWeb.println();
+    serializeJson(sendJSON, *activePort);
+    activePort->println();
     return 0;
   }
   return (uint8_t)addr;
