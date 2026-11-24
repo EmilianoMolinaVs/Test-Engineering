@@ -78,10 +78,10 @@ void initMPU6050() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Serial Initialized!");
+  delay(100);
+  Serial.println("Serial Initialized...");
 
   Wire.begin(SDA_PIN, SCL_PIN);
-  Wire.setTimeout(50000);
   delay(100);
 
   for (uint8_t addr = 1; addr < 127; addr++) {
@@ -92,6 +92,8 @@ void setup() {
       Serial.println(addr, HEX);
     }
   }
+
+  Serial.println("scan finished...");
 
   // Try to initialize!
   if (!mpu.begin(0x68)) {
