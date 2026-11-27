@@ -31,8 +31,8 @@ void loop() {
 #include <cstdint>
 
 // Definición del pin y parámetros de la señal
-const uint8_t pulsePin = 6;
-const uint32_t freq = 10000;  // 4 MHz
+const uint8_t pulsePin = 22;
+const uint32_t freq = 50000;  
 const uint8_t resolution = 2;   // Resolución de 2 bits (valores de 0 a 3)
 
 void setup() {

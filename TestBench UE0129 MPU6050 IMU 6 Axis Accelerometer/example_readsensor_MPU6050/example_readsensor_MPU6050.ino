@@ -7,6 +7,7 @@
 
 #define SDA_PIN 6
 #define SCL_PIN 7
+#define I2C_FREQ 1000000  
 
 Adafruit_MPU6050 mpu;
 
@@ -82,6 +83,7 @@ void setup() {
   Serial.println("Serial Initialized...");
 
   Wire.begin(SDA_PIN, SCL_PIN);
+  Wire.setClock(I2C_FREQ);
   delay(100);
 
   for (uint8_t addr = 1; addr < 127; addr++) {
@@ -104,6 +106,7 @@ void setup() {
   }
   Serial.println("MPU6050 Found!");
 
+  Wire.setClock(I2C_FREQ);
   initMPU6050();
 
   Serial.println("");
