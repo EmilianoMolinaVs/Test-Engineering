@@ -7,7 +7,7 @@
 
 #define SDA_PIN 6
 #define SCL_PIN 7
-#define I2C_FREQ 1000000  
+#define I2C_FREQ 400000  
 
 Adafruit_MPU6050 mpu;
 
